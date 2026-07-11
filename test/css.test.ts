@@ -1,0 +1,141 @@
+import { describe, expect, test } from "bun:test";
+
+import { convert } from "../parser/convert";
+import { parseHTML } from "../parser/html";
+import { computeStyles } from "../style/style";
+import { collectStylesheetRules } from "../style/css/collect";
+import { matchesSelector } from "../style/css/match";
+import { parseInlineStyle, parseStylesheet } from "../style/css/parse";
+
+function findBody(styled: ReturnType<typeof computeStyles>) {
+  return styled.children[0]?.children.find(
+    (child) => child.dom.type === "element" && child.dom.tag === "body",
+  );
+}
+
+describe("parseStylesheet", () => {
+  test("parses tag, class, and id selectors", () => {
+    const rules = parseStylesheet(`
+      body { color: #ccc; background: #111; }
+      p.intro { color: cyan; }
+      #title { font-weight: bold; }
+    `);
+
+    expect(rules).toHaveLength(3);
+    expect(rules[0]?.declarations.color).toBe("#ccc");
+    expect(rules[1]?.selectors[0]).toEqual({ kind: "tag-class", tag: "p", className: "intro" });
+    expect(rules[2]?.selectors[0]).toEqual({ kind: "id", id: "title" });
+  });
+
+  test("parses spacing properties", () => {
+    const rules = parseStylesheet("p { margin-top: 2; padding-bottom: 1; }");
+    expect(rules[0]?.declarations.marginTop).toBe(2);
+    expect(rules[0]?.declarations.paddingBottom).toBe(1);
+  });
+});
+
+describe("computeStyles with CSS", () => {
+  test("applies stylesheet rules over UA defaults", () => {
+    const html = `
+      <html>
+        <head>
+          <style>
+            body { color: #cccccc; background: #111111; }
+            h1 { color: #ffd700; }
+          </style>
+        </head>
+        <body>
+          <h1>Title</h1>
+        </body>
+      </html>
+    `;
+
+    const styled = computeStyles(convert(parseHTML(html)));
+    const body = findBody(styled);
+    const heading = body?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "h1",
+    );
+
+    expect(body?.style.fg).toBe("#cccccc");
+    expect(body?.style.bg).toBe("#111111");
+    expect(heading?.style.fg).toBe("#ffd700");
+  });
+
+  test("applies class and id selectors", () => {
+    const html = `
+      <style>
+        p.note { color: blue; }
+        #main { color: green; font-weight: bold; }
+      </style>
+      <p class="note">A</p>
+      <p id="main">B</p>
+    `;
+
+    const styled = computeStyles(convert(parseHTML(html)));
+    const body = findBody(styled);
+    const note = body?.children.find(
+      (child) =>
+        child.dom.type === "element" &&
+        child.dom.tag === "p" &&
+        child.dom.attributes?.class === "note",
+    );
+    const main = body?.children.find(
+      (child) =>
+        child.dom.type === "element" &&
+        child.dom.tag === "p" &&
+        child.dom.attributes?.id === "main",
+    );
+
+    expect(note?.style.fg).toBe("blue");
+    expect(main?.style.fg).toBe("green");
+    expect(main?.style.bold).toBe(true);
+  });
+
+  test("inline style overrides stylesheet rules", () => {
+    const html = `
+      <style>p { color: blue; }</style>
+      <p style="color: red;">hello</p>
+    `;
+
+    const styled = computeStyles(convert(parseHTML(html)));
+    const body = findBody(styled);
+    const paragraph = body?.children[0];
+
+    expect(paragraph?.style.fg).toBe("red");
+  });
+});
+
+describe("matchesSelector", () => {
+  test("matches element attributes from the DOM", () => {
+    const dom = convert(parseHTML(`<p class="note" id="main"></p>`));
+    const body = dom.children[0]?.children.find(
+      (child) => child.type === "element" && child.tag === "body",
+    );
+    const node = body?.children[0];
+
+    expect(node).toBeDefined();
+    if (!node || node.type !== "element") throw new Error("expected element");
+
+    expect(matchesSelector(node, { kind: "tag", tag: "p" })).toBe(true);
+    expect(matchesSelector(node, { kind: "class", className: "note" })).toBe(true);
+    expect(matchesSelector(node, { kind: "id", id: "main" })).toBe(true);
+    expect(matchesSelector(node, { kind: "tag-class", tag: "p", className: "note" })).toBe(true);
+  });
+});
+
+describe("collectStylesheetRules", () => {
+  test("reads rules from style elements", () => {
+    const dom = convert(parseHTML("<html><head><style>h1 { color: red; }</style></head></html>"));
+    const rules = collectStylesheetRules(dom);
+
+    expect(rules).toHaveLength(1);
+    expect(rules[0]?.declarations.color).toBe("red");
+  });
+});
+
+describe("parseInlineStyle", () => {
+  test("parses inline declarations", () => {
+    expect(parseInlineStyle("color: red; font-weight: bold").color).toBe("red");
+    expect(parseInlineStyle("color: red; font-weight: bold").fontWeight).toBe("bold");
+  });
+});

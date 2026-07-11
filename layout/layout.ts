@@ -155,7 +155,10 @@ function layoutInlineBatch(batch: StyledNode[], ctx: LayoutContext, viewport: Vi
 }
 
 function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
+  ctx.y += node.style.marginTop ?? 0;
   const startY = ctx.y;
+  ctx.y += node.style.paddingTop ?? 0;
+
   let inlineBatch: StyledNode[] = [];
 
   const flushInlineBatch = () => {
@@ -184,6 +187,8 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
 
   flushInlineBatch();
 
+  ctx.y += node.style.paddingBottom ?? 0;
+
   const contentHeight = Math.max(LINE_HEIGHT, ctx.y - startY);
   node.layout = {
     x: 0,
@@ -192,6 +197,7 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
     height: contentHeight,
   };
 
+  ctx.y += node.style.marginBottom ?? 0;
   ctx.y += BLOCK_GAP;
 }
 

@@ -11,5 +11,6 @@ export interface Node {
   parent?: Node;
   value?: string;
   tag?: string;
+  attributes?: Record<string, string>;
   children?: Node[];
 }

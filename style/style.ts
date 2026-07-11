@@ -1,5 +1,8 @@
 import type { Node } from "../dom/node";
 import { NodeType } from "../dom/node";
+import { applyAuthorStyles } from "./css/apply";
+import { collectStylesheetRules } from "./css/collect";
+import type { CssRule } from "./css/types";
 
 export type Display = "block" | "inline" | "none";
 
@@ -10,6 +13,10 @@ export interface ComputedStyle {
   underline: boolean;
   fg?: string;
   bg?: string;
+  marginTop?: number;
+  marginBottom?: number;
+  paddingTop?: number;
+  paddingBottom?: number;
 }
 
 export interface LayoutFragment {
@@ -100,6 +107,10 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
     underline: inherited.underline,
     fg: inherited.fg,
     bg: inherited.bg,
+    marginTop: inherited.marginTop,
+    marginBottom: inherited.marginBottom,
+    paddingTop: inherited.paddingTop,
+    paddingBottom: inherited.paddingBottom,
   };
 
   switch (tag) {
@@ -127,11 +138,11 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
   }
 }
 
-function styleNode(node: Node, inherited: ComputedStyle): StyledNode | null {
+function styleNode(node: Node, inherited: ComputedStyle, rules: CssRule[]): StyledNode | null {
   switch (node.type) {
     case NodeType.Document: {
       const children = node.children
-        ?.map((child) => styleNode(child, inherited))
+        ?.map((child) => styleNode(child, inherited, rules))
         .filter((child): child is StyledNode => child !== null) ?? [];
 
       return {
@@ -142,12 +153,13 @@ function styleNode(node: Node, inherited: ComputedStyle): StyledNode | null {
     }
 
     case NodeType.Element: {
-      const style = uaStyleForElement(node.tag ?? "", inherited);
+      const uaStyle = uaStyleForElement(node.tag ?? "", inherited);
+      const style = applyAuthorStyles(node, uaStyle, rules);
       if (style.display === "none") return null;
 
       const children =
         node.children
-          ?.map((child) => styleNode(child, style))
+          ?.map((child) => styleNode(child, style, rules))
           .filter((child): child is StyledNode => child !== null) ?? [];
 
       return { dom: node, style, children };
@@ -169,9 +181,10 @@ function styleNode(node: Node, inherited: ComputedStyle): StyledNode | null {
   }
 }
 
-/** Apply user-agent defaults to a DOM tree. */
+/** Apply user-agent defaults and author CSS to a DOM tree. */
 export function computeStyles(root: Node): StyledNode {
-  const styled = styleNode(root, DEFAULT_STYLE);
+  const rules = collectStylesheetRules(root);
+  const styled = styleNode(root, DEFAULT_STYLE, rules);
   if (!styled) {
     throw new Error("Document produced no styled output");
   }

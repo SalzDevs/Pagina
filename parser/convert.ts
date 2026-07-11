@@ -46,6 +46,9 @@ export function convert(node: any, parent?: Node): Node {
         type: NodeType.Element,
         parent,
         tag: node.tagName,
+        attributes: Object.fromEntries(
+          (node.attrs ?? []).map((attr: { name: string; value: string }) => [attr.name, attr.value]),
+        ),
         children: [],
       };
   }
