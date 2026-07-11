@@ -2,13 +2,23 @@ import { NodeType } from "../dom/node";
 import type { StyledNode } from "../style/style";
 import type { DisplayCommand, DisplayList } from "./display-list";
 
-function paintTextNode(node: StyledNode, commands: DisplayCommand[]): void {
+interface PaintContext {
+  linkIndex: number | null;
+  nextLinkIndex: { value: number };
+}
+
+function paintTextNode(
+  node: StyledNode,
+  commands: DisplayCommand[],
+  ctx: PaintContext,
+): void {
   const style = {
     fg: node.style.fg,
     bg: node.style.bg,
     bold: node.style.bold || undefined,
     italic: node.style.italic || undefined,
     underline: node.style.underline || undefined,
+    linkIndex: ctx.linkIndex ?? undefined,
   };
 
   if (node.fragments && node.fragments.length > 0) {
@@ -35,16 +45,31 @@ function paintTextNode(node: StyledNode, commands: DisplayCommand[]): void {
   });
 }
 
-function paintNode(node: StyledNode, commands: DisplayCommand[]): void {
+function paintNode(node: StyledNode, commands: DisplayCommand[], ctx: PaintContext): void {
   switch (node.dom.type) {
     case NodeType.Text:
-      paintTextNode(node, commands);
+      paintTextNode(node, commands, ctx);
       return;
 
     case NodeType.Document:
     case NodeType.Element: {
+      if (node.dom.type === NodeType.Element && node.dom.tag === "a" && node.dom.attributes?.href) {
+        const linkIndex = ctx.nextLinkIndex.value;
+        ctx.nextLinkIndex.value += 1;
+
+        const linkCtx: PaintContext = {
+          linkIndex,
+          nextLinkIndex: ctx.nextLinkIndex,
+        };
+
+        for (const child of node.children) {
+          paintNode(child, commands, linkCtx);
+        }
+        return;
+      }
+
       for (const child of node.children) {
-        paintNode(child, commands);
+        paintNode(child, commands, ctx);
       }
       return;
     }
@@ -58,6 +83,6 @@ function paintNode(node: StyledNode, commands: DisplayCommand[]): void {
 /** Convert a laid-out styled tree into a display list. Does not draw anything. */
 export function paint(node: StyledNode): DisplayList {
   const commands: DisplayCommand[] = [];
-  paintNode(node, commands);
+  paintNode(node, commands, { linkIndex: null, nextLinkIndex: { value: 0 } });
   return commands;
 }
