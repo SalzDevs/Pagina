@@ -2,6 +2,7 @@ import type { ComputedStyle, Display } from "../style";
 import type { Node } from "../../dom/node";
 import { NodeType } from "../../dom/node";
 import { matchesSelector } from "./match";
+import { normalizeBackgroundColor, normalizeColor } from "./color";
 import { parseInlineStyle } from "./parse";
 import type { CssDeclarations, CssRule } from "./types";
 
@@ -45,8 +46,8 @@ function mergeDeclarations(
     }
   };
 
-  set("fg", declarations.color);
-  set("bg", declarations.backgroundColor ?? declarations.background);
+  set("fg", normalizeColor(declarations.color));
+  set("bg", normalizeBackgroundColor(declarations.backgroundColor, declarations.background));
   set("bold", isBold(declarations.fontWeight));
   set("italic", isItalic(declarations.fontStyle));
   set("underline", isUnderline(declarations.textDecoration));

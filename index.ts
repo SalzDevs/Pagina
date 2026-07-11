@@ -1,10 +1,9 @@
-import { resolve } from "node:path";
-
 import { createCliRenderer } from "@opentui/core";
 
 import { collectLinks } from "./links/collect";
 import { layout } from "./layout/layout";
-import { loadHtmlFromFile } from "./navigation/load";
+import { loadHtml } from "./navigation/load";
+import { normalizePageLocation } from "./navigation/location";
 import { convert } from "./parser/convert";
 import { parseHTML } from "./parser/html";
 import { paint } from "./paint/paint";
@@ -15,7 +14,7 @@ import { measureContentHeight } from "./viewport/visible";
 const DEFAULT_PAGE = "examples/page.html";
 
 async function main() {
-  const initialPath = resolve(process.argv[2] ?? DEFAULT_PAGE);
+  const initialLocation = normalizePageLocation(process.argv[2] ?? DEFAULT_PAGE);
 
   const renderer = await createCliRenderer({
     exitOnCtrlC: true,
@@ -23,17 +22,17 @@ async function main() {
   });
 
   let session: BrowserSession | null = null;
-  let currentPath = initialPath;
+  let currentLocation = initialLocation;
 
-  const loadPage = async (filePath: string) => {
+  const loadPage = async (location: string) => {
     session?.destroy();
 
-    currentPath = resolve(filePath);
-    const html = await loadHtmlFromFile(currentPath);
+    currentLocation = normalizePageLocation(location);
+    const html = await loadHtml(currentLocation);
 
     const document = parseHTML(html);
     const dom = convert(document);
-    const styled = await computeStyles(dom, { basePath: currentPath });
+    const styled = await computeStyles(dom, { pageLocation: currentLocation });
 
     layout(styled, {
       viewport: {
@@ -47,14 +46,14 @@ async function main() {
     const contentHeight = measureContentHeight(styled);
 
     session = createBrowserSession(renderer, displayList, contentHeight, links, {
-      basePath: currentPath,
+      pageLocation: currentLocation,
       onNavigate: loadPage,
     });
 
     session.attach();
   };
 
-  await loadPage(initialPath);
+  await loadPage(initialLocation);
   renderer.start();
 }
 

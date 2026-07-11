@@ -48,7 +48,7 @@ function key(name: string, shift = false) {
 
 async function pipelineFromFile(path: string) {
   const html = await loadHtmlFromFile(path);
-  const styled = await computeStyles(convert(parseHTML(html)), { basePath: resolve(path) });
+  const styled = await computeStyles(convert(parseHTML(html)), { pageLocation: resolve(path) });
   layout(styled, { viewport });
   return {
     styled,
@@ -105,9 +105,14 @@ describe("resolveHref", () => {
     expect(resolveHref("", linksPagePath)).toBeNull();
   });
 
-  test("rejects remote urls for now", () => {
-    expect(() => resolveHref("https://example.com", linksPagePath)).toThrow(
-      "Remote URLs are not supported yet",
+  test("resolves absolute remote links", () => {
+    expect(resolveHref("https://example.com/about", linksPagePath)).toBe("https://example.com/about");
+  });
+
+  test("resolves relative links against a remote page location", () => {
+    expect(resolveHref("/docs", "https://example.com/page.html")).toBe("https://example.com/docs");
+    expect(resolveHref("other.html", "https://example.com/docs/page.html")).toBe(
+      "https://example.com/docs/other.html",
     );
   });
 });

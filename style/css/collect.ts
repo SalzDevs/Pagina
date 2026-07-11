@@ -1,7 +1,7 @@
 import type { Node } from "../../dom/node";
 import { NodeType } from "../../dom/node";
-import { loadTextFromFile } from "../../navigation/load";
-import { resolveLocalPath } from "../../navigation/resolve";
+import { loadText } from "../../navigation/load";
+import { resolveResource } from "../../navigation/resolve";
 import type { CssRule } from "./types";
 import { parseStylesheet } from "./parse";
 
@@ -52,7 +52,7 @@ export function collectCssSources(root: Node): CssSource[] {
 /** Collect CSS rules from inline and linked stylesheets. */
 export async function collectStylesheetRules(
   root: Node,
-  basePath?: string,
+  pageLocation?: string,
 ): Promise<CssRule[]> {
   const sources = collectCssSources(root);
   const rules: CssRule[] = [];
@@ -63,12 +63,12 @@ export async function collectStylesheetRules(
       continue;
     }
 
-    if (!basePath) continue;
+    if (!pageLocation) continue;
 
-    const filePath = resolveLocalPath(source.href, basePath);
-    if (!filePath) continue;
+    const resourceLocation = resolveResource(source.href, pageLocation);
+    if (!resourceLocation) continue;
 
-    const css = await loadTextFromFile(filePath);
+    const css = await loadText(resourceLocation);
     rules.push(...parseStylesheet(css));
   }
 

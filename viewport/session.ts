@@ -20,8 +20,8 @@ import {
 } from "../viewport/scroll";
 
 export interface BrowserSessionOptions {
-  basePath: string;
-  onNavigate: (path: string) => void | Promise<void>;
+  pageLocation: string;
+  onNavigate: (location: string) => void | Promise<void>;
 }
 
 export interface BrowserSession {
@@ -75,7 +75,7 @@ export function createBrowserSession(
     const link = links[index];
     if (!link) return;
 
-    const target = resolveHref(link.href, options.basePath);
+    const target = resolveHref(link.href, options.pageLocation);
     if (target) {
       await options.onNavigate(target);
     }
@@ -171,7 +171,7 @@ export function createScrollSession(
   contentHeight: number,
 ): ScrollSession {
   const session = createBrowserSession(renderer, displayList, contentHeight, [], {
-    basePath: "",
+    pageLocation: "",
     onNavigate: () => {},
   });
 

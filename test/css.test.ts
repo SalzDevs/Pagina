@@ -109,7 +109,7 @@ describe("computeStyles with CSS", () => {
   test("loads linked stylesheets from examples/linked-page.html", async () => {
     const html = await Bun.file("examples/linked-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)), {
-      basePath: resolve("examples/linked-page.html"),
+      pageLocation: resolve("examples/linked-page.html"),
     });
     const body = findBody(styled);
     const intro = body?.children.find(
@@ -183,6 +183,23 @@ describe("collectStylesheetRules", () => {
 
     expect(rules.some((rule) => rule.declarations.color === "#cccccc")).toBe(true);
     expect(rules.some((rule) => rule.declarations.color === "#ffd700")).toBe(true);
+  });
+
+  test("loads linked rules from a remote stylesheet", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async (input) => {
+      expect(input).toBe("https://example.com/theme.css");
+      return new Response("body { color: navy; }", { status: 200 });
+    }) as typeof fetch;
+
+    try {
+      const dom = convert(parseHTML('<link rel="stylesheet" href="theme.css" />'));
+      const rules = await collectStylesheetRules(dom, "https://example.com/page.html");
+
+      expect(rules.some((rule) => rule.declarations.color === "navy")).toBe(true);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
   });
 });
 
