@@ -2,6 +2,7 @@ import { createCliRenderer } from "@opentui/core";
 import { parseHTML } from "./parser/html";
 import {convert} from "./parser/convert"
 import { render } from "./render/render";
+import { layout } from "./layout/layout";
 
 const html = `
 <!DOCTYPE html>
@@ -18,9 +19,11 @@ async function main() {
     exitOnCtrlC: true,
   });
 
-  const document =  parseHTML(html);
+  const document = parseHTML(html);
 
   const dom = convert(document);
+
+  layout(dom);
 
   render(renderer, dom);
 
