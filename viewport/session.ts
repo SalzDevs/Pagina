@@ -1,4 +1,4 @@
-import type { CliRenderer, KeyEvent, MouseEvent } from "@opentui/core";
+import type { CliRenderer, KeyEvent } from "@opentui/core";
 
 import { linkIndexAtPoint } from "../links/hit";
 import type { Link } from "../links/types";
@@ -8,9 +8,10 @@ import {
   scrollToFocusedLink,
   type LinkFocusState,
 } from "../links/focus";
+import { handleHistoryKey } from "../navigation/history-keys";
 import { resolveHref } from "../navigation/resolve";
 import type { DisplayList } from "../paint/display-list";
-import { mountDisplayList, type MountedDisplayList } from "../render/render";
+import { mountDisplayList, type MountLayout, type MountedDisplayList } from "../render/render";
 import {
   createScrollViewport,
   handleScrollKey,
@@ -21,7 +22,10 @@ import {
 
 export interface BrowserSessionOptions {
   pageLocation: string;
+  layout: MountLayout;
   onNavigate: (location: string) => void | Promise<void>;
+  onHistoryBack?: () => void | Promise<void>;
+  onHistoryForward?: () => void | Promise<void>;
 }
 
 export interface BrowserSession {
@@ -38,20 +42,21 @@ export function createBrowserSession(
   links: Link[],
   options: BrowserSessionOptions,
 ): BrowserSession {
-  let viewport = createScrollViewport(renderer.height, contentHeight);
+  let viewport = createScrollViewport(options.layout.height, contentHeight);
   let linkFocus = createLinkFocusState();
   const mounted: MountedDisplayList = mountDisplayList(
     renderer,
     displayList,
     contentHeight,
     linkFocus.focusedIndex,
+    options.layout,
   );
 
   const syncViewport = (next: ScrollViewport) => {
     viewport = scrollTo(
       {
         ...next,
-        viewportHeight: renderer.height,
+        viewportHeight: options.layout.height,
         contentHeight,
       },
       next.scrollY,
@@ -112,6 +117,16 @@ export function createBrowserSession(
     },
     attach: () => {
       keyHandler = async (key) => {
+        const historyAction = handleHistoryKey(key);
+        if (historyAction === "back") {
+          await options.onHistoryBack?.();
+          return;
+        }
+        if (historyAction === "forward") {
+          await options.onHistoryForward?.();
+          return;
+        }
+
         const linkResult = handleLinkKey(linkFocus, links.length, key);
         if (linkResult) {
           if (linkResult.kind === "focus") {
@@ -172,6 +187,11 @@ export function createScrollSession(
 ): ScrollSession {
   const session = createBrowserSession(renderer, displayList, contentHeight, [], {
     pageLocation: "",
+    layout: {
+      top: 0,
+      height: renderer.height,
+      width: renderer.width,
+    },
     onNavigate: () => {},
   });
 

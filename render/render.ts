@@ -9,6 +9,12 @@ export interface RenderOptions {
   viewportHeight?: number;
 }
 
+export interface MountLayout {
+  top: number;
+  height: number;
+  width: number;
+}
+
 export interface MountedDisplayList {
   setScrollY: (scrollY: number) => void;
   setFocusedLink: (focusedIndex: number | null) => void;
@@ -27,11 +33,19 @@ export function mountDisplayList(
   displayList: DisplayList,
   contentHeight: number,
   focusedLinkIndex: number | null = null,
+  layout: MountLayout = {
+    top: 0,
+    height: renderer.height,
+    width: renderer.width,
+  },
 ): MountedDisplayList {
   const viewport = new BoxRenderable(renderer, {
     id: "pagina-viewport",
-    width: renderer.width,
-    height: renderer.height,
+    width: layout.width,
+    height: layout.height,
+    position: "absolute",
+    top: layout.top,
+    left: 0,
     overflow: "hidden",
   });
 
@@ -40,8 +54,8 @@ export function mountDisplayList(
     position: "absolute",
     top: 0,
     left: 0,
-    width: renderer.width,
-    height: Math.max(contentHeight, renderer.height),
+    width: layout.width,
+    height: Math.max(contentHeight, layout.height),
   });
 
   const styledList = applyLinkFocus(displayList, focusedLinkIndex);

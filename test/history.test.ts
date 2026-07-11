@@ -1,0 +1,128 @@
+import { describe, expect, test } from "bun:test";
+
+import type { Node } from "../dom/node";
+import { NodeType } from "../dom/node";
+import { handleHistoryKey } from "../navigation/history-keys";
+import {
+  createBrowserHistory,
+  extractPageTitle,
+  formatBreadcrumb,
+  goBack,
+  goForward,
+  historyLabel,
+  pushHistory,
+} from "../navigation/history";
+
+function key(name: string, options: { shift?: boolean; option?: boolean } = {}) {
+  return {
+    name,
+    eventType: "press" as const,
+    ctrl: false,
+    meta: false,
+    shift: options.shift ?? false,
+    option: options.option ?? false,
+    sequence: "",
+    number: false,
+    raw: "",
+    source: "raw" as const,
+    defaultPrevented: false,
+    propagationStopped: false,
+    preventDefault() {},
+    stopPropagation() {},
+  };
+}
+
+describe("browser history", () => {
+  test("pushes entries and truncates forward history on navigation", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "A" });
+    history = pushHistory(history, { location: "/b", label: "B" });
+
+    expect(history.entries.map((entry) => entry.label)).toEqual(["A", "B"]);
+    expect(history.index).toBe(1);
+
+    const back = goBack(history);
+    history = back.history;
+    expect(back.entry?.location).toBe("/a");
+
+    history = pushHistory(history, { location: "/c", label: "C" });
+    expect(history.entries.map((entry) => entry.label)).toEqual(["A", "C"]);
+    expect(history.index).toBe(1);
+  });
+
+  test("moves back and forward through entries", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "A" });
+    history = pushHistory(history, { location: "/b", label: "B" });
+    history = pushHistory(history, { location: "/c", label: "C" });
+
+    history = goBack(history).history;
+    history = goBack(history).history;
+    expect(history.index).toBe(0);
+
+    history = goForward(history).history;
+    expect(history.index).toBe(1);
+    expect(goForward(history).entry?.label).toBe("C");
+  });
+
+  test("formats breadcrumb labels with the current entry highlighted", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "Home" });
+    history = pushHistory(history, { location: "/b", label: "Other" });
+
+    expect(formatBreadcrumb(history, 40)).toBe("Home › [Other]");
+  });
+
+  test("truncates long breadcrumbs from the left", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "First Page" });
+    history = pushHistory(history, { location: "/b", label: "Second Page" });
+    history = pushHistory(history, { location: "/c", label: "Current Page" });
+
+    const line = formatBreadcrumb(history, 24);
+    expect(line).toContain("[Current Page]");
+    expect(line.startsWith("...")).toBe(true);
+  });
+});
+
+describe("history labels", () => {
+  test("prefers the document title", () => {
+    const dom: Node = {
+      type: NodeType.Element,
+      tag: "html",
+      children: [
+        {
+          type: NodeType.Element,
+          tag: "head",
+          children: [
+            {
+              type: NodeType.Element,
+              tag: "title",
+              children: [{ type: NodeType.Text, value: "Links Demo" }],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(extractPageTitle(dom)).toBe("Links Demo");
+    expect(historyLabel("examples/links-page.html", "Links Demo")).toBe("Links Demo");
+  });
+
+  test("falls back to hostname or file name", () => {
+    expect(historyLabel("https://example.com/docs/page.html")).toBe("example.com/docs/page.html");
+    expect(historyLabel("/tmp/examples/page.html")).toBe("page.html");
+  });
+});
+
+describe("handleHistoryKey", () => {
+  test("binds u and shift+u to back and forward", () => {
+    expect(handleHistoryKey(key("u"))).toBe("back");
+    expect(handleHistoryKey(key("u", { shift: true }))).toBe("forward");
+  });
+
+  test("binds option+arrow keys to back and forward", () => {
+    expect(handleHistoryKey(key("left", { option: true }))).toBe("back");
+    expect(handleHistoryKey(key("right", { option: true }))).toBe("forward");
+  });
+});
