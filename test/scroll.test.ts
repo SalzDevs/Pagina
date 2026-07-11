@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
+import { convert } from "../parser/convert";
+import { parseHTML } from "../parser/html";
+import { layout } from "../layout/layout";
+import { paint } from "../paint/paint";
+import { computeStyles } from "../style/style";
 import {
   createScrollViewport,
   handleScrollKey,
@@ -7,7 +12,12 @@ import {
   scrollBy,
   scrollTo,
 } from "../viewport/scroll";
-import { measureContentHeight, visibleCommands } from "../viewport/visible";
+import {
+  hasVisibleContentAtMaxScroll,
+  measureContentHeight,
+  measureDisplayListHeight,
+  visibleCommands,
+} from "../viewport/visible";
 
 function key(name: string, eventType: "press" | "release" = "press") {
   return {
@@ -37,6 +47,13 @@ describe("scroll viewport", () => {
     expect(scrollBy(viewport, -99).scrollY).toBe(0);
   });
 
+  test("does not scroll when content fits in the viewport", () => {
+    const viewport = createScrollViewport(24, 20);
+
+    expect(maxScrollY(viewport)).toBe(0);
+    expect(scrollBy(viewport, 10).scrollY).toBe(0);
+  });
+
   test("handles arrow and page keys", () => {
     const viewport = createScrollViewport(10, 25);
 
@@ -48,6 +65,20 @@ describe("scroll viewport", () => {
     expect(handleScrollKey(scrollTo(viewport, 8), key("home"))?.scrollY).toBe(0);
   });
 
+  test("ignores ctrl-modified keys", () => {
+    const viewport = createScrollViewport(10, 25);
+    const ctrlUp = key("up");
+    ctrlUp.ctrl = true;
+
+    expect(handleScrollKey(viewport, ctrlUp)).toBeNull();
+  });
+
+  test("can scroll up after reaching the bottom", () => {
+    const viewport = scrollTo(createScrollViewport(10, 25), 15);
+
+    expect(handleScrollKey(viewport, key("up"))?.scrollY).toBe(14);
+  });
+
   test("ignores unbound keys", () => {
     const viewport = createScrollViewport(10, 25);
     expect(handleScrollKey(viewport, key("a"))).toBeNull();
@@ -57,7 +88,7 @@ describe("scroll viewport", () => {
 
 describe("visible commands", () => {
   test("measures content height from display commands", () => {
-    const height = measureContentHeight([
+    const height = measureDisplayListHeight([
       { x: 0, y: 0, text: "a" },
       { x: 0, y: 12, text: "b" },
     ]);
@@ -77,5 +108,30 @@ describe("visible commands", () => {
     );
 
     expect(visible).toEqual([{ x: 0, y: 1, text: "middle" }]);
+  });
+
+  test("still shows content at max scroll on a long page", async () => {
+    const html = await Bun.file("examples/long-page.html").text();
+    const styled = computeStyles(convert(parseHTML(html)));
+    layout(styled, { viewport: { width: 80, height: 24 } });
+    const displayList = paint(styled);
+    const contentHeight = measureContentHeight(styled);
+
+    expect(
+      hasVisibleContentAtMaxScroll(displayList, contentHeight, 24),
+    ).toBe(true);
+
+    const max = maxScrollY(createScrollViewport(24, contentHeight));
+    expect(visibleCommands(displayList, max, 24).length).toBeGreaterThan(0);
+    expect(visibleCommands(displayList, contentHeight, 24).length).toBe(0);
+  });
+});
+
+describe("measureContentHeight", () => {
+  test("uses text fragments rather than block boxes", () => {
+    const styled = computeStyles(convert(parseHTML("<p>top</p><p>bottom</p>")));
+    layout(styled, { viewport: { width: 40, height: 10 } });
+
+    expect(measureContentHeight(styled)).toBeGreaterThan(0);
   });
 });

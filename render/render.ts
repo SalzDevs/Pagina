@@ -1,36 +1,47 @@
 import type { CliRenderer } from "@opentui/core";
-import { Text, createTextAttributes } from "@opentui/core";
+import { BoxRenderable, TextRenderable, createTextAttributes } from "@opentui/core";
 
 import type { DisplayList } from "../paint/display-list";
-import { visibleCommands } from "../viewport/visible";
 
 export interface RenderOptions {
   scrollY?: number;
   viewportHeight?: number;
 }
 
-export function clearRenderer(renderer: CliRenderer): void {
-  for (const child of renderer.root.getChildren()) {
-    renderer.root.remove(child);
-  }
+export interface MountedDisplayList {
+  setScrollY: (scrollY: number) => void;
+  destroy: () => void;
+  viewport: BoxRenderable;
 }
 
-/** Draw a display list using OpenTUI. Knows nothing about HTML or the DOM. */
-export function render(
+/** Mount the full display list once and scroll by moving the content layer. */
+export function mountDisplayList(
   renderer: CliRenderer,
   displayList: DisplayList,
-  options: RenderOptions = {},
-): void {
-  const scrollY = options.scrollY ?? 0;
-  const viewportHeight = options.viewportHeight ?? Number.POSITIVE_INFINITY;
-  const commands = visibleCommands(displayList, scrollY, viewportHeight);
+  contentHeight: number,
+): MountedDisplayList {
+  const viewport = new BoxRenderable(renderer, {
+    id: "pagina-viewport",
+    width: renderer.width,
+    height: renderer.height,
+    overflow: "hidden",
+  });
 
-  for (const [index, command] of commands.entries()) {
+  const content = new BoxRenderable(renderer, {
+    id: "pagina-content",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: renderer.width,
+    height: Math.max(contentHeight, renderer.height),
+  });
+
+  for (const [index, command] of displayList.entries()) {
     if (command.text.length === 0) continue;
 
-    renderer.root.add(
-      Text({
-        id: `display-cmd-${scrollY}-${index}`,
+    content.add(
+      new TextRenderable(renderer, {
+        id: `display-cmd-${index}`,
         content: command.text,
         position: "absolute",
         left: command.x,
@@ -43,7 +54,41 @@ export function render(
           underline: command.underline,
         }),
         selectable: false,
+        focusable: false,
       }),
     );
   }
+
+  viewport.add(content);
+  renderer.root.add(viewport);
+
+  return {
+    setScrollY(scrollY: number) {
+      content.top = -scrollY;
+      renderer.requestRender();
+    },
+    destroy() {
+      viewport.destroyRecursively();
+    },
+    viewport,
+  };
+}
+
+/** @deprecated Prefer mountDisplayList for interactive scrolling. */
+export function clearRenderer(renderer: CliRenderer): void {
+  for (const child of renderer.root.getChildren()) {
+    renderer.root.remove(child);
+  }
+}
+
+/** Draw a visible slice of the display list. Used for static rendering only. */
+export function render(
+  renderer: CliRenderer,
+  displayList: DisplayList,
+  options: RenderOptions = {},
+): void {
+  const contentHeight =
+    displayList.length === 0 ? 0 : Math.max(...displayList.map((command) => command.y)) + 1;
+  const mounted = mountDisplayList(renderer, displayList, contentHeight);
+  mounted.setScrollY(options.scrollY ?? 0);
 }

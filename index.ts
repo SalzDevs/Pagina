@@ -17,6 +17,7 @@ async function main() {
 
   const renderer = await createCliRenderer({
     exitOnCtrlC: true,
+    useMouse: true,
   });
 
   const document = parseHTML(html);
@@ -31,10 +32,9 @@ async function main() {
   });
 
   const displayList = paint(styled);
-  const contentHeight = measureContentHeight(displayList);
+  const contentHeight = measureContentHeight(styled);
   const session = createScrollSession(renderer, displayList, contentHeight);
 
-  session.rerender();
   session.attach();
   renderer.start();
 }

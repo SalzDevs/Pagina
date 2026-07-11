@@ -36,9 +36,15 @@ export function scrollBy(viewport: ScrollViewport, delta: number): ScrollViewpor
   return scrollTo(viewport, viewport.scrollY + delta);
 }
 
+function isScrollKey(key: KeyEvent): boolean {
+  if (key.ctrl || key.meta) return false;
+  return true;
+}
+
 /** Apply a key event to the viewport. Returns null when the key is not a scroll binding. */
 export function handleScrollKey(viewport: ScrollViewport, key: KeyEvent): ScrollViewport | null {
   if (key.eventType === "release") return null;
+  if (!isScrollKey(key)) return null;
 
   const pageStep = Math.max(1, viewport.viewportHeight - 1);
 
@@ -54,10 +60,8 @@ export function handleScrollKey(viewport: ScrollViewport, key: KeyEvent): Scroll
     case "pagedown":
       return scrollBy(viewport, pageStep);
     case "home":
-    case "g":
       return scrollTo(viewport, 0);
     case "end":
-    case "G":
       return scrollTo(viewport, maxScrollY(viewport));
     default:
       return null;
