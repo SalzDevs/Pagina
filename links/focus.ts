@@ -3,7 +3,7 @@ import type { KeyEvent } from "@opentui/core";
 import type { DisplayCommand, DisplayList } from "../paint/display-list";
 import { isTextCommand } from "../paint/display-list";
 import type { ScrollViewport } from "../viewport/scroll";
-import { scrollTo } from "../viewport/scroll";
+import { scrollToRevealY } from "../viewport/scroll";
 import type { Link } from "./types";
 
 export const FOCUSED_LINK_FG = "#ffffff";
@@ -62,16 +62,9 @@ export function applyLinkFocus(
 export function scrollToFocusedLink(viewport: ScrollViewport, link: Link): ScrollViewport {
   const top = Math.min(...link.bounds.map((bound) => bound.y));
   const bottom = Math.max(...link.bounds.map((bound) => bound.y + bound.height));
+  const height = Math.max(1, bottom - top);
 
-  if (top < viewport.scrollY) {
-    return scrollTo(viewport, top);
-  }
-
-  if (bottom > viewport.scrollY + viewport.viewportHeight) {
-    return scrollTo(viewport, bottom - viewport.viewportHeight);
-  }
-
-  return viewport;
+  return scrollToRevealY(viewport, top, height);
 }
 
 export type LinkKeyResult =

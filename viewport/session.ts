@@ -9,7 +9,8 @@ import {
   type LinkFocusState,
 } from "../links/focus";
 import { handleHistoryKey } from "../navigation/history-keys";
-import { resolveHref } from "../navigation/resolve";
+import { isSamePage, parseLinkTarget } from "../navigation/fragment";
+import { scrollToFragment } from "../navigation/anchors";
 import type { DisplayList } from "../paint/display-list";
 import { mountDisplayList, type MountLayout, type MountedDisplayList } from "../render/render";
 import {
@@ -23,7 +24,8 @@ import {
 export interface BrowserSessionOptions {
   pageLocation: string;
   layout: MountLayout;
-  onNavigate: (location: string) => void | Promise<void>;
+  fragmentPositions: ReadonlyMap<string, number>;
+  onNavigate: (location: string, fragment?: string | null) => void | Promise<void>;
   onHistoryBack?: () => void | Promise<void>;
   onHistoryForward?: () => void | Promise<void>;
 }
@@ -33,6 +35,7 @@ export interface BrowserSession {
   attach: () => void;
   destroy: () => void;
   setFocusedLink: (focusedIndex: number | null) => void;
+  scrollToFragment: (fragment: string | null) => void;
 }
 
 export function createBrowserSession(
@@ -64,15 +67,15 @@ export function createBrowserSession(
     mounted.setScrollY(viewport.scrollY);
   };
 
-  const syncLinkFocus = (next: LinkFocusState) => {
+  const syncLinkFocus = (next: LinkFocusState, scroll = false) => {
     linkFocus = next;
     mounted.setFocusedLink(linkFocus.focusedIndex);
 
-    if (linkFocus.focusedIndex !== null) {
-      const link = links[linkFocus.focusedIndex];
-      if (link) {
-        syncViewport(scrollToFocusedLink(viewport, link));
-      }
+    if (!scroll || linkFocus.focusedIndex === null) return;
+
+    const link = links[linkFocus.focusedIndex];
+    if (link) {
+      syncViewport(scrollToFocusedLink(viewport, link));
     }
   };
 
@@ -80,10 +83,24 @@ export function createBrowserSession(
     const link = links[index];
     if (!link) return;
 
-    const target = resolveHref(link.href, options.pageLocation);
-    if (target) {
-      await options.onNavigate(target);
+    const target = parseLinkTarget(link.href, options.pageLocation);
+    if (!target) return;
+
+    if (target.location === null) {
+      syncViewport(scrollToFragment(viewport, options.fragmentPositions, target.fragment));
+      return;
     }
+
+    if (target.fragment !== null && isSamePage(target.location, options.pageLocation)) {
+      syncViewport(scrollToFragment(viewport, options.fragmentPositions, target.fragment));
+      return;
+    }
+
+    await options.onNavigate(target.location, target.fragment);
+  };
+
+  const scrollToFragmentId = (fragment: string | null) => {
+    syncViewport(scrollToFragment(viewport, options.fragmentPositions, fragment));
   };
 
   syncViewport(viewport);
@@ -98,8 +115,9 @@ export function createBrowserSession(
       return viewport;
     },
     setFocusedLink(focusedIndex: number | null) {
-      syncLinkFocus({ focusedIndex });
+      syncLinkFocus({ focusedIndex }, false);
     },
+    scrollToFragment: scrollToFragmentId,
     destroy() {
       if (keyHandler) {
         renderer._internalKeyInput.offInternal("keypress", keyHandler);
@@ -130,7 +148,7 @@ export function createBrowserSession(
         const linkResult = handleLinkKey(linkFocus, links.length, key);
         if (linkResult) {
           if (linkResult.kind === "focus") {
-            syncLinkFocus(linkResult.state);
+            syncLinkFocus(linkResult.state, true);
             return;
           }
 
@@ -155,7 +173,7 @@ export function createBrowserSession(
       mouseMoveHandler = (event) => {
         const index = linkIndexAtPoint(links, event.x, event.y + viewport.scrollY);
         if (index === linkFocus.focusedIndex) return;
-        syncLinkFocus({ focusedIndex: index });
+        syncLinkFocus({ focusedIndex: index }, false);
       };
 
       mouseUpHandler = (event) => {
@@ -192,6 +210,7 @@ export function createScrollSession(
       height: renderer.height,
       width: renderer.width,
     },
+    fragmentPositions: new Map(),
     onNavigate: () => {},
   });
 

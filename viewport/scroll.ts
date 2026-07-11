@@ -36,6 +36,29 @@ export function scrollBy(viewport: ScrollViewport, delta: number): ScrollViewpor
   return scrollTo(viewport, viewport.scrollY + delta);
 }
 
+/** Scroll so a document row sits at the top of the viewport. */
+export function scrollToAlignTop(viewport: ScrollViewport, documentY: number): ScrollViewport {
+  return scrollTo(viewport, documentY);
+}
+
+/** Scroll the viewport so a document row range is visible. */
+export function scrollToRevealY(
+  viewport: ScrollViewport,
+  top: number,
+  height = 1,
+): ScrollViewport {
+  if (top < viewport.scrollY) {
+    return scrollTo(viewport, top);
+  }
+
+  const bottom = top + height;
+  if (bottom > viewport.scrollY + viewport.viewportHeight) {
+    return scrollTo(viewport, bottom - viewport.viewportHeight);
+  }
+
+  return viewport;
+}
+
 function isScrollKey(key: KeyEvent): boolean {
   if (key.ctrl || key.meta) return false;
   return true;

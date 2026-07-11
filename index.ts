@@ -14,6 +14,8 @@ import {
   type BrowserHistory,
 } from "./navigation/history";
 import { normalizePageLocation } from "./navigation/location";
+import { splitPageLocation } from "./navigation/fragment";
+import { collectFragmentPositions } from "./navigation/anchors";
 import { convert } from "./parser/convert";
 import { parseHTML } from "./parser/html";
 import { paint } from "./paint/paint";
@@ -27,8 +29,6 @@ const DEFAULT_PAGE = "examples/page.html";
 type HistoryMode = "push" | "none";
 
 async function main() {
-  const initialLocation = normalizePageLocation(process.argv[2] ?? DEFAULT_PAGE);
-
   const renderer = await createCliRenderer({
     exitOnCtrlC: true,
     useMouse: true,
@@ -44,7 +44,11 @@ async function main() {
     height: Math.max(1, renderer.height - BREADCRUMB_HEIGHT),
   });
 
-  const loadPage = async (location: string, historyMode: HistoryMode = "push") => {
+  const loadPage = async (
+    location: string,
+    historyMode: HistoryMode = "push",
+    fragment: string | null = null,
+  ) => {
     session?.destroy();
 
     const pageLocation = normalizePageLocation(location);
@@ -64,6 +68,7 @@ async function main() {
 
     const displayList = paint(styled, { viewportHeight: chrome.height });
     const links = collectLinks(styled);
+    const fragmentPositions = collectFragmentPositions(styled);
     const contentHeight = Math.max(
       measureContentHeight(styled),
       measureDisplayListHeight(displayList),
@@ -81,7 +86,8 @@ async function main() {
     session = createBrowserSession(renderer, displayList, contentHeight, links, {
       pageLocation,
       layout: chrome,
-      onNavigate: (target) => loadPage(target, "push"),
+      fragmentPositions,
+      onNavigate: (target, targetFragment) => loadPage(target, "push", targetFragment ?? null),
       onHistoryBack: async () => {
         const result = goBack(history);
         history = result.history;
@@ -96,10 +102,19 @@ async function main() {
       },
     });
 
+    if (fragment !== null) {
+      session.scrollToFragment(fragment);
+    }
+
     session.attach();
   };
 
-  await loadPage(initialLocation);
+  const initial = splitPageLocation(process.argv[2] ?? DEFAULT_PAGE);
+  await loadPage(
+    initial.location || DEFAULT_PAGE,
+    "push",
+    initial.fragment,
+  );
   renderer.start();
 }
 
