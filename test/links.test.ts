@@ -169,9 +169,9 @@ describe("link focus", () => {
 
   test("applies focus styling to one link at a time", () => {
     const displayList = [
-      { x: 0, y: 0, text: "plain", linkIndex: undefined },
-      { x: 0, y: 1, text: "other page", linkIndex: 0 },
-      { x: 0, y: 2, text: "styled page", linkIndex: 1 },
+      { kind: "text" as const, x: 0, y: 0, text: "plain", linkIndex: undefined },
+      { kind: "text" as const, x: 0, y: 1, text: "other page", linkIndex: 0 },
+      { kind: "text" as const, x: 0, y: 2, text: "styled page", linkIndex: 1 },
     ];
 
     const focused = applyLinkFocus(displayList, 1);
@@ -195,8 +195,12 @@ describe("link focus", () => {
 describe("paint linkIndex", () => {
   test("tags display commands for links-page.html anchors", async () => {
     const { displayList } = await pipelineFromFile("examples/links-page.html");
-    const otherPageCommands = displayList.filter((command) => command.linkIndex === 0);
-    const styledPageCommands = displayList.filter((command) => command.linkIndex === 1);
+    const otherPageCommands = displayList.filter(
+      (command) => command.kind === "text" && command.linkIndex === 0,
+    );
+    const styledPageCommands = displayList.filter(
+      (command) => command.kind === "text" && command.linkIndex === 1,
+    );
 
     expect(otherPageCommands.some((command) => command.text.includes("other"))).toBe(true);
     expect(styledPageCommands.some((command) => command.text.includes("styled"))).toBe(true);
@@ -208,17 +212,26 @@ describe("paint linkIndex", () => {
 
     expect(
       displayList.some(
-        (command) => command.linkIndex === 0 && command.text.toLowerCase().includes("other"),
+        (command) =>
+          command.kind === "text" &&
+          command.linkIndex === 0 &&
+          command.text.toLowerCase().includes("other"),
       ),
     ).toBe(true);
     expect(
       displayList.some(
-        (command) => command.linkIndex === 1 && command.text.toLowerCase().includes("styled"),
+        (command) =>
+          command.kind === "text" &&
+          command.linkIndex === 1 &&
+          command.text.toLowerCase().includes("styled"),
       ),
     ).toBe(true);
     expect(
       displayList.some(
-        (command) => command.linkIndex === 2 && command.text.toLowerCase().includes("home"),
+        (command) =>
+          command.kind === "text" &&
+          command.linkIndex === 2 &&
+          command.text.toLowerCase().includes("home"),
       ),
     ).toBe(true);
   });

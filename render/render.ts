@@ -3,6 +3,7 @@ import { BoxRenderable, TextRenderable, createTextAttributes } from "@opentui/co
 
 import { applyLinkFocus } from "../links/focus";
 import type { DisplayList } from "../paint/display-list";
+import { commandBottom, isFillCommand, isTextCommand } from "../paint/display-list";
 
 export interface RenderOptions {
   scrollY?: number;
@@ -62,7 +63,23 @@ export function mountDisplayList(
   const commandRenderables: CommandRenderable[] = [];
 
   for (const [index, command] of styledList.entries()) {
-    if (command.text.length === 0) continue;
+    if (isFillCommand(command)) {
+      content.add(
+        new BoxRenderable(renderer, {
+          id: `display-fill-${index}`,
+          position: "absolute",
+          left: command.x,
+          top: command.y,
+          width: command.width,
+          height: command.height,
+          backgroundColor: command.bg,
+          shouldFill: true,
+        }),
+      );
+      continue;
+    }
+
+    if (!isTextCommand(command) || command.text.length === 0) continue;
 
     const renderable = new TextRenderable(renderer, {
       id: `display-cmd-${index}`,
@@ -93,7 +110,7 @@ export function mountDisplayList(
 
     for (const { commandIndex, renderable } of commandRenderables) {
       const command = nextList[commandIndex];
-      if (!command) continue;
+      if (!command || !isTextCommand(command)) continue;
 
       renderable.fg = command.fg;
       renderable.bg = command.bg;
@@ -134,7 +151,7 @@ export function render(
   options: RenderOptions = {},
 ): void {
   const contentHeight =
-    displayList.length === 0 ? 0 : Math.max(...displayList.map((command) => command.y)) + 1;
+    displayList.length === 0 ? 0 : Math.max(...displayList.map((command) => commandBottom(command)));
   const mounted = mountDisplayList(renderer, displayList, contentHeight);
   mounted.setScrollY(options.scrollY ?? 0);
 }

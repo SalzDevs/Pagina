@@ -20,7 +20,7 @@ import { paint } from "./paint/paint";
 import { BREADCRUMB_HEIGHT, mountBreadcrumb } from "./render/breadcrumb";
 import { computeStyles } from "./style/style";
 import { createBrowserSession, type BrowserSession } from "./viewport/session";
-import { measureContentHeight } from "./viewport/visible";
+import { measureContentHeight, measureDisplayListHeight } from "./viewport/visible";
 
 const DEFAULT_PAGE = "examples/page.html";
 
@@ -62,9 +62,12 @@ async function main() {
       },
     });
 
-    const displayList = paint(styled);
+    const displayList = paint(styled, { viewportHeight: chrome.height });
     const links = collectLinks(styled);
-    const contentHeight = measureContentHeight(styled);
+    const contentHeight = Math.max(
+      measureContentHeight(styled),
+      measureDisplayListHeight(displayList),
+    );
 
     if (historyMode === "push") {
       history = pushHistory(history, {

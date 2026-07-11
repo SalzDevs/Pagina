@@ -1,4 +1,5 @@
 import type { DisplayCommand, DisplayList } from "../paint/display-list";
+import { commandBottom, isTextCommand } from "../paint/display-list";
 import type { StyledNode } from "../style/style";
 
 /** Measure document height from laid-out text fragments only. */
@@ -22,7 +23,7 @@ export function measureContentHeight(styled: StyledNode): number {
 /** Measure document height from a display list. */
 export function measureDisplayListHeight(displayList: DisplayList): number {
   if (displayList.length === 0) return 0;
-  return Math.max(...displayList.map((command) => command.y)) + 1;
+  return Math.max(...displayList.map((command) => commandBottom(command)));
 }
 
 /** Keep only commands visible in the scrolled viewport. */
@@ -34,11 +35,23 @@ export function visibleCommands(
   const maxY = scrollY + viewportHeight;
 
   return displayList
-    .filter((command) => command.y >= scrollY && command.y < maxY)
-    .map((command) => ({
-      ...command,
-      y: command.y - scrollY,
-    }));
+    .filter((command) => {
+      const bottom = commandBottom(command);
+      return bottom > scrollY && command.y < maxY;
+    })
+    .map((command) => {
+      if (isTextCommand(command)) {
+        return {
+          ...command,
+          y: command.y - scrollY,
+        };
+      }
+
+      return {
+        ...command,
+        y: command.y - scrollY,
+      };
+    });
 }
 
 /** True when the viewport shows at least one command at max scroll. */

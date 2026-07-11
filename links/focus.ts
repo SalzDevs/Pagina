@@ -1,6 +1,7 @@
 import type { KeyEvent } from "@opentui/core";
 
-import type { DisplayCommand } from "../paint/display-list";
+import type { DisplayCommand, DisplayList } from "../paint/display-list";
+import { isTextCommand } from "../paint/display-list";
 import type { ScrollViewport } from "../viewport/scroll";
 import { scrollTo } from "../viewport/scroll";
 import type { Link } from "./types";
@@ -37,13 +38,13 @@ export function focusPreviousLink(state: LinkFocusState, linkCount: number): Lin
 }
 
 export function commandMatchesLink(command: DisplayCommand, linkIndex: number): boolean {
-  return command.linkIndex === linkIndex;
+  return isTextCommand(command) && command.linkIndex === linkIndex;
 }
 
 export function applyLinkFocus(
-  displayList: DisplayCommand[],
+  displayList: DisplayList,
   focusedIndex: number | null,
-): DisplayCommand[] {
+): DisplayList {
   if (focusedIndex === null) return displayList;
 
   return displayList.map((command) => {
