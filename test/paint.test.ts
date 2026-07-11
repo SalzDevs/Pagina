@@ -9,9 +9,9 @@ import { computeStyles } from "../style/style";
 const viewport = { width: 80, height: 24 };
 
 describe("paint", () => {
-  test("emits display commands from laid-out text nodes", () => {
+  test("emits display commands from laid-out text nodes", async () => {
     const html = "<p>Hello <strong>world</strong></p>";
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport });
     const displayList = paint(styled);
@@ -23,9 +23,9 @@ describe("paint", () => {
     expect(displayList.every((cmd) => typeof cmd.y === "number")).toBe(true);
   });
 
-  test("uses layout positions for each command", () => {
+  test("uses layout positions for each command", async () => {
     const html = "<p>ab</p>";
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport });
     const displayList = paint(styled);
@@ -40,9 +40,9 @@ describe("paint", () => {
     });
   });
 
-  test("applies computed styles to display commands", () => {
+  test("applies computed styles to display commands", async () => {
     const html = "<p><strong>bold</strong></p>";
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport });
     const displayList = paint(styled);

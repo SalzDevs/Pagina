@@ -112,7 +112,7 @@ describe("visible commands", () => {
 
   test("still shows content at max scroll on a long page", async () => {
     const html = await Bun.file("examples/long-page.html").text();
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
     layout(styled, { viewport: { width: 80, height: 24 } });
     const displayList = paint(styled);
     const contentHeight = measureContentHeight(styled);
@@ -128,8 +128,8 @@ describe("visible commands", () => {
 });
 
 describe("measureContentHeight", () => {
-  test("uses text fragments rather than block boxes", () => {
-    const styled = computeStyles(convert(parseHTML("<p>top</p><p>bottom</p>")));
+  test("uses text fragments rather than block boxes", async () => {
+    const styled = await computeStyles(convert(parseHTML("<p>top</p><p>bottom</p>")));
     layout(styled, { viewport: { width: 40, height: 10 } });
 
     expect(measureContentHeight(styled)).toBeGreaterThan(0);

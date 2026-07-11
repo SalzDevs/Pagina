@@ -5,9 +5,9 @@ import { parseHTML } from "../parser/html";
 import { computeStyles } from "../style/style";
 
 describe("computeStyles", () => {
-  test("marks block elements and hides head", () => {
+  test("marks block elements and hides head", async () => {
     const dom = convert(parseHTML("<html><head></head><body><p>x</p></body></html>"));
-    const styled = computeStyles(dom);
+    const styled = await computeStyles(dom);
 
     const body = styled.children[0]?.children.find(
       (child) => child.dom.type === "element" && child.dom.tag === "body",
@@ -18,9 +18,9 @@ describe("computeStyles", () => {
     expect(styled.children[0]?.children.some((child) => child.dom.type === "element" && child.dom.tag === "head")).toBe(false);
   });
 
-  test("applies semantic styles to inline elements", () => {
+  test("applies semantic styles to inline elements", async () => {
     const dom = convert(parseHTML("<p><strong>bold</strong> <em>italic</em></p>"));
-    const styled = computeStyles(dom);
+    const styled = await computeStyles(dom);
 
     const body = styled.children[0]?.children.find(
       (child) => child.dom.type === "element" && child.dom.tag === "body",

@@ -3,9 +3,9 @@ import { describe, expect, test } from "bun:test";
 import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
 import { layout } from "../layout/layout";
-import { computeStyles } from "../style/style";
+import { computeStyles, type StyledNode } from "../style/style";
 
-function findParagraph(styled: ReturnType<typeof computeStyles>) {
+function findParagraph(styled: StyledNode) {
   const body = styled.children[0]?.children.find(
     (child) => child.dom.type === "element" && child.dom.tag === "body",
   );
@@ -13,9 +13,9 @@ function findParagraph(styled: ReturnType<typeof computeStyles>) {
 }
 
 describe("layout", () => {
-  test("wraps long lines to the viewport width", () => {
+  test("wraps long lines to the viewport width", async () => {
     const html = "<p>hello terminal browser engine</p>";
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport: { width: 10, height: 5 } });
 
@@ -27,9 +27,9 @@ describe("layout", () => {
     expect(fragments?.some((fragment) => fragment.text.includes("engine"))).toBe(true);
   });
 
-  test("keeps inline elements on the same line when they fit", () => {
+  test("keeps inline elements on the same line when they fit", async () => {
     const html = "<p>Hello <strong>world</strong></p>";
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport: { width: 40, height: 5 } });
 
@@ -39,9 +39,9 @@ describe("layout", () => {
     expect(fragments?.every((fragment) => fragment.y === 0)).toBe(true);
   });
 
-  test("assigns block height from wrapped content", () => {
+  test("assigns block height from wrapped content", async () => {
     const html = "<p>one two three four five six seven eight nine ten</p>";
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport: { width: 8, height: 10 } });
 
@@ -49,9 +49,9 @@ describe("layout", () => {
     expect((paragraph?.layout?.height ?? 0) > 1).toBe(true);
   });
 
-  test("stacks block elements vertically", () => {
+  test("stacks block elements vertically", async () => {
     const html = "<p>first</p><p>second</p>";
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport: { width: 40, height: 10 } });
 

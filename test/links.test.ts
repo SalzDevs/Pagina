@@ -48,7 +48,7 @@ function key(name: string, shift = false) {
 
 async function pipelineFromFile(path: string) {
   const html = await loadHtmlFromFile(path);
-  const styled = computeStyles(convert(parseHTML(html)));
+  const styled = await computeStyles(convert(parseHTML(html)), { basePath: resolve(path) });
   layout(styled, { viewport });
   return {
     styled,
@@ -57,8 +57,8 @@ async function pipelineFromFile(path: string) {
   };
 }
 
-function pipeline(html: string) {
-  const styled = computeStyles(convert(parseHTML(html)));
+async function pipeline(html: string) {
+  const styled = await computeStyles(convert(parseHTML(html)));
   layout(styled, { viewport });
   return {
     styled,
@@ -85,8 +85,8 @@ describe("collectLinks", () => {
     expect(links[0]?.href).toBe("links-page.html");
   });
 
-  test("skips anchors without href or visible text", () => {
-    const { links } = pipeline('<p><a>missing</a><a href="page.html"></a></p>');
+  test("skips anchors without href or visible text", async () => {
+    const { links } = await pipeline('<p><a>missing</a><a href="page.html"></a></p>');
     expect(links).toHaveLength(0);
   });
 });

@@ -1,20 +1,44 @@
 import type { Node } from "../../dom/node";
 import { NodeType } from "../../dom/node";
+import { loadTextFromFile } from "../../navigation/load";
+import { resolveLocalPath } from "../../navigation/resolve";
 import type { CssRule } from "./types";
 import { parseStylesheet } from "./parse";
 
-/** Collect CSS text from `<style>` elements in the DOM. */
-export function collectStylesheetRules(root: Node): CssRule[] {
-  const cssTexts: string[] = [];
+type CssSource =
+  | { kind: "inline"; text: string }
+  | { kind: "link"; href: string };
+
+function stylesheetText(node: Node): string {
+  return (
+    node.children
+      ?.filter((child) => child.type === NodeType.Text)
+      .map((child) => child.value ?? "")
+      .join("") ?? ""
+  );
+}
+
+function isStylesheetLink(node: Node): boolean {
+  if (node.type !== NodeType.Element || node.tag !== "link") return false;
+
+  const rel = node.attributes?.rel?.toLowerCase() ?? "";
+  const href = node.attributes?.href;
+  return rel.split(/\s+/).includes("stylesheet") && Boolean(href);
+}
+
+/** Collect CSS sources from `<style>` and `<link rel="stylesheet">` in document order. */
+export function collectCssSources(root: Node): CssSource[] {
+  const sources: CssSource[] = [];
 
   const walk = (node: Node): void => {
     if (node.type === NodeType.Element && node.tag === "style") {
-      const text = node.children
-        ?.filter((child) => child.type === NodeType.Text)
-        .map((child) => child.value ?? "")
-        .join("");
+      const text = stylesheetText(node);
+      if (text) sources.push({ kind: "inline", text });
+      return;
+    }
 
-      if (text) cssTexts.push(text);
+    if (isStylesheetLink(node)) {
+      sources.push({ kind: "link", href: node.attributes!.href! });
       return;
     }
 
@@ -22,6 +46,31 @@ export function collectStylesheetRules(root: Node): CssRule[] {
   };
 
   walk(root);
+  return sources;
+}
 
-  return cssTexts.flatMap(parseStylesheet);
+/** Collect CSS rules from inline and linked stylesheets. */
+export async function collectStylesheetRules(
+  root: Node,
+  basePath?: string,
+): Promise<CssRule[]> {
+  const sources = collectCssSources(root);
+  const rules: CssRule[] = [];
+
+  for (const source of sources) {
+    if (source.kind === "inline") {
+      rules.push(...parseStylesheet(source.text));
+      continue;
+    }
+
+    if (!basePath) continue;
+
+    const filePath = resolveLocalPath(source.href, basePath);
+    if (!filePath) continue;
+
+    const css = await loadTextFromFile(filePath);
+    rules.push(...parseStylesheet(css));
+  }
+
+  return rules;
 }

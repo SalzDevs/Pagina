@@ -181,9 +181,16 @@ function styleNode(node: Node, inherited: ComputedStyle, rules: CssRule[]): Styl
   }
 }
 
+export interface ComputeStylesOptions {
+  basePath?: string;
+}
+
 /** Apply user-agent defaults and author CSS to a DOM tree. */
-export function computeStyles(root: Node): StyledNode {
-  const rules = collectStylesheetRules(root);
+export async function computeStyles(
+  root: Node,
+  options: ComputeStylesOptions = {},
+): Promise<StyledNode> {
+  const rules = await collectStylesheetRules(root, options.basePath);
   const styled = styleNode(root, DEFAULT_STYLE, rules);
   if (!styled) {
     throw new Error("Document produced no styled output");

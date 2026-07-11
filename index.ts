@@ -33,7 +33,7 @@ async function main() {
 
     const document = parseHTML(html);
     const dom = convert(document);
-    const styled = computeStyles(dom);
+    const styled = await computeStyles(dom, { basePath: currentPath });
 
     layout(styled, {
       viewport: {

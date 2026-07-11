@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 
-/** Read HTML from a local file path. */
-export async function loadHtmlFromFile(path: string): Promise<string> {
+/** Read text from a local file path. */
+export async function loadTextFromFile(path: string): Promise<string> {
   const filePath = resolve(path);
   const file = Bun.file(filePath);
 
@@ -10,4 +10,9 @@ export async function loadHtmlFromFile(path: string): Promise<string> {
   }
 
   return file.text();
+}
+
+/** Read HTML from a local file path. */
+export async function loadHtmlFromFile(path: string): Promise<string> {
+  return loadTextFromFile(path);
 }

@@ -1,0 +1,17 @@
+body {
+  color: #cccccc;
+  background: #111111;
+}
+
+h1 {
+  color: #ffd700;
+}
+
+p.intro {
+  color: #8be9fd;
+}
+
+#highlight {
+  color: #50fa7b;
+  font-weight: bold;
+}

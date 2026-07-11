@@ -1,13 +1,15 @@
+import { resolve } from "node:path";
+
 import { describe, expect, test } from "bun:test";
 
 import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
-import { computeStyles } from "../style/style";
-import { collectStylesheetRules } from "../style/css/collect";
+import { computeStyles, type StyledNode } from "../style/style";
+import { collectCssSources, collectStylesheetRules } from "../style/css/collect";
 import { matchesSelector } from "../style/css/match";
 import { parseInlineStyle, parseStylesheet } from "../style/css/parse";
 
-function findBody(styled: ReturnType<typeof computeStyles>) {
+function findBody(styled: StyledNode) {
   return styled.children[0]?.children.find(
     (child) => child.dom.type === "element" && child.dom.tag === "body",
   );
@@ -35,7 +37,7 @@ describe("parseStylesheet", () => {
 });
 
 describe("computeStyles with CSS", () => {
-  test("applies stylesheet rules over UA defaults", () => {
+  test("applies stylesheet rules over UA defaults", async () => {
     const html = `
       <html>
         <head>
@@ -50,7 +52,7 @@ describe("computeStyles with CSS", () => {
       </html>
     `;
 
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
     const body = findBody(styled);
     const heading = body?.children.find(
       (child) => child.dom.type === "element" && child.dom.tag === "h1",
@@ -61,7 +63,7 @@ describe("computeStyles with CSS", () => {
     expect(heading?.style.fg).toBe("#ffd700");
   });
 
-  test("applies class and id selectors", () => {
+  test("applies class and id selectors", async () => {
     const html = `
       <style>
         p.note { color: blue; }
@@ -71,7 +73,7 @@ describe("computeStyles with CSS", () => {
       <p id="main">B</p>
     `;
 
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
     const body = findBody(styled);
     const note = body?.children.find(
       (child) =>
@@ -91,17 +93,42 @@ describe("computeStyles with CSS", () => {
     expect(main?.style.bold).toBe(true);
   });
 
-  test("inline style overrides stylesheet rules", () => {
+  test("inline style overrides stylesheet rules", async () => {
     const html = `
       <style>p { color: blue; }</style>
       <p style="color: red;">hello</p>
     `;
 
-    const styled = computeStyles(convert(parseHTML(html)));
+    const styled = await computeStyles(convert(parseHTML(html)));
     const body = findBody(styled);
     const paragraph = body?.children[0];
 
     expect(paragraph?.style.fg).toBe("red");
+  });
+
+  test("loads linked stylesheets from examples/linked-page.html", async () => {
+    const html = await Bun.file("examples/linked-page.html").text();
+    const styled = await computeStyles(convert(parseHTML(html)), {
+      basePath: resolve("examples/linked-page.html"),
+    });
+    const body = findBody(styled);
+    const intro = body?.children.find(
+      (child) =>
+        child.dom.type === "element" &&
+        child.dom.tag === "p" &&
+        child.dom.attributes?.class === "intro",
+    );
+    const highlight = body?.children.find(
+      (child) =>
+        child.dom.type === "element" &&
+        child.dom.tag === "p" &&
+        child.dom.attributes?.id === "highlight",
+    );
+
+    expect(body?.style.fg).toBe("#cccccc");
+    expect(intro?.style.fg).toBe("#8be9fd");
+    expect(highlight?.style.fg).toBe("#50fa7b");
+    expect(highlight?.style.bold).toBe(true);
   });
 });
 
@@ -124,12 +151,38 @@ describe("matchesSelector", () => {
 });
 
 describe("collectStylesheetRules", () => {
-  test("reads rules from style elements", () => {
+  test("reads rules from style elements", async () => {
     const dom = convert(parseHTML("<html><head><style>h1 { color: red; }</style></head></html>"));
-    const rules = collectStylesheetRules(dom);
+    const rules = await collectStylesheetRules(dom);
 
     expect(rules).toHaveLength(1);
     expect(rules[0]?.declarations.color).toBe("red");
+  });
+
+  test("collects stylesheet links in document order", () => {
+    const dom = convert(
+      parseHTML(`
+        <html>
+          <head>
+            <link rel="stylesheet" href="theme.css" />
+            <style>body { color: white; }</style>
+          </head>
+        </html>
+      `),
+    );
+
+    expect(collectCssSources(dom)).toEqual([
+      { kind: "link", href: "theme.css" },
+      { kind: "inline", text: "body { color: white; }" },
+    ]);
+  });
+
+  test("loads linked rules when a base path is provided", async () => {
+    const dom = convert(parseHTML('<link rel="stylesheet" href="theme.css" />'));
+    const rules = await collectStylesheetRules(dom, resolve("examples/linked-page.html"));
+
+    expect(rules.some((rule) => rule.declarations.color === "#cccccc")).toBe(true);
+    expect(rules.some((rule) => rule.declarations.color === "#ffd700")).toBe(true);
   });
 });
 
