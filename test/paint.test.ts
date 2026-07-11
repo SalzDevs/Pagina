@@ -6,12 +6,14 @@ import { layout } from "../layout/layout";
 import { paint } from "../paint/paint";
 import { computeStyles } from "../style/style";
 
+const viewport = { width: 80, height: 24 };
+
 describe("paint", () => {
   test("emits display commands from laid-out text nodes", () => {
     const html = "<p>Hello <strong>world</strong></p>";
     const styled = computeStyles(convert(parseHTML(html)));
 
-    layout(styled);
+    layout(styled, { viewport });
     const displayList = paint(styled);
 
     expect(displayList.length).toBeGreaterThan(0);
@@ -25,7 +27,7 @@ describe("paint", () => {
     const html = "<p>ab</p>";
     const styled = computeStyles(convert(parseHTML(html)));
 
-    layout(styled);
+    layout(styled, { viewport });
     const displayList = paint(styled);
 
     expect(displayList[0]).toEqual({
@@ -42,7 +44,7 @@ describe("paint", () => {
     const html = "<p><strong>bold</strong></p>";
     const styled = computeStyles(convert(parseHTML(html)));
 
-    layout(styled);
+    layout(styled, { viewport });
     const displayList = paint(styled);
 
     expect(displayList.some((cmd) => cmd.text.includes("bold") && cmd.bold)).toBe(true);

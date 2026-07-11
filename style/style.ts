@@ -12,6 +12,14 @@ export interface ComputedStyle {
   bg?: string;
 }
 
+export interface LayoutFragment {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  text: string;
+}
+
 export interface StyledNode {
   dom: Node;
   style: ComputedStyle;
@@ -22,6 +30,7 @@ export interface StyledNode {
     width: number;
     height: number;
   };
+  fragments?: LayoutFragment[];
 }
 
 const DEFAULT_STYLE: ComputedStyle = {

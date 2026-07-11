@@ -2,23 +2,44 @@ import { NodeType } from "../dom/node";
 import type { StyledNode } from "../style/style";
 import type { DisplayCommand, DisplayList } from "./display-list";
 
-function paintNode(node: StyledNode, commands: DisplayCommand[]): void {
-  switch (node.dom.type) {
-    case NodeType.Text: {
-      if (!node.layout || !node.dom.value) return;
+function paintTextNode(node: StyledNode, commands: DisplayCommand[]): void {
+  const style = {
+    fg: node.style.fg,
+    bg: node.style.bg,
+    bold: node.style.bold || undefined,
+    italic: node.style.italic || undefined,
+    underline: node.style.underline || undefined,
+  };
+
+  if (node.fragments && node.fragments.length > 0) {
+    for (const fragment of node.fragments) {
+      if (fragment.text.length === 0) continue;
 
       commands.push({
-        x: node.layout.x,
-        y: node.layout.y,
-        text: node.dom.value,
-        fg: node.style.fg,
-        bg: node.style.bg,
-        bold: node.style.bold || undefined,
-        italic: node.style.italic || undefined,
-        underline: node.style.underline || undefined,
+        x: fragment.x,
+        y: fragment.y,
+        text: fragment.text,
+        ...style,
       });
-      return;
     }
+    return;
+  }
+
+  if (!node.layout || !node.dom.value) return;
+
+  commands.push({
+    x: node.layout.x,
+    y: node.layout.y,
+    text: node.dom.value,
+    ...style,
+  });
+}
+
+function paintNode(node: StyledNode, commands: DisplayCommand[]): void {
+  switch (node.dom.type) {
+    case NodeType.Text:
+      paintTextNode(node, commands);
+      return;
 
     case NodeType.Document:
     case NodeType.Element: {

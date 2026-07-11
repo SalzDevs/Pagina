@@ -26,7 +26,12 @@ async function main() {
   const dom = convert(document);
   const styled = computeStyles(dom);
 
-  layout(styled);
+  layout(styled, {
+    viewport: {
+      width: renderer.width,
+      height: renderer.height,
+    },
+  });
   const displayList = paint(styled);
   render(renderer, displayList);
 

@@ -1,5 +1,5 @@
 import { NodeType } from "../dom/node";
-import type { StyledNode } from "../style/style";
+import type { LayoutFragment, StyledNode } from "../style/style";
 
 export interface LayoutBox {
   x: number;
@@ -8,76 +8,227 @@ export interface LayoutBox {
   height: number;
 }
 
+export interface Viewport {
+  width: number;
+  height: number;
+}
+
+export interface LayoutOptions {
+  viewport: Viewport;
+}
+
 export interface LayoutContext {
   x: number;
   y: number;
 }
 
-export function layout(node: StyledNode): void {
-  const ctx: LayoutContext = {
-    x: 0,
-    y: 0,
-  };
-
-  layoutNode(node, ctx);
+interface InlineSegment {
+  node: StyledNode;
+  text: string;
 }
 
-function layoutNode(node: StyledNode, ctx: LayoutContext): void {
+interface LineRun {
+  node: StyledNode;
+  text: string;
+  x: number;
+  width: number;
+}
+
+const LINE_HEIGHT = 1;
+const BLOCK_GAP = 1;
+const DEFAULT_VIEWPORT: Viewport = { width: 80, height: 24 };
+
+function isBlock(node: StyledNode): boolean {
+  return node.style.display === "block";
+}
+
+function isLineBreak(node: StyledNode): boolean {
+  return node.dom.type === "element" && node.dom.tag === "br";
+}
+
+function collectInlineSegments(node: StyledNode, out: InlineSegment[]): void {
+  if (node.dom.type === "text") {
+    out.push({ node, text: node.dom.value ?? "" });
+    return;
+  }
+
+  if (isLineBreak(node)) {
+    out.push({ node, text: "\n" });
+    return;
+  }
+
+  if (isBlock(node)) return;
+
+  for (const child of node.children) {
+    collectInlineSegments(child, out);
+  }
+}
+
+function addFragment(node: StyledNode, fragment: LayoutFragment): void {
+  node.fragments ??= [];
+  node.fragments.push(fragment);
+}
+
+function wrapSegments(segments: InlineSegment[], contentWidth: number, startY: number): number {
+  let currentY = startY;
+  let lineRuns: LineRun[] = [];
+  let lineWidth = 0;
+
+  const flushLine = () => {
+    for (const run of lineRuns) {
+      addFragment(run.node, {
+        x: run.x,
+        y: currentY,
+        width: run.width,
+        height: LINE_HEIGHT,
+        text: run.text,
+      });
+    }
+
+    if (lineRuns.length > 0) {
+      currentY += LINE_HEIGHT;
+    }
+
+    lineRuns = [];
+    lineWidth = 0;
+  };
+
+  for (const segment of segments) {
+    if (segment.text === "\n") {
+      flushLine();
+      continue;
+    }
+
+    const parts = segment.text.split(/(\s+)/).filter((part) => part.length > 0);
+
+    for (const part of parts) {
+      const partWidth = part.length;
+      const spaceRemaining = contentWidth - lineWidth;
+
+      if (partWidth > contentWidth && lineRuns.length === 0) {
+        let offset = 0;
+        while (offset < part.length) {
+          const chunk = part.slice(offset, offset + contentWidth);
+          addFragment(segment.node, {
+            x: 0,
+            y: currentY,
+            width: chunk.length,
+            height: LINE_HEIGHT,
+            text: chunk,
+          });
+          currentY += LINE_HEIGHT;
+          offset += contentWidth;
+        }
+        continue;
+      }
+
+      if (lineRuns.length > 0 && partWidth > spaceRemaining && !/^\s+$/.test(part)) {
+        flushLine();
+      }
+
+      if (/^\s+$/.test(part) && lineRuns.length === 0) {
+        continue;
+      }
+
+      lineRuns.push({
+        node: segment.node,
+        text: part,
+        x: lineWidth,
+        width: partWidth,
+      });
+      lineWidth += partWidth;
+    }
+  }
+
+  flushLine();
+  return currentY;
+}
+
+function layoutInlineBatch(batch: StyledNode[], ctx: LayoutContext, viewport: Viewport): void {
+  const segments: InlineSegment[] = [];
+  for (const node of batch) {
+    collectInlineSegments(node, segments);
+  }
+
+  ctx.y = wrapSegments(segments, viewport.width, ctx.y);
+  ctx.x = 0;
+}
+
+function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
+  const startY = ctx.y;
+  let inlineBatch: StyledNode[] = [];
+
+  const flushInlineBatch = () => {
+    if (inlineBatch.length === 0) return;
+    layoutInlineBatch(inlineBatch, ctx, viewport);
+    inlineBatch = [];
+  };
+
+  for (const child of node.children) {
+    if (isLineBreak(child)) {
+      flushInlineBatch();
+      ctx.y += LINE_HEIGHT;
+      continue;
+    }
+
+    if (isBlock(child)) {
+      flushInlineBatch();
+      ctx.x = 0;
+      layoutBlock(child, ctx, viewport);
+      ctx.x = 0;
+      continue;
+    }
+
+    inlineBatch.push(child);
+  }
+
+  flushInlineBatch();
+
+  const contentHeight = Math.max(LINE_HEIGHT, ctx.y - startY);
+  node.layout = {
+    x: 0,
+    y: startY,
+    width: viewport.width,
+    height: contentHeight,
+  };
+
+  ctx.y += BLOCK_GAP;
+}
+
+function layoutNode(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
   switch (node.dom.type) {
     case NodeType.Document:
-      layoutChildren(node, ctx);
+      for (const child of node.children) {
+        layoutNode(child, ctx, viewport);
+      }
       break;
 
     case NodeType.Element:
-      if (node.dom.tag === "br") {
-        ctx.x = 0;
-        ctx.y += 1;
+      if (isBlock(node)) {
+        layoutBlock(node, ctx, viewport);
         break;
       }
 
-      if (node.style.display === "block") {
-        layoutBlock(node, ctx);
-        break;
+      for (const child of node.children) {
+        layoutNode(child, ctx, viewport);
       }
-
-      layoutChildren(node, ctx);
       break;
 
     case NodeType.Text:
-      node.layout = {
-        x: ctx.x,
-        y: ctx.y,
-        width: node.dom.value?.length ?? 0,
-        height: 1,
-      };
-
-      ctx.x += node.layout.width;
-      break;
-
     case NodeType.Comment:
     case NodeType.Doctype:
       break;
   }
 }
 
-function layoutBlock(node: StyledNode, ctx: LayoutContext): void {
-  ctx.x = 0;
-
-  node.layout = {
+/** Compute geometry for a styled tree. */
+export function layout(node: StyledNode, options: LayoutOptions = { viewport: DEFAULT_VIEWPORT }): void {
+  const ctx: LayoutContext = {
     x: 0,
-    y: ctx.y,
-    width: 0,
-    height: 1,
+    y: 0,
   };
 
-  layoutChildren(node, ctx);
-
-  ctx.x = 0;
-  ctx.y += 2;
+  layoutNode(node, ctx, options.viewport);
 }
 
-function layoutChildren(node: StyledNode, ctx: LayoutContext): void {
-  for (const child of node.children) {
-    layoutNode(child, ctx);
-  }
-}
+export { DEFAULT_VIEWPORT };
