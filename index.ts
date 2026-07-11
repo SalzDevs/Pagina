@@ -5,6 +5,7 @@ import { parseHTML } from "./parser/html";
 import { layout } from "./layout/layout";
 import { paint } from "./paint/paint";
 import { render } from "./render/render";
+import { computeStyles } from "./style/style";
 
 const html = `
 <!DOCTYPE html>
@@ -23,9 +24,10 @@ async function main() {
 
   const document = parseHTML(html);
   const dom = convert(document);
+  const styled = computeStyles(dom);
 
-  layout(dom);
-  const displayList = paint(dom);
+  layout(styled);
+  const displayList = paint(styled);
   render(renderer, displayList);
 
   renderer.start();

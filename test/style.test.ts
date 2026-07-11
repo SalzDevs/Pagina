@@ -1,0 +1,39 @@
+import { describe, expect, test } from "bun:test";
+
+import { convert } from "../parser/convert";
+import { parseHTML } from "../parser/html";
+import { computeStyles } from "../style/style";
+
+describe("computeStyles", () => {
+  test("marks block elements and hides head", () => {
+    const dom = convert(parseHTML("<html><head></head><body><p>x</p></body></html>"));
+    const styled = computeStyles(dom);
+
+    const body = styled.children[0]?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "body",
+    );
+    const paragraph = body?.children[0];
+
+    expect(paragraph?.style.display).toBe("block");
+    expect(styled.children[0]?.children.some((child) => child.dom.type === "element" && child.dom.tag === "head")).toBe(false);
+  });
+
+  test("applies semantic styles to inline elements", () => {
+    const dom = convert(parseHTML("<p><strong>bold</strong> <em>italic</em></p>"));
+    const styled = computeStyles(dom);
+
+    const body = styled.children[0]?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "body",
+    );
+    const paragraph = body?.children[0];
+    const strong = paragraph?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "strong",
+    );
+    const em = paragraph?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "em",
+    );
+
+    expect(strong?.style.bold).toBe(true);
+    expect(em?.style.italic).toBe(true);
+  });
+});

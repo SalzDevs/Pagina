@@ -19,6 +19,8 @@ export function render(renderer: CliRenderer, displayList: DisplayList): void {
         bg: command.bg,
         attributes: createTextAttributes({
           bold: command.bold,
+          italic: command.italic,
+          underline: command.underline,
         }),
         selectable: false,
       }),

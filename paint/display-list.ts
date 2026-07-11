@@ -8,6 +8,8 @@ export interface DisplayCommand {
   bg?: string;
 
   bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
 }
 
 export type DisplayList = DisplayCommand[];
