@@ -3,6 +3,7 @@ import { createCliRenderer } from "@opentui/core";
 import { collectLinks } from "./links/collect";
 import { layout } from "./layout/layout";
 import { loadHtml } from "./navigation/load";
+import { buildErrorPageHtml } from "./navigation/error-page";
 import {
   createBrowserHistory,
   extractPageTitle,
@@ -52,7 +53,13 @@ async function main() {
     session?.destroy();
 
     const pageLocation = normalizePageLocation(location);
-    const html = await loadHtml(pageLocation);
+
+    let html: string;
+    try {
+      html = await loadHtml(pageLocation);
+    } catch (error) {
+      html = buildErrorPageHtml(pageLocation, error);
+    }
 
     const document = parseHTML(html);
     const dom = convert(document);
