@@ -1,4 +1,14 @@
-import type { CssDeclarations, CssRule, CssSelector } from "./types";
+import type { CssDeclarations, CssRule, CssSelector, SimpleSelector } from "./types";
+
+const FONT_SIZE_KEYWORDS: Record<string, number> = {
+  "xx-small": 0.6,
+  "x-small": 0.75,
+  small: 0.875,
+  medium: 1,
+  large: 1.125,
+  "x-large": 1.25,
+  "xx-large": 1.5,
+};
 
 function parseLength(value: string): number | undefined {
   const trimmed = value.trim();
@@ -11,6 +21,31 @@ function parseLength(value: string): number | undefined {
   if (Number.isNaN(amount)) return undefined;
 
   return Math.max(0, Math.round(amount));
+}
+
+function parseFontSize(value: string): number | undefined {
+  const trimmed = value.trim().toLowerCase();
+  if (trimmed in FONT_SIZE_KEYWORDS) {
+    return FONT_SIZE_KEYWORDS[trimmed];
+  }
+
+  const match = trimmed.match(/^([\d.]+)(px|em|rem|%)$/);
+  if (!match) return undefined;
+
+  const amount = Number(match[1]);
+  if (Number.isNaN(amount)) return undefined;
+
+  switch (match[2]) {
+    case "px":
+      return amount / 16;
+    case "em":
+    case "rem":
+      return amount;
+    case "%":
+      return amount / 100;
+    default:
+      return undefined;
+  }
 }
 
 function parseDeclarations(block: string): CssDeclarations {
@@ -39,6 +74,9 @@ function parseDeclarations(block: string): CssDeclarations {
         break;
       case "font-style":
         declarations.fontStyle = value;
+        break;
+      case "font-size":
+        declarations.fontSize = parseFontSize(value);
         break;
       case "text-decoration":
         declarations.textDecoration = value;
@@ -86,7 +124,7 @@ function parseDeclarations(block: string): CssDeclarations {
   return declarations;
 }
 
-function parseSelector(raw: string): CssSelector | null {
+function parseSimpleSelector(raw: string): SimpleSelector | null {
   const selector = raw.trim();
   if (selector.length === 0) return null;
 
@@ -117,19 +155,132 @@ function parseSelector(raw: string): CssSelector | null {
   return null;
 }
 
+function parseSelector(raw: string): CssSelector | null {
+  const selector = raw.trim();
+  if (selector.length === 0) return null;
+
+  const parts = selector.split(/\s+/).filter(Boolean);
+  if (parts.length === 1) {
+    return parseSimpleSelector(parts[0]!);
+  }
+
+  const chain = parts
+    .map(parseSimpleSelector)
+    .filter((part): part is SimpleSelector => part !== null);
+
+  if (chain.length !== parts.length) return null;
+
+  return { kind: "descendant", chain };
+}
+
+function skipBlock(css: string, openBraceIndex: number): number {
+  let index = openBraceIndex + 1;
+  let depth = 1;
+
+  while (index < css.length && depth > 0) {
+    if (css[index] === "{") depth++;
+    else if (css[index] === "}") depth--;
+    if (depth > 0) index++;
+  }
+
+  return index;
+}
+
+function readAtRuleName(css: string, start: number): { name: string; end: number } {
+  let end = start + 1;
+  while (end < css.length && /[-a-zA-Z0-9]/.test(css[end]!)) {
+    end++;
+  }
+
+  return {
+    name: css.slice(start + 1, end).toLowerCase(),
+    end,
+  };
+}
+
+/** Remove or unwrap at-rules so the remaining CSS parses as plain rule blocks. */
+export function preprocessStylesheet(css: string): string {
+  let result = "";
+  let index = 0;
+
+  while (index < css.length) {
+    if (css[index] === "@") {
+      const { name, end } = readAtRuleName(css, index);
+      let braceIndex = end;
+      while (braceIndex < css.length && css[braceIndex] !== "{") {
+        braceIndex++;
+      }
+
+      if (braceIndex >= css.length) break;
+
+      const blockEnd = skipBlock(css, braceIndex);
+
+      if (name === "media" || name === "supports") {
+        const inner = css.slice(braceIndex + 1, blockEnd);
+        result += preprocessStylesheet(inner);
+      }
+
+      index = blockEnd + 1;
+      continue;
+    }
+
+    result += css[index];
+    index++;
+  }
+
+  return result;
+}
+
+function extractRuleBlocks(css: string): Array<{ selectorText: string; body: string }> {
+  const blocks: Array<{ selectorText: string; body: string }> = [];
+  let index = 0;
+
+  while (index < css.length) {
+    while (index < css.length && /\s/.test(css[index]!)) {
+      index++;
+    }
+
+    if (index >= css.length) break;
+
+    if (css[index] === "@") {
+      const { end } = readAtRuleName(css, index);
+      let braceIndex = end;
+      while (braceIndex < css.length && css[braceIndex] !== "{") {
+        braceIndex++;
+      }
+      if (braceIndex >= css.length) break;
+      index = skipBlock(css, braceIndex) + 1;
+      continue;
+    }
+
+    const selectorStart = index;
+    while (index < css.length && css[index] !== "{") {
+      index++;
+    }
+
+    if (index >= css.length) break;
+
+    const selectorText = css.slice(selectorStart, index).trim();
+    const bodyStart = index + 1;
+    const bodyEnd = skipBlock(css, index);
+    const body = css.slice(bodyStart, bodyEnd);
+    index = bodyEnd + 1;
+
+    if (selectorText.length === 0) continue;
+
+    blocks.push({ selectorText, body });
+  }
+
+  return blocks;
+}
+
 /** Parse a minimal stylesheet into rules. */
 export function parseStylesheet(css: string): CssRule[] {
   const rules: CssRule[] = [];
+  const normalized = preprocessStylesheet(css);
 
-  for (const block of css.split("}")) {
-    const brace = block.indexOf("{");
-    if (brace === -1) continue;
-
-    const selectorText = block.slice(0, brace).trim();
-    const body = block.slice(brace + 1);
-    if (selectorText.length === 0) continue;
-
-    const selectors = selectorText
+  for (const block of extractRuleBlocks(normalized)) {
+    const selectors = block.selectorText
       .split(",")
       .map(parseSelector)
       .filter((selector): selector is CssSelector => selector !== null);
@@ -138,7 +289,7 @@ export function parseStylesheet(css: string): CssRule[] {
 
     rules.push({
       selectors,
-      declarations: parseDeclarations(body),
+      declarations: parseDeclarations(block.body),
     });
   }
 

@@ -13,6 +13,7 @@ export interface ComputedStyle {
   underline: boolean;
   fg?: string;
   bg?: string;
+  fontSize?: number;
   marginTop?: number;
   marginBottom?: number;
   paddingTop?: number;
@@ -111,6 +112,7 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
     marginBottom: inherited.marginBottom,
     paddingTop: inherited.paddingTop,
     paddingBottom: inherited.paddingBottom,
+    fontSize: inherited.fontSize,
   };
 
   switch (tag) {
@@ -138,11 +140,16 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
   }
 }
 
-function styleNode(node: Node, inherited: ComputedStyle, rules: CssRule[]): StyledNode | null {
+function styleNode(
+  node: Node,
+  inherited: ComputedStyle,
+  rules: CssRule[],
+  ancestors: Node[] = [],
+): StyledNode | null {
   switch (node.type) {
     case NodeType.Document: {
       const children = node.children
-        ?.map((child) => styleNode(child, inherited, rules))
+        ?.map((child) => styleNode(child, inherited, rules, ancestors))
         .filter((child): child is StyledNode => child !== null) ?? [];
 
       return {
@@ -154,12 +161,13 @@ function styleNode(node: Node, inherited: ComputedStyle, rules: CssRule[]): Styl
 
     case NodeType.Element: {
       const uaStyle = uaStyleForElement(node.tag ?? "", inherited);
-      const style = applyAuthorStyles(node, uaStyle, rules);
+      const style = applyAuthorStyles(node, uaStyle, rules, ancestors);
       if (style.display === "none") return null;
 
+      const nextAncestors = [...ancestors, node];
       const children =
         node.children
-          ?.map((child) => styleNode(child, style, rules))
+          ?.map((child) => styleNode(child, style, rules, nextAncestors))
           .filter((child): child is StyledNode => child !== null) ?? [];
 
       return { dom: node, style, children };

@@ -52,6 +52,11 @@ function mergeDeclarations(
   set("italic", isItalic(declarations.fontStyle));
   set("underline", isUnderline(declarations.textDecoration));
   set("display", parseDisplay(declarations.display));
+  set("fontSize", declarations.fontSize);
+
+  if (declarations.fontSize !== undefined && declarations.fontSize >= 1.2) {
+    next.bold = true;
+  }
 
   set("marginTop", declarations.marginTop);
   set("marginBottom", declarations.marginBottom);
@@ -66,13 +71,14 @@ export function applyAuthorStyles(
   node: Node,
   base: ComputedStyle,
   rules: CssRule[],
+  ancestors: readonly Node[] = [],
 ): ComputedStyle {
   if (node.type !== NodeType.Element) return base;
 
   let style = base;
 
   for (const rule of rules) {
-    const matched = rule.selectors.some((selector) => matchesSelector(node, selector));
+    const matched = rule.selectors.some((selector) => matchesSelector(node, selector, ancestors));
     if (matched) {
       style = mergeDeclarations(style, rule.declarations);
     }
