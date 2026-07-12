@@ -8,6 +8,7 @@ import {
   createBrowserHistory,
   extractPageTitle,
   formatBreadcrumb,
+  formatLoadingBreadcrumb,
   goBack,
   goForward,
   historyLabel,
@@ -38,6 +39,13 @@ async function main() {
   const breadcrumb = mountBreadcrumb(renderer);
   let history: BrowserHistory = createBrowserHistory();
   let session: BrowserSession | null = null;
+  let rendererStarted = false;
+
+  const startRendererOnce = () => {
+    if (rendererStarted) return;
+    renderer.start();
+    rendererStarted = true;
+  };
 
   const contentLayout = () => ({
     top: BREADCRUMB_HEIGHT,
@@ -50,9 +58,11 @@ async function main() {
     historyMode: HistoryMode = "push",
     fragment: string | null = null,
   ) => {
-    session?.destroy();
-
     const pageLocation = normalizePageLocation(location);
+    breadcrumb.update(formatLoadingBreadcrumb(pageLocation, renderer.width));
+    startRendererOnce();
+
+    session?.destroy();
 
     let html: string;
     try {
@@ -122,7 +132,8 @@ async function main() {
     "push",
     initial.fragment,
   );
-  renderer.start();
+
+  startRendererOnce();
 }
 
 await main();

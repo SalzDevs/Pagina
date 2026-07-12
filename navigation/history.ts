@@ -130,3 +130,13 @@ export function formatBreadcrumb(history: BrowserHistory, width: number): string
 
   return single.slice(0, Math.max(0, width - 3)) + "...";
 }
+
+/** Format a breadcrumb loading label while a page is being fetched. */
+export function formatLoadingBreadcrumb(location: string, width: number): string {
+  const label = historyLabel(location);
+  const text = `Loading ${label}…`;
+
+  if (text.length <= width) return text;
+
+  return text.slice(0, Math.max(0, width - 3)) + "...";
+}

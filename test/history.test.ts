@@ -7,6 +7,7 @@ import {
   createBrowserHistory,
   extractPageTitle,
   formatBreadcrumb,
+  formatLoadingBreadcrumb,
   goBack,
   goForward,
   historyLabel,
@@ -82,6 +83,20 @@ describe("browser history", () => {
     const line = formatBreadcrumb(history, 24);
     expect(line).toContain("[Current Page]");
     expect(line.startsWith("...")).toBe(true);
+  });
+
+  test("formats loading labels for remote and local locations", () => {
+    expect(formatLoadingBreadcrumb("https://example.com/docs/page.html", 40)).toBe(
+      "Loading example.com/docs/page.html…",
+    );
+    expect(formatLoadingBreadcrumb("/tmp/examples/page.html", 40)).toBe("Loading page.html…");
+  });
+
+  test("truncates long loading labels", () => {
+    const line = formatLoadingBreadcrumb("https://example.com/very/long/path/to/a/page.html", 20);
+    expect(line.endsWith("...")).toBe(true);
+    expect(line.length).toBeLessThanOrEqual(20);
+    expect(line.startsWith("Loading ")).toBe(true);
   });
 });
 
