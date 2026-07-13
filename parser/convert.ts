@@ -1,63 +1,79 @@
-import type { Node }from "../dom/node";
+import type { DefaultTreeAdapterTypes } from "parse5";
+
+import type { Node } from "../dom/node";
 import { NodeType } from "../dom/node";
 
-export function convert(node: any, parent?: Node): Node {
-  let current: Node;
+type Parse5Node = DefaultTreeAdapterTypes.Node;
+type Parse5Element = DefaultTreeAdapterTypes.Element | DefaultTreeAdapterTypes.Template;
 
+function attributesFromElement(element: Parse5Element): Record<string, string> {
+  return Object.fromEntries(element.attrs.map((attr) => [attr.name, attr.value]));
+}
+
+function convertChildNodes(
+  childNodes: readonly DefaultTreeAdapterTypes.ChildNode[],
+  parent: Node,
+): Node[] {
+  return childNodes.map((child) => convert(child, parent));
+}
+
+function convertContainer(
+  parent: Node | undefined,
+  childNodes: readonly DefaultTreeAdapterTypes.ChildNode[],
+): Node {
+  const current: Node = {
+    type: NodeType.Document,
+    parent,
+    children: [],
+  };
+  current.children = convertChildNodes(childNodes, current);
+  return current;
+}
+
+export function convert(node: Parse5Node, parent?: Node): Node {
   switch (node.nodeName) {
     case "#document":
-      current = {
-        type: NodeType.Document,
-        parent,
-        children: [],
-      };
-      break;
+      return convertContainer(parent, node.childNodes);
+
+    case "#document-fragment":
+      return convertContainer(parent, node.childNodes);
 
     case "#text":
-      current = {
+      return {
         type: NodeType.Text,
         parent,
         value: node.value,
       };
-      break;
 
     case "#comment":
-      current = {
+      return {
         type: NodeType.Comment,
         parent,
         value: node.data,
       };
-      break;
 
     case "#documentType":
-      current = {
+      return {
         type: NodeType.Doctype,
         parent,
         value: node.name,
       };
-      break;
 
-    default:
-      if (!node.tagName) {
+    default: {
+      if (!("tagName" in node) || !node.tagName) {
         throw new Error(`Unknown node type: ${node.nodeName}`);
       }
 
-      current = {
+      const element = node;
+      const current: Node = {
         type: NodeType.Element,
         parent,
-        tag: node.tagName,
-        attributes: Object.fromEntries(
-          (node.attrs ?? []).map((attr: { name: string; value: string }) => [attr.name, attr.value]),
-        ),
+        tag: element.tagName,
+        attributes: attributesFromElement(element),
         children: [],
       };
+      current.children = convertChildNodes(element.childNodes, current);
+      return current;
+    }
   }
-
-  if (current.children && node.childNodes) {
-    current.children = node.childNodes.map((child: any) =>
-      convert(child, current),
-    );
-  }
-
-  return current;
 }
