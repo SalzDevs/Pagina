@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "bun:test";
 
 import { collectLinks } from "../links/collect";
-import { linkIndexAtPoint } from "../links/hit";
+import { buildLinkHitIndex, linkIndexAtPoint } from "../links/hit";
 import { loadHtmlFromFile } from "../navigation/load";
 import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
@@ -34,6 +34,7 @@ describe("mouseToDocumentPoint", () => {
 
   test("maps root mouse coords to link bounds on links-page.html", async () => {
     const links = await linksFromFile(linksPagePath);
+    const hitIndex = buildLinkHitIndex(links);
     const layoutTop = BREADCRUMB_HEIGHT;
 
     for (let index = 0; index < links.length; index++) {
@@ -42,12 +43,13 @@ describe("mouseToDocumentPoint", () => {
 
       const screenY = layoutTop + bound!.y;
       const point = mouseToDocumentPoint({ x: bound!.x, y: screenY }, { top: layoutTop }, 0);
-      expect(linkIndexAtPoint(links, point.x, point.y)).toBe(index);
+      expect(linkIndexAtPoint(hitIndex, point.x, point.y)).toBe(index);
     }
   });
 
   test("stays aligned when the page is scrolled", async () => {
     const links = await linksFromFile(linksPagePath);
+    const hitIndex = buildLinkHitIndex(links);
     const link = links[0];
     const bound = link?.bounds[0];
     expect(bound).toBeDefined();
@@ -57,6 +59,6 @@ describe("mouseToDocumentPoint", () => {
     const screenY = layoutTop + bound!.y - scrollY;
     const point = mouseToDocumentPoint({ x: bound!.x, y: screenY }, { top: layoutTop }, scrollY);
 
-    expect(linkIndexAtPoint(links, point.x, point.y)).toBe(0);
+    expect(linkIndexAtPoint(hitIndex, point.x, point.y)).toBe(0);
   });
 });

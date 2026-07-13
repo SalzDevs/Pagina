@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "bun:test";
 
 import { collectLinks } from "../links/collect";
-import { linkIndexAtPoint } from "../links/hit";
+import { buildLinkHitIndex, linkIndexAtPoint } from "../links/hit";
 import {
   applyLinkFocus,
   createLinkFocusState,
@@ -263,13 +263,32 @@ describe("paint linkIndex", () => {
 describe("linkIndexAtPoint", () => {
   test("finds the other-page link under its layout bounds", async () => {
     const { links } = await pipelineFromFile("examples/links-page.html");
+    const hitIndex = buildLinkHitIndex(links);
     const link = links[0];
     const bound = link?.bounds[0];
 
     expect(link?.href).toBe("other-page.html");
     expect(bound).toBeDefined();
 
-    expect(linkIndexAtPoint(links, bound!.x, bound!.y)).toBe(0);
-    expect(linkIndexAtPoint(links, bound!.x + bound!.width + 5, bound!.y)).toBeNull();
+    expect(linkIndexAtPoint(hitIndex, bound!.x, bound!.y)).toBe(0);
+    expect(linkIndexAtPoint(hitIndex, bound!.x + bound!.width + 5, bound!.y)).toBeNull();
+  });
+
+  test("looks up only the requested document row", () => {
+    const links = [
+      {
+        href: "near.html",
+        bounds: [{ x: 0, y: 10, width: 4, height: 1 }],
+      },
+      {
+        href: "far.html",
+        bounds: [{ x: 0, y: 99, width: 4, height: 1 }],
+      },
+    ];
+    const hitIndex = buildLinkHitIndex(links);
+
+    expect(linkIndexAtPoint(hitIndex, 1, 10)).toBe(0);
+    expect(linkIndexAtPoint(hitIndex, 1, 50)).toBeNull();
+    expect(linkIndexAtPoint(hitIndex, 1, 99)).toBe(1);
   });
 });

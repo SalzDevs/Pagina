@@ -1,6 +1,6 @@
 import type { CliRenderer, KeyEvent } from "@opentui/core";
 
-import { linkIndexAtPoint } from "../links/hit";
+import { buildLinkHitIndex, linkIndexAtPoint, type LinkHitIndex } from "../links/hit";
 import { mouseToDocumentPoint } from "./mouse";
 import type { Link } from "../links/types";
 import {
@@ -65,10 +65,13 @@ export function createBrowserSession(
       ? { focusedIndex: options.initialFocusedLinkIndex }
       : createLinkFocusState();
   let pageLinks = links;
+  let pageLinkHitIndex: LinkHitIndex = buildLinkHitIndex(links);
   let fragmentPositions = options.fragmentPositions;
   let pageContentHeight = contentHeight;
   let pageLayout = options.layout;
   let pageDisplayList = displayList;
+
+  let lastHoverCell: { x: number; y: number } | null = null;
 
   const mounted: MountedDisplayList = mountDisplayList(
     renderer,
@@ -129,9 +132,11 @@ export function createBrowserSession(
   const relayout = (view: PageView, layout: MountLayout) => {
     pageDisplayList = view.displayList;
     pageLinks = view.links;
+    pageLinkHitIndex = buildLinkHitIndex(view.links);
     fragmentPositions = view.fragmentPositions;
     pageContentHeight = view.contentHeight;
     pageLayout = layout;
+    lastHoverCell = null;
 
     mounted.relayout(
       pageDisplayList,
@@ -172,6 +177,7 @@ export function createBrowserSession(
     scrollToFragment: scrollToFragmentId,
     relayout,
     destroy() {
+      lastHoverCell = null;
       if (keyHandler) {
         renderer._internalKeyInput.offInternal("keypress", keyHandler);
         keyHandler = null;
@@ -235,7 +241,16 @@ export function createBrowserSession(
         if (options.isHelpVisible?.()) return;
 
         const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY);
-        const index = linkIndexAtPoint(pageLinks, point.x, point.y);
+        const cell = { x: Math.trunc(point.x), y: Math.trunc(point.y) };
+        if (
+          lastHoverCell?.x === cell.x &&
+          lastHoverCell?.y === cell.y
+        ) {
+          return;
+        }
+
+        lastHoverCell = cell;
+        const index = linkIndexAtPoint(pageLinkHitIndex, point.x, point.y);
         if (index === linkFocus.focusedIndex) return;
         syncLinkFocus({ focusedIndex: index }, false);
       };
@@ -245,7 +260,7 @@ export function createBrowserSession(
         if (event.button !== 0 || event.type !== "up") return;
 
         const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY);
-        const index = linkIndexAtPoint(pageLinks, point.x, point.y);
+        const index = linkIndexAtPoint(pageLinkHitIndex, point.x, point.y);
         if (index === null) return;
 
         void activateLink(index);
