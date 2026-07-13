@@ -14,7 +14,7 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@opentui/core": "^0.4.3",
+    "@opentui/core": "0.4.3",
     "parse5": "^8.0.1"
   }
 }

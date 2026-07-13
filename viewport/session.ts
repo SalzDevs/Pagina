@@ -15,6 +15,7 @@ import { isSamePage, parseLinkTarget } from "../navigation/fragment";
 import { scrollToFragment } from "../navigation/anchors";
 import type { DisplayList } from "../paint/display-list";
 import { mountDisplayList, type MountLayout, type MountedDisplayList } from "../render/render";
+import { createKeyboardInput, type KeyboardInput } from "./keyboard";
 import type { PageView } from "./page-view";
 import {
   createScrollViewport,
@@ -159,6 +160,7 @@ export function createBrowserSession(
 
   syncViewport(viewport);
 
+  let keyboard: KeyboardInput | null = null;
   let keyHandler: ((key: KeyEvent) => void | Promise<void>) | null = null;
   let mouseScrollHandler: NonNullable<typeof mounted.viewport.onMouseScroll> | null = null;
   let mouseMoveHandler: NonNullable<typeof mounted.viewport.onMouseMove> | null = null;
@@ -178,9 +180,10 @@ export function createBrowserSession(
     relayout,
     destroy() {
       lastHoverCell = null;
-      if (keyHandler) {
-        renderer._internalKeyInput.offInternal("keypress", keyHandler);
+      if (keyHandler && keyboard) {
+        keyboard.offKeyPress(keyHandler);
         keyHandler = null;
+        keyboard = null;
       }
 
       mounted.viewport.onMouseScroll = undefined;
@@ -227,7 +230,8 @@ export function createBrowserSession(
         syncViewport(next);
       };
 
-      renderer._internalKeyInput.onInternal("keypress", keyHandler);
+      keyboard = createKeyboardInput(renderer);
+      keyboard.onKeyPress(keyHandler);
 
       mouseScrollHandler = (event) => {
         if (options.isHelpVisible?.()) return;
