@@ -1,3 +1,4 @@
+import { HEADING_FONT_SIZES } from "../layout/line-height";
 import type { Node } from "../dom/node";
 import { NodeType } from "../dom/node";
 import { applyAuthorStyles } from "./css/apply";
@@ -132,7 +133,12 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
     case "h4":
     case "h5":
     case "h6":
-      return { ...style, display: "block", bold: true };
+      return {
+        ...style,
+        display: "block",
+        bold: true,
+        fontSize: HEADING_FONT_SIZES[tag] ?? style.fontSize,
+      };
     case "code":
       return { ...style, fg: "#ce9178" };
     default:

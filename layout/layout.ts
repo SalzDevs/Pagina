@@ -1,4 +1,5 @@
 import { NodeType } from "../dom/node";
+import { lineHeightForFontSize } from "./line-height";
 import type { LayoutFragment, StyledNode } from "../style/style";
 
 export interface LayoutBox {
@@ -34,9 +35,12 @@ interface LineRun {
   width: number;
 }
 
-const LINE_HEIGHT = 1;
 const BLOCK_GAP = 1;
 const DEFAULT_VIEWPORT: Viewport = { width: 80, height: 24 };
+
+function nodeLineHeight(node: StyledNode): number {
+  return lineHeightForFontSize(node.style.fontSize);
+}
 
 function isBlock(node: StyledNode): boolean {
   return node.style.display === "block";
@@ -75,18 +79,21 @@ function wrapSegments(segments: InlineSegment[], contentWidth: number, startY: n
   let lineWidth = 0;
 
   const flushLine = () => {
+    const lineHeight =
+      lineRuns.length === 0 ? 1 : Math.max(...lineRuns.map((run) => nodeLineHeight(run.node)));
+
     for (const run of lineRuns) {
       addFragment(run.node, {
         x: run.x,
         y: currentY,
         width: run.width,
-        height: LINE_HEIGHT,
+        height: lineHeight,
         text: run.text,
       });
     }
 
     if (lineRuns.length > 0) {
-      currentY += LINE_HEIGHT;
+      currentY += lineHeight;
     }
 
     lineRuns = [];
@@ -106,6 +113,7 @@ function wrapSegments(segments: InlineSegment[], contentWidth: number, startY: n
       const spaceRemaining = contentWidth - lineWidth;
 
       if (partWidth > contentWidth && lineRuns.length === 0) {
+        const chunkHeight = nodeLineHeight(segment.node);
         let offset = 0;
         while (offset < part.length) {
           const chunk = part.slice(offset, offset + contentWidth);
@@ -113,10 +121,10 @@ function wrapSegments(segments: InlineSegment[], contentWidth: number, startY: n
             x: 0,
             y: currentY,
             width: chunk.length,
-            height: LINE_HEIGHT,
+            height: chunkHeight,
             text: chunk,
           });
-          currentY += LINE_HEIGHT;
+          currentY += chunkHeight;
           offset += contentWidth;
         }
         continue;
@@ -170,7 +178,7 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
   for (const child of node.children) {
     if (isLineBreak(child)) {
       flushInlineBatch();
-      ctx.y += LINE_HEIGHT;
+      ctx.y += 1;
       continue;
     }
 
@@ -189,7 +197,7 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
 
   ctx.y += node.style.paddingBottom ?? 0;
 
-  const contentHeight = Math.max(LINE_HEIGHT, ctx.y - startY);
+  const contentHeight = Math.max(1, ctx.y - startY);
   node.layout = {
     x: 0,
     y: startY,
