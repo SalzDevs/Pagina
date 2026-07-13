@@ -6,6 +6,7 @@ import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
 import { computeStyles, type StyledNode } from "../style/style";
 import { collectCssSources, collectStylesheetRules } from "../style/css/collect";
+import { buildRuleIndex, candidateRuleIndices } from "../style/css/index";
 import { matchesSelector } from "../style/css/match";
 import { parseInlineStyle, parseStylesheet, preprocessStylesheet } from "../style/css/parse";
 
@@ -352,6 +353,59 @@ describe("matchesSelector", () => {
         [body, paragraph],
       ),
     ).toBe(false);
+  });
+});
+
+describe("buildRuleIndex", () => {
+  function findElement(dom: ReturnType<typeof convert>, tag: string) {
+    const walk = (node: ReturnType<typeof convert>): ReturnType<typeof convert> | undefined => {
+      if (node.type === "element" && node.tag === tag) return node;
+      for (const child of node.children ?? []) {
+        const found = walk(child);
+        if (found) return found;
+      }
+      return undefined;
+    };
+
+    return walk(dom);
+  }
+
+  test("returns only relevant rule indices for an element", () => {
+    const rules = parseStylesheet(`
+      body { color: #ccc; }
+      p.intro { color: cyan; }
+      #title { font-weight: bold; }
+      body a { color: yellow; }
+      div { color: red; }
+    `);
+    const index = buildRuleIndex(rules);
+    const paragraph = findElement(convert(parseHTML('<p class="intro">hello</p>')), "p");
+    const link = findElement(convert(parseHTML('<a href="#">link</a>')), "a");
+
+    expect(paragraph?.type).toBe("element");
+    expect(link?.type).toBe("element");
+
+    if (paragraph?.type !== "element" || link?.type !== "element") {
+      throw new Error("expected element nodes");
+    }
+
+    expect(candidateRuleIndices(index, paragraph)).toEqual([1]);
+    expect(candidateRuleIndices(index, link)).toEqual([3]);
+  });
+
+  test("preserves document order for multi-bucket candidates", () => {
+    const rules = parseStylesheet(`
+      p { color: red; }
+      .intro { color: green; }
+      p.intro { color: blue; }
+    `);
+    const index = buildRuleIndex(rules);
+    const paragraph = findElement(convert(parseHTML('<p class="intro">hello</p>')), "p");
+
+    expect(paragraph?.type).toBe("element");
+    if (paragraph?.type !== "element") throw new Error("expected paragraph element");
+
+    expect(candidateRuleIndices(index, paragraph)).toEqual([0, 1, 2]);
   });
 });
 

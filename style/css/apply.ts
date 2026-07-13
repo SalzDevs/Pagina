@@ -1,6 +1,7 @@
 import type { ComputedStyle, Display } from "../style";
 import type { Node } from "../../dom/node";
 import { NodeType } from "../../dom/node";
+import { candidateRuleIndices, type CssRuleIndex } from "./index";
 import { matchesSelector } from "./match";
 import { normalizeBackgroundColor, normalizeColor } from "./color";
 import { parseInlineStyle } from "./parse";
@@ -75,14 +76,20 @@ export function applyAuthorStyles(
   node: Node,
   base: ComputedStyle,
   rules: CssRule[],
+  ruleIndex: CssRuleIndex,
   ancestors: readonly Node[] = [],
 ): ComputedStyle {
   if (node.type !== NodeType.Element) return base;
 
   let style = base;
 
-  for (const rule of rules) {
-    const matched = rule.selectors.some((selector) => matchesSelector(node, selector, ancestors));
+  for (const ruleIndexValue of candidateRuleIndices(ruleIndex, node)) {
+    const rule = rules[ruleIndexValue];
+    if (!rule) continue;
+
+    const matched = rule.selectors.some((selector) =>
+      matchesSelector(node, selector, ancestors),
+    );
     if (matched) {
       style = mergeDeclarations(style, rule.declarations);
     }

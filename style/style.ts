@@ -3,6 +3,7 @@ import type { Node } from "../dom/node";
 import { NodeType } from "../dom/node";
 import { applyAuthorStyles } from "./css/apply";
 import { collectStylesheetRules } from "./css/collect";
+import { buildRuleIndex, type CssRuleIndex } from "./css/index";
 import type { CssRule } from "./css/types";
 
 export type Display = "block" | "inline" | "none";
@@ -168,12 +169,13 @@ function styleNode(
   node: Node,
   inherited: ComputedStyle,
   rules: CssRule[],
-  ancestors: Node[] = [],
+  ruleIndex: CssRuleIndex,
+  ancestors: Node[],
 ): StyledNode | null {
   switch (node.type) {
     case NodeType.Document: {
       const children = node.children
-        ?.map((child) => styleNode(child, inherited, rules, ancestors))
+        ?.map((child) => styleNode(child, inherited, rules, ruleIndex, ancestors))
         .filter((child): child is StyledNode => child !== null) ?? [];
 
       return {
@@ -185,14 +187,15 @@ function styleNode(
 
     case NodeType.Element: {
       const uaStyle = uaStyleForElement(node.tag ?? "", inherited);
-      const style = applyAuthorStyles(node, uaStyle, rules, ancestors);
+      const style = applyAuthorStyles(node, uaStyle, rules, ruleIndex, ancestors);
       if (style.display === "none") return null;
 
-      const nextAncestors = [...ancestors, node];
+      ancestors.push(node);
       const children =
         node.children
-          ?.map((child) => styleNode(child, style, rules, nextAncestors))
+          ?.map((child) => styleNode(child, style, rules, ruleIndex, ancestors))
           .filter((child): child is StyledNode => child !== null) ?? [];
+      ancestors.pop();
 
       return { dom: node, style, children };
     }
@@ -229,7 +232,9 @@ export async function computeStyles(
 ): Promise<StyledNode> {
   const documentBase = options.documentBase ?? options.pageLocation;
   const rules = await collectStylesheetRules(root, options.pageLocation, documentBase);
-  const styled = styleNode(root, DEFAULT_STYLE, rules);
+  const ruleIndex = buildRuleIndex(rules);
+  const ancestors: Node[] = [];
+  const styled = styleNode(root, DEFAULT_STYLE, rules, ruleIndex, ancestors);
   if (!styled) {
     throw new Error("Document produced no styled output");
   }
