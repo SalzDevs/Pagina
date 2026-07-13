@@ -11,6 +11,7 @@ import {
   goForward,
   historyEntryLabel,
   pushHistory,
+  updateCurrentHistoryEntry,
   type BrowserHistory,
 } from "./navigation/history";
 import { normalizePageLocation } from "./navigation/location";
@@ -59,16 +60,28 @@ async function main() {
     height: Math.max(1, renderer.height - BREADCRUMB_HEIGHT),
   });
 
+  const snapshotScrollIntoHistory = () => {
+    if (history.index < 0 || !session) return;
+
+    history = updateCurrentHistoryEntry(history, {
+      scrollY: session.viewport.scrollY,
+    });
+  };
+
   const mountCurrentPage = (
     fragment: string | null = null,
     historyMode: HistoryMode = "none",
     pageTitle?: string,
-    preserveViewState = false,
+    viewState: { preserveViewState?: boolean; restoreScrollY?: number } = {},
   ) => {
     if (!loadedPage) return;
 
-    const previousScrollY = preserveViewState ? (session?.viewport.scrollY ?? 0) : 0;
-    const previousFocusedLink = preserveViewState ? (session?.focusedLinkIndex ?? null) : null;
+    const previousScrollY = viewState.preserveViewState
+      ? (session?.viewport.scrollY ?? 0)
+      : (viewState.restoreScrollY ?? 0);
+    const previousFocusedLink = viewState.preserveViewState
+      ? (session?.focusedLinkIndex ?? null)
+      : null;
 
     session?.destroy();
 
@@ -107,16 +120,18 @@ async function main() {
       initialFocusedLinkIndex: previousFocusedLink,
       onNavigate: (target, targetFragment) => loadPage(target, "push", targetFragment ?? null),
       onHistoryBack: async () => {
+        snapshotScrollIntoHistory();
         const result = goBack(history);
         history = result.history;
         if (!result.entry) return;
-        await loadPage(result.entry.location, "none");
+        await loadPage(result.entry.location, "none", null, result.entry.scrollY ?? 0);
       },
       onHistoryForward: async () => {
+        snapshotScrollIntoHistory();
         const result = goForward(history);
         history = result.history;
         if (!result.entry) return;
-        await loadPage(result.entry.location, "none");
+        await loadPage(result.entry.location, "none", null, result.entry.scrollY ?? 0);
       },
     });
 
@@ -129,17 +144,22 @@ async function main() {
 
   const relayoutCurrentPage = () => {
     if (!loadedPage || !session) return;
-    mountCurrentPage(null, "none", undefined, true);
+    mountCurrentPage(null, "none", undefined, { preserveViewState: true });
   };
 
   const loadPage = async (
     location: string,
     historyMode: HistoryMode = "push",
     fragment: string | null = null,
+    restoreScrollY?: number,
   ) => {
     const pageLocation = normalizePageLocation(location);
     breadcrumb.update(formatLoadingBreadcrumb(pageLocation, renderer.width));
     startRendererOnce();
+
+    if (historyMode === "push") {
+      snapshotScrollIntoHistory();
+    }
 
     session?.destroy();
     session = null;
@@ -163,7 +183,7 @@ async function main() {
       styled,
     };
 
-    mountCurrentPage(fragment, historyMode, pageTitle, false);
+    mountCurrentPage(fragment, historyMode, pageTitle, { restoreScrollY });
   };
 
   renderer.on(CliRenderEvents.RESIZE, relayoutCurrentPage);

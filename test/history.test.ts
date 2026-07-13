@@ -12,6 +12,7 @@ import {
   goForward,
   historyLabel,
   pushHistory,
+  updateCurrentHistoryEntry,
 } from "../navigation/history";
 
 function key(name: string, options: { shift?: boolean; option?: boolean } = {}) {
@@ -97,6 +98,25 @@ describe("browser history", () => {
     expect(line.endsWith("...")).toBe(true);
     expect(line.length).toBeLessThanOrEqual(20);
     expect(line.startsWith("Loading ")).toBe(true);
+  });
+
+  test("stores and restores scroll position on the active entry", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "A" });
+    history = updateCurrentHistoryEntry(history, { scrollY: 42 });
+    history = pushHistory(history, { location: "/b", label: "B" });
+    history = updateCurrentHistoryEntry(history, { scrollY: 17 });
+
+    const back = goBack(history);
+    expect(back.entry?.location).toBe("/a");
+    expect(back.entry?.scrollY).toBe(42);
+
+    history = back.history;
+    history = updateCurrentHistoryEntry(history, { scrollY: 50 });
+
+    const forward = goForward(history);
+    expect(forward.entry?.location).toBe("/b");
+    expect(forward.entry?.scrollY).toBe(17);
   });
 });
 

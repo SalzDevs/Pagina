@@ -8,6 +8,7 @@ import { ERROR_PAGE_TITLE } from "./error-page";
 export interface HistoryEntry {
   location: string;
   label: string;
+  scrollY?: number;
 }
 
 export interface BrowserHistory {
@@ -27,6 +28,22 @@ export function pushHistory(history: BrowserHistory, entry: HistoryEntry): Brows
     entries,
     index: entries.length - 1,
   };
+}
+
+/** Persist view state on the active history entry before navigating away. */
+export function updateCurrentHistoryEntry(
+  history: BrowserHistory,
+  patch: Pick<HistoryEntry, "scrollY">,
+): BrowserHistory {
+  if (history.index < 0) return history;
+
+  const current = history.entries[history.index];
+  if (!current) return history;
+
+  const entries = history.entries.slice();
+  entries[history.index] = { ...current, ...patch };
+
+  return { ...history, entries };
 }
 
 export function goBack(history: BrowserHistory): {
