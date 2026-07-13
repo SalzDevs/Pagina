@@ -11,11 +11,12 @@ import {
   formatLoadingBreadcrumb,
   goBack,
   goForward,
-  historyLabel,
+  historyEntryLabel,
   pushHistory,
   type BrowserHistory,
 } from "./navigation/history";
 import { normalizePageLocation } from "./navigation/location";
+import { resolveDocumentBase } from "./navigation/base-url";
 import { splitPageLocation } from "./navigation/fragment";
 import { collectFragmentPositions } from "./navigation/anchors";
 import { convert } from "./parser/convert";
@@ -73,7 +74,9 @@ async function main() {
 
     const document = parseHTML(html);
     const dom = convert(document);
-    const styled = await computeStyles(dom, { pageLocation });
+    const documentBase = resolveDocumentBase(dom, pageLocation);
+    const pageTitle = extractPageTitle(dom);
+    const styled = await computeStyles(dom, { pageLocation, documentBase });
 
     const chrome = contentLayout();
     layout(styled, {
@@ -94,7 +97,7 @@ async function main() {
     if (historyMode === "push") {
       history = pushHistory(history, {
         location: pageLocation,
-        label: historyLabel(pageLocation, extractPageTitle(dom)),
+        label: historyEntryLabel(pageLocation, pageTitle),
       });
     }
 
@@ -102,6 +105,7 @@ async function main() {
 
     session = createBrowserSession(renderer, displayList, contentHeight, links, {
       pageLocation,
+      documentBase,
       layout: chrome,
       fragmentPositions,
       onNavigate: (target, targetFragment) => loadPage(target, "push", targetFragment ?? null),

@@ -3,6 +3,7 @@ import { basename } from "node:path";
 import type { Node } from "../dom/node";
 import { NodeType } from "../dom/node";
 import { isRemoteUrl } from "./resolve";
+import { ERROR_PAGE_TITLE } from "./error-page";
 
 export interface HistoryEntry {
   location: string;
@@ -102,6 +103,29 @@ export function historyLabel(location: string, title?: string): string {
   }
 
   return basename(location);
+}
+
+/** True when the page title matches Pagina's generated error page. */
+export function isErrorPageTitle(title?: string): boolean {
+  return title?.trim() === ERROR_PAGE_TITLE;
+}
+
+/** Build a breadcrumb label for a failed navigation. */
+export function formatErrorHistoryLabel(location: string): string {
+  return `⚠ ${historyLabel(location)}`;
+}
+
+/** Choose a history label for a loaded page. */
+export function historyEntryLabel(
+  location: string,
+  title?: string,
+  options: { isErrorPage?: boolean } = {},
+): string {
+  if (options.isErrorPage || isErrorPageTitle(title)) {
+    return formatErrorHistoryLabel(location);
+  }
+
+  return historyLabel(location, title);
 }
 
 /** Format the history trail for the breadcrumb bar. */

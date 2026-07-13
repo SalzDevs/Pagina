@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 
-import { isRemoteUrl, resolveResource } from "./resolve";
+import { isRemoteUrl, resolveResource, resolveAgainstBase } from "./resolve";
 
 export interface LinkTarget {
   /** Resolved page location when a navigation fetch is needed. */
@@ -47,7 +47,11 @@ export function isSamePage(left: string, right: string): boolean {
 }
 
 /** Parse an anchor href into a navigation target. */
-export function parseLinkTarget(href: string, pageLocation: string): LinkTarget | null {
+export function parseLinkTarget(
+  href: string,
+  documentBase: string,
+  pageLocation: string = documentBase,
+): LinkTarget | null {
   const trimmed = href.trim();
   if (!trimmed || trimmed.startsWith("javascript:")) return null;
 
@@ -57,7 +61,7 @@ export function parseLinkTarget(href: string, pageLocation: string): LinkTarget 
 
   const hashIndex = trimmed.indexOf("#");
   if (hashIndex === -1) {
-    const location = resolveResource(trimmed, pageLocation);
+    const location = resolveAgainstBase(trimmed, documentBase, pageLocation);
     return location ? { location, fragment: null } : null;
   }
 
@@ -68,7 +72,9 @@ export function parseLinkTarget(href: string, pageLocation: string): LinkTarget 
     return { location: null, fragment: fragmentPart.length > 0 ? fragmentPart : null };
   }
 
-  const location = pathPart ? resolveResource(pathPart, pageLocation) : pageLocation.split("#")[0] ?? pageLocation;
+  const location = pathPart
+    ? resolveAgainstBase(pathPart, documentBase, pageLocation)
+    : pageLocation.split("#")[0] ?? pageLocation;
   if (!location) return null;
 
   return {

@@ -195,6 +195,7 @@ function styleNode(
 
 export interface ComputeStylesOptions {
   pageLocation?: string;
+  documentBase?: string;
 }
 
 /** Apply user-agent defaults and author CSS to a DOM tree. */
@@ -202,7 +203,8 @@ export async function computeStyles(
   root: Node,
   options: ComputeStylesOptions = {},
 ): Promise<StyledNode> {
-  const rules = await collectStylesheetRules(root, options.pageLocation);
+  const documentBase = options.documentBase ?? options.pageLocation;
+  const rules = await collectStylesheetRules(root, options.pageLocation, documentBase);
   const styled = styleNode(root, DEFAULT_STYLE, rules);
   if (!styled) {
     throw new Error("Document produced no styled output");

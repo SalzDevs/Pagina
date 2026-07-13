@@ -1,7 +1,7 @@
 import type { Node } from "../../dom/node";
 import { NodeType } from "../../dom/node";
 import { loadText } from "../../navigation/load";
-import { resolveResource } from "../../navigation/resolve";
+import { resolveResource, resolveAgainstBase } from "../../navigation/resolve";
 import type { CssRule } from "./types";
 import { parseStylesheet } from "./parse";
 
@@ -53,9 +53,11 @@ export function collectCssSources(root: Node): CssSource[] {
 export async function collectStylesheetRules(
   root: Node,
   pageLocation?: string,
+  documentBase?: string,
 ): Promise<CssRule[]> {
   const sources = collectCssSources(root);
   const rules: CssRule[] = [];
+  const base = documentBase ?? pageLocation;
 
   for (const source of sources) {
     if (source.kind === "inline") {
@@ -63,13 +65,21 @@ export async function collectStylesheetRules(
       continue;
     }
 
-    if (!pageLocation) continue;
+    if (!base) continue;
 
-    const resourceLocation = resolveResource(source.href, pageLocation);
+    const resourceLocation = resolveAgainstBase(
+      source.href,
+      base,
+      pageLocation ?? base,
+    );
     if (!resourceLocation) continue;
 
-    const css = await loadText(resourceLocation);
-    rules.push(...parseStylesheet(css));
+    try {
+      const css = await loadText(resourceLocation);
+      rules.push(...parseStylesheet(css));
+    } catch {
+      continue;
+    }
   }
 
   return rules;

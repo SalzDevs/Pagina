@@ -7,6 +7,15 @@ export function isRemoteUrl(value: string): boolean {
 
 /** Resolve a href or resource URL against the current page location. */
 export function resolveResource(url: string, pageLocation: string): string | null {
+  return resolveAgainstBase(url, pageLocation, pageLocation);
+}
+
+/** Resolve a relative URL against an explicit document base. */
+export function resolveAgainstBase(
+  url: string,
+  documentBase: string,
+  pageLocation: string = documentBase,
+): string | null {
   const trimmed = url.trim();
   if (!trimmed || trimmed.startsWith("javascript:") || trimmed.startsWith("#")) return null;
 
@@ -14,15 +23,19 @@ export function resolveResource(url: string, pageLocation: string): string | nul
     return trimmed;
   }
 
-  if (isRemoteUrl(pageLocation)) {
-    return new URL(trimmed, pageLocation).href;
+  if (isRemoteUrl(documentBase)) {
+    return new URL(trimmed, documentBase).href;
   }
 
-  const baseDir = dirname(resolve(pageLocation));
+  const basePath = resolve(documentBase);
+  const pagePath = resolve(pageLocation.split("#")[0] ?? pageLocation);
+  const usesDirectoryBase = basePath !== pagePath;
+
   if (trimmed.startsWith("/")) {
     return resolve(trimmed);
   }
 
+  const baseDir = usesDirectoryBase ? basePath : dirname(basePath);
   return resolve(baseDir, trimmed);
 }
 

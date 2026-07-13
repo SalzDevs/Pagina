@@ -1,5 +1,7 @@
 const DEFAULT_HOME = "examples/page.html";
 
+export const ERROR_PAGE_TITLE = "Could not load page";
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -27,7 +29,7 @@ export function buildErrorPageHtml(failedLocation: string, error: unknown): stri
   return `<!DOCTYPE html>
 <html>
   <head>
-    <title>Could not load page</title>
+    <title>${ERROR_PAGE_TITLE}</title>
     <style>
       body { color: #cccccc; background: #111111; }
       h1 { color: #f48771; }

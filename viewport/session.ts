@@ -23,6 +23,7 @@ import {
 
 export interface BrowserSessionOptions {
   pageLocation: string;
+  documentBase: string;
   layout: MountLayout;
   fragmentPositions: ReadonlyMap<string, number>;
   onNavigate: (location: string, fragment?: string | null) => void | Promise<void>;
@@ -83,7 +84,7 @@ export function createBrowserSession(
     const link = links[index];
     if (!link) return;
 
-    const target = parseLinkTarget(link.href, options.pageLocation);
+    const target = parseLinkTarget(link.href, options.documentBase, options.pageLocation);
     if (!target) return;
 
     if (target.location === null) {
@@ -205,6 +206,7 @@ export function createScrollSession(
 ): ScrollSession {
   const session = createBrowserSession(renderer, displayList, contentHeight, [], {
     pageLocation: "",
+    documentBase: "",
     layout: {
       top: 0,
       height: renderer.height,

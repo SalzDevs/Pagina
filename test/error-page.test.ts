@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 
 import {
   buildErrorPageHtml,
+  ERROR_PAGE_TITLE,
   formatLoadError,
 } from "../navigation/error-page";
 import { convert } from "../parser/convert";
@@ -30,7 +31,7 @@ describe("buildErrorPageHtml", () => {
       new Error("Failed to fetch https://example.com/missing: 404 Not Found"),
     );
 
-    expect(html).toContain("<title>Could not load page</title>");
+    expect(html).toContain(`<title>${ERROR_PAGE_TITLE}</title>`);
     expect(html).toContain("https://example.com/missing");
     expect(html).toContain("404 Not Found");
     expect(html).toContain("Try again");
@@ -58,7 +59,7 @@ describe("buildErrorPageHtml", () => {
     layout(styled, { viewport: { width: 80, height: 24 } });
     const links = collectLinks(styled);
 
-    expect(extractPageTitle(dom)).toBe("Could not load page");
+    expect(extractPageTitle(dom)).toBe(ERROR_PAGE_TITLE);
     expect(links.some((link) => link.href === "examples/missing.html")).toBe(true);
     expect(links.some((link) => link.href === "examples/page.html")).toBe(true);
   });
