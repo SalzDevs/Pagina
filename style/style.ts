@@ -99,6 +99,9 @@ const HIDDEN_TAGS = new Set([
   "title",
 ]);
 
+/** Default left inset for blockquote elements (terminal columns). */
+export const BLOCKQUOTE_INDENT = 4;
+
 function uaDisplay(tag: string): Display {
   if (HIDDEN_TAGS.has(tag)) return "none";
   if (BLOCK_TAGS.has(tag)) return "block";
@@ -113,14 +116,6 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
     underline: inherited.underline,
     fg: inherited.fg,
     bg: inherited.bg,
-    marginTop: inherited.marginTop,
-    marginBottom: inherited.marginBottom,
-    marginLeft: inherited.marginLeft,
-    marginRight: inherited.marginRight,
-    paddingTop: inherited.paddingTop,
-    paddingBottom: inherited.paddingBottom,
-    paddingLeft: inherited.paddingLeft,
-    paddingRight: inherited.paddingRight,
     fontSize: inherited.fontSize,
   };
 
@@ -149,6 +144,11 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
       };
     case "code":
       return { ...style, fg: "#ce9178" };
+    case "blockquote":
+      return {
+        ...style,
+        marginLeft: BLOCKQUOTE_INDENT,
+      };
     default:
       return style;
   }
