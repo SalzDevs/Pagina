@@ -15,8 +15,10 @@ import { isSamePage, parseLinkTarget } from "../navigation/fragment";
 import { scrollToFragment } from "../navigation/anchors";
 import type { DisplayList } from "../paint/display-list";
 import { mountDisplayList, type MountLayout, type MountedDisplayList } from "../render/render";
+import type { PageView } from "./page-view";
 import {
   createScrollViewport,
+  clampScrollY,
   handleScrollKey,
   scrollBy,
   scrollTo,
@@ -42,6 +44,7 @@ export interface BrowserSession {
   focusedLinkIndex: number | null;
   attach: () => void;
   destroy: () => void;
+  relayout: (view: PageView, layout: MountLayout) => void;
   setFocusedLink: (focusedIndex: number | null) => void;
   scrollToFragment: (fragment: string | null) => void;
 }
@@ -61,20 +64,26 @@ export function createBrowserSession(
     options.initialFocusedLinkIndex !== undefined
       ? { focusedIndex: options.initialFocusedLinkIndex }
       : createLinkFocusState();
+  let pageLinks = links;
+  let fragmentPositions = options.fragmentPositions;
+  let pageContentHeight = contentHeight;
+  let pageLayout = options.layout;
+  let pageDisplayList = displayList;
+
   const mounted: MountedDisplayList = mountDisplayList(
     renderer,
-    displayList,
-    contentHeight,
+    pageDisplayList,
+    pageContentHeight,
     linkFocus.focusedIndex,
-    options.layout,
+    pageLayout,
   );
 
   const syncViewport = (next: ScrollViewport) => {
     viewport = scrollTo(
       {
         ...next,
-        viewportHeight: options.layout.height,
-        contentHeight,
+        viewportHeight: pageLayout.height,
+        contentHeight: pageContentHeight,
       },
       next.scrollY,
     );
@@ -87,26 +96,26 @@ export function createBrowserSession(
 
     if (!scroll || linkFocus.focusedIndex === null) return;
 
-    const link = links[linkFocus.focusedIndex];
+    const link = pageLinks[linkFocus.focusedIndex];
     if (link) {
       syncViewport(scrollToFocusedLink(viewport, link));
     }
   };
 
   const activateLink = async (index: number) => {
-    const link = links[index];
+    const link = pageLinks[index];
     if (!link) return;
 
     const target = parseLinkTarget(link.href, options.documentBase, options.pageLocation);
     if (!target) return;
 
     if (target.location === null) {
-      syncViewport(scrollToFragment(viewport, options.fragmentPositions, target.fragment));
+      syncViewport(scrollToFragment(viewport, fragmentPositions, target.fragment));
       return;
     }
 
     if (target.fragment !== null && isSamePage(target.location, options.pageLocation)) {
-      syncViewport(scrollToFragment(viewport, options.fragmentPositions, target.fragment));
+      syncViewport(scrollToFragment(viewport, fragmentPositions, target.fragment));
       return;
     }
 
@@ -114,7 +123,33 @@ export function createBrowserSession(
   };
 
   const scrollToFragmentId = (fragment: string | null) => {
-    syncViewport(scrollToFragment(viewport, options.fragmentPositions, fragment));
+    syncViewport(scrollToFragment(viewport, fragmentPositions, fragment));
+  };
+
+  const relayout = (view: PageView, layout: MountLayout) => {
+    pageDisplayList = view.displayList;
+    pageLinks = view.links;
+    fragmentPositions = view.fragmentPositions;
+    pageContentHeight = view.contentHeight;
+    pageLayout = layout;
+
+    mounted.relayout(
+      pageDisplayList,
+      pageContentHeight,
+      pageLayout,
+      linkFocus.focusedIndex,
+    );
+
+    syncViewport(
+      scrollTo(viewport, clampScrollY(
+        {
+          scrollY: viewport.scrollY,
+          viewportHeight: pageLayout.height,
+          contentHeight: pageContentHeight,
+        },
+        viewport.scrollY,
+      )),
+    );
   };
 
   syncViewport(viewport);
@@ -135,6 +170,7 @@ export function createBrowserSession(
       syncLinkFocus({ focusedIndex }, false);
     },
     scrollToFragment: scrollToFragmentId,
+    relayout,
     destroy() {
       if (keyHandler) {
         renderer._internalKeyInput.offInternal("keypress", keyHandler);
@@ -169,7 +205,7 @@ export function createBrowserSession(
           return;
         }
 
-        const linkResult = handleLinkKey(linkFocus, links.length, key);
+        const linkResult = handleLinkKey(linkFocus, pageLinks.length, key);
         if (linkResult) {
           if (linkResult.kind === "focus") {
             syncLinkFocus(linkResult.state, true);
@@ -198,8 +234,8 @@ export function createBrowserSession(
       mouseMoveHandler = (event) => {
         if (options.isHelpVisible?.()) return;
 
-        const point = mouseToDocumentPoint(event, options.layout, viewport.scrollY);
-        const index = linkIndexAtPoint(links, point.x, point.y);
+        const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY);
+        const index = linkIndexAtPoint(pageLinks, point.x, point.y);
         if (index === linkFocus.focusedIndex) return;
         syncLinkFocus({ focusedIndex: index }, false);
       };
@@ -208,8 +244,8 @@ export function createBrowserSession(
         if (options.isHelpVisible?.()) return;
         if (event.button !== 0 || event.type !== "up") return;
 
-        const point = mouseToDocumentPoint(event, options.layout, viewport.scrollY);
-        const index = linkIndexAtPoint(links, point.x, point.y);
+        const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY);
+        const index = linkIndexAtPoint(pageLinks, point.x, point.y);
         if (index === null) return;
 
         void activateLink(index);

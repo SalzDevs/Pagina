@@ -2,7 +2,7 @@ import type { CliRenderer } from "@opentui/core";
 import { BoxRenderable, TextRenderable, createTextAttributes } from "@opentui/core";
 
 import { applyLinkFocus } from "../links/focus";
-import type { DisplayList } from "../paint/display-list";
+import type { DisplayCommand, DisplayList, FillCommand, TextCommand } from "../paint/display-list";
 import { commandBottom, isFillCommand, isTextCommand } from "../paint/display-list";
 
 export interface RenderOptions {
@@ -19,13 +19,143 @@ export interface MountLayout {
 export interface MountedDisplayList {
   setScrollY: (scrollY: number) => void;
   setFocusedLink: (focusedIndex: number | null) => void;
+  relayout: (
+    displayList: DisplayList,
+    contentHeight: number,
+    layout: MountLayout,
+    focusedLinkIndex?: number | null,
+  ) => void;
   destroy: () => void;
   viewport: BoxRenderable;
 }
 
-interface CommandRenderable {
-  commandIndex: number;
-  renderable: TextRenderable;
+type MountedCommand =
+  | { kind: "fill"; commandIndex: number; renderable: BoxRenderable }
+  | { kind: "text"; commandIndex: number; renderable: TextRenderable };
+
+function applyTextCommand(renderable: TextRenderable, command: TextCommand): void {
+  renderable.content = command.text;
+  renderable.left = command.x;
+  renderable.top = command.y;
+  renderable.fg = command.fg;
+  renderable.bg = command.bg;
+  renderable.attributes = createTextAttributes({
+    bold: command.bold,
+    italic: command.italic,
+    underline: command.underline,
+  });
+}
+
+function createTextRenderable(
+  renderer: CliRenderer,
+  index: number,
+  command: TextCommand,
+): TextRenderable {
+  const renderable = new TextRenderable(renderer, {
+    id: `display-cmd-${index}`,
+    content: command.text,
+    position: "absolute",
+    left: command.x,
+    top: command.y,
+    fg: command.fg,
+    bg: command.bg,
+    attributes: createTextAttributes({
+      bold: command.bold,
+      italic: command.italic,
+      underline: command.underline,
+    }),
+    selectable: false,
+    focusable: false,
+  });
+
+  return renderable;
+}
+
+function applyFillCommand(renderable: BoxRenderable, command: FillCommand): void {
+  renderable.left = command.x;
+  renderable.top = command.y;
+  renderable.width = command.width;
+  renderable.height = command.height;
+  renderable.backgroundColor = command.bg;
+}
+
+function createFillRenderable(
+  renderer: CliRenderer,
+  index: number,
+  command: FillCommand,
+): BoxRenderable {
+  return new BoxRenderable(renderer, {
+    id: `display-fill-${index}`,
+    position: "absolute",
+    left: command.x,
+    top: command.y,
+    width: command.width,
+    height: command.height,
+    backgroundColor: command.bg,
+    shouldFill: true,
+  });
+}
+
+function removeMountedCommand(content: BoxRenderable, mounted: MountedCommand): void {
+  content.remove(mounted.renderable);
+  mounted.renderable.destroy();
+}
+
+function syncMountedCommands(
+  renderer: CliRenderer,
+  content: BoxRenderable,
+  styledList: DisplayCommand[],
+  mountedCommands: MountedCommand[],
+): void {
+  let mountIndex = 0;
+
+  for (const [commandIndex, command] of styledList.entries()) {
+    if (isFillCommand(command)) {
+      const existing = mountedCommands[mountIndex];
+
+      if (existing?.kind === "fill") {
+        applyFillCommand(existing.renderable, command);
+        existing.commandIndex = commandIndex;
+      } else {
+        if (existing) {
+          removeMountedCommand(content, existing);
+        }
+
+        const renderable = createFillRenderable(renderer, commandIndex, command);
+        content.add(renderable);
+        mountedCommands[mountIndex] = { kind: "fill", commandIndex, renderable };
+      }
+
+      mountIndex++;
+      continue;
+    }
+
+    if (!isTextCommand(command) || command.text.length === 0) continue;
+
+    const existing = mountedCommands[mountIndex];
+
+    if (existing?.kind === "text") {
+      applyTextCommand(existing.renderable, command);
+      existing.commandIndex = commandIndex;
+    } else {
+      if (existing) {
+        removeMountedCommand(content, existing);
+      }
+
+      const renderable = createTextRenderable(renderer, commandIndex, command);
+      content.add(renderable);
+      mountedCommands[mountIndex] = { kind: "text", commandIndex, renderable };
+    }
+
+    mountIndex++;
+  }
+
+  while (mountedCommands.length > mountIndex) {
+    const removed = mountedCommands.pop();
+    if (removed) {
+      removeMountedCommand(content, removed);
+    }
+  }
 }
 
 /** Mount the full display list once and scroll by moving the content layer. */
@@ -59,68 +189,50 @@ export function mountDisplayList(
     height: Math.max(contentHeight, layout.height),
   });
 
-  const styledList = applyLinkFocus(displayList, focusedLinkIndex);
-  const commandRenderables: CommandRenderable[] = [];
+  let currentDisplayList = displayList;
+  let currentFocusedLinkIndex = focusedLinkIndex;
+  const mountedCommands: MountedCommand[] = [];
 
-  for (const [index, command] of styledList.entries()) {
-    if (isFillCommand(command)) {
-      content.add(
-        new BoxRenderable(renderer, {
-          id: `display-fill-${index}`,
-          position: "absolute",
-          left: command.x,
-          top: command.y,
-          width: command.width,
-          height: command.height,
-          backgroundColor: command.bg,
-          shouldFill: true,
-        }),
-      );
-      continue;
-    }
+  const applyLayout = (nextLayout: MountLayout, nextContentHeight: number) => {
+    viewport.width = nextLayout.width;
+    viewport.height = nextLayout.height;
+    viewport.top = nextLayout.top;
+    content.width = nextLayout.width;
+    content.height = Math.max(nextContentHeight, nextLayout.height);
+  };
 
-    if (!isTextCommand(command) || command.text.length === 0) continue;
+  const syncDisplayList = (nextFocusedLinkIndex: number | null = currentFocusedLinkIndex) => {
+    currentFocusedLinkIndex = nextFocusedLinkIndex;
+    const styledList = applyLinkFocus(currentDisplayList, currentFocusedLinkIndex);
+    syncMountedCommands(renderer, content, styledList, mountedCommands);
+    renderer.requestRender();
+  };
 
-    const renderable = new TextRenderable(renderer, {
-      id: `display-cmd-${index}`,
-      content: command.text,
-      position: "absolute",
-      left: command.x,
-      top: command.y,
-      fg: command.fg,
-      bg: command.bg,
-      attributes: createTextAttributes({
-        bold: command.bold,
-        italic: command.italic,
-        underline: command.underline,
-      }),
-      selectable: false,
-      focusable: false,
-    });
-
-    commandRenderables.push({ commandIndex: index, renderable });
-    content.add(renderable);
-  }
+  applyLayout(layout, contentHeight);
+  syncDisplayList(focusedLinkIndex);
 
   viewport.add(content);
   renderer.root.add(viewport);
 
   const applyFocus = (focusedIndex: number | null) => {
-    const nextList = applyLinkFocus(displayList, focusedIndex);
+    const nextList = applyLinkFocus(currentDisplayList, focusedIndex);
 
-    for (const { commandIndex, renderable } of commandRenderables) {
-      const command = nextList[commandIndex];
+    for (const mounted of mountedCommands) {
+      if (mounted.kind !== "text") continue;
+
+      const command = nextList[mounted.commandIndex];
       if (!command || !isTextCommand(command)) continue;
 
-      renderable.fg = command.fg;
-      renderable.bg = command.bg;
-      renderable.attributes = createTextAttributes({
+      mounted.renderable.fg = command.fg;
+      mounted.renderable.bg = command.bg;
+      mounted.renderable.attributes = createTextAttributes({
         bold: command.bold,
         italic: command.italic,
         underline: command.underline,
       });
     }
 
+    currentFocusedLinkIndex = focusedIndex;
     renderer.requestRender();
   };
 
@@ -130,6 +242,11 @@ export function mountDisplayList(
       renderer.requestRender();
     },
     setFocusedLink: applyFocus,
+    relayout(nextDisplayList, nextContentHeight, nextLayout, nextFocusedLinkIndex) {
+      currentDisplayList = nextDisplayList;
+      applyLayout(nextLayout, nextContentHeight);
+      syncDisplayList(nextFocusedLinkIndex ?? currentFocusedLinkIndex);
+    },
     destroy() {
       viewport.destroyRecursively();
     },

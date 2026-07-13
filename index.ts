@@ -159,8 +159,17 @@ async function main() {
 
   const relayoutCurrentPage = () => {
     if (!loadedPage || !session) return;
+
     help.resize(renderer.width, renderer.height);
-    mountCurrentPage(null, "none", undefined, { preserveViewState: true });
+    breadcrumb.resize(renderer.width);
+
+    const chrome = contentLayout();
+    const view = buildPageView(loadedPage.styled, {
+      width: chrome.width,
+      height: chrome.height,
+    });
+
+    session.relayout(view, chrome);
   };
 
   const loadPage = async (

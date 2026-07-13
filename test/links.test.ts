@@ -52,7 +52,7 @@ async function pipelineFromFile(path: string) {
   layout(styled, { viewport });
   return {
     styled,
-    displayList: paint(styled),
+    displayList: paint(styled).displayList,
     links: collectLinks(styled),
   };
 }
@@ -62,7 +62,7 @@ async function pipeline(html: string) {
   layout(styled, { viewport });
   return {
     styled,
-    displayList: paint(styled),
+    displayList: paint(styled).displayList,
     links: collectLinks(styled),
   };
 }

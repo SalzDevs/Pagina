@@ -114,7 +114,7 @@ describe("visible commands", () => {
     const html = await Bun.file("examples/long-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)));
     layout(styled, { viewport: { width: 80, height: 24 } });
-    const displayList = paint(styled);
+    const displayList = paint(styled).displayList;
     const contentHeight = measureContentHeight(styled);
 
     expect(

@@ -47,6 +47,7 @@ export interface ListItemLayoutOptions {
     contentWidth: number,
   ) => void;
   blockGap: number;
+  recordFragmentPosition?: (node: StyledNode) => void;
 }
 
 /** Lay out a single list item with a bullet or number marker. */
@@ -89,12 +90,15 @@ export function layoutListItem(
     width: box.layoutWidth,
     height: Math.max(1, ctx.y - itemStartY),
   };
+
+  options.recordFragmentPosition?.(node);
 }
 
 export interface ListContainerLayoutOptions {
   addFragment: ListItemLayoutOptions["addFragment"];
   layoutListItemContent: ListItemLayoutOptions["layoutListItemContent"];
   blockGap: number;
+  recordFragmentPosition?: ListItemLayoutOptions["recordFragmentPosition"];
 }
 
 /** Lay out the direct list items of a ul or ol element. */
@@ -127,6 +131,7 @@ export function layoutListContainer(
       addFragment: options.addFragment,
       layoutListItemContent: options.layoutListItemContent,
       blockGap: options.blockGap,
+      recordFragmentPosition: options.recordFragmentPosition,
     });
 
     if (ordered) counter += 1;
@@ -146,4 +151,6 @@ export function layoutListContainer(
 
   ctx.x = savedX;
   ctx.availableWidth = savedAvailableWidth;
+
+  options.recordFragmentPosition?.(node);
 }

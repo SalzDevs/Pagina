@@ -1,0 +1,35 @@
+import { describe, expect, test } from "bun:test";
+
+import { layout } from "../layout/layout";
+import { collectLinks } from "../links/collect";
+import { collectFragmentPositions } from "../navigation/anchors";
+import { convert } from "../parser/convert";
+import { parseHTML } from "../parser/html";
+import { paint } from "../paint/paint";
+import { computeStyles } from "../style/style";
+import { buildPageView } from "../viewport/page-view";
+import { measureContentHeight } from "../viewport/visible";
+
+describe("buildPageView merged passes", () => {
+  test("collects links and fragment positions without extra tree walks", async () => {
+    const html = await Bun.file("examples/fragments-page.html").text();
+    const styled = await computeStyles(convert(parseHTML(html)));
+
+    const view = buildPageView(styled, { width: 80, height: 24 });
+
+    expect(view.links).toEqual(collectLinks(styled));
+    expect(view.fragmentPositions).toEqual(collectFragmentPositions(styled));
+    expect(view.contentHeight).toBeGreaterThanOrEqual(measureContentHeight(styled));
+  });
+
+  test("paint returns links in document order", async () => {
+    const html = await Bun.file("examples/links-page.html").text();
+    const styled = await computeStyles(convert(parseHTML(html)));
+    layout(styled, { viewport: { width: 80, height: 24 } });
+
+    const painted = paint(styled, { viewportHeight: 24 });
+
+    expect(painted.links).toEqual(collectLinks(styled));
+    expect(painted.contentHeight).toBeGreaterThan(0);
+  });
+});

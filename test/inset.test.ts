@@ -151,7 +151,7 @@ describe("horizontal inset layout", () => {
     const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport: { width: 30, height: 10 } });
-    const displayList = paint(styled);
+    const displayList = paint(styled).displayList;
     const quote = findByTag(styled, "blockquote");
     const fill = displayList.find(isFillCommand);
 

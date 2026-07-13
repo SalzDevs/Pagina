@@ -95,7 +95,7 @@ describe("horizontal rules", () => {
     const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport: { width: 12, height: 5 } });
-    const displayList = paint(styled);
+    const displayList = paint(styled).displayList;
     const hrText = displayList.find(
       (command) => command.kind === "text" && command.text.includes(HR_CHARACTER),
     );

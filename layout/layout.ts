@@ -1,4 +1,5 @@
 import { NodeType } from "../dom/node";
+import { elementDocumentTop } from "../navigation/anchors";
 import { blockBox } from "./box";
 import { lineHeightForFontSize } from "./line-height";
 import { isHrElement, layoutHr } from "./hr";
@@ -27,6 +28,19 @@ export interface LayoutContext {
   y: number;
   listDepth: number;
   availableWidth: number;
+  fragmentPositions: Map<string, number>;
+}
+
+function recordFragmentPosition(node: StyledNode, positions: Map<string, number>): void {
+  if (node.dom.type !== NodeType.Element) return;
+
+  const id = node.dom.attributes?.id;
+  if (!id) return;
+
+  const top = elementDocumentTop(node);
+  if (top !== null) {
+    positions.set(id, top);
+  }
 }
 
 interface InlineSegment {
@@ -183,6 +197,7 @@ function layoutNestedList(node: StyledNode, ctx: LayoutContext, viewport: Viewpo
     addFragment,
     layoutListItemContent,
     blockGap: BLOCK_GAP,
+    recordFragmentPosition: (layoutNode) => recordFragmentPosition(layoutNode, ctx.fragmentPositions),
   });
   ctx.listDepth -= 1;
 }
@@ -234,7 +249,9 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
       addFragment,
       layoutListItemContent,
       blockGap: BLOCK_GAP,
+      recordFragmentPosition: (layoutNode) => recordFragmentPosition(layoutNode, ctx.fragmentPositions),
     });
+    recordFragmentPosition(node, ctx.fragmentPositions);
     return;
   }
 
@@ -244,6 +261,7 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
       nodeLineHeight,
       blockGap: BLOCK_GAP,
     });
+    recordFragmentPosition(node, ctx.fragmentPositions);
     return;
   }
 
@@ -252,6 +270,7 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
       addFragment,
       blockGap: BLOCK_GAP,
     });
+    recordFragmentPosition(node, ctx.fragmentPositions);
     return;
   }
 
@@ -286,6 +305,7 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
         addFragment,
         layoutListItemContent,
         blockGap: BLOCK_GAP,
+        recordFragmentPosition: (layoutNode) => recordFragmentPosition(layoutNode, ctx.fragmentPositions),
       });
       continue;
     }
@@ -316,6 +336,8 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
 
   ctx.x = savedX;
   ctx.availableWidth = savedAvailableWidth;
+
+  recordFragmentPosition(node, ctx.fragmentPositions);
 }
 
 function layoutNode(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
@@ -335,6 +357,8 @@ function layoutNode(node: StyledNode, ctx: LayoutContext, viewport: Viewport): v
       for (const child of node.children) {
         layoutNode(child, ctx, viewport);
       }
+
+      recordFragmentPosition(node, ctx.fragmentPositions);
       break;
 
     case NodeType.Text:
@@ -354,17 +378,23 @@ function clearLayout(node: StyledNode): void {
 }
 
 /** Compute geometry for a styled tree. */
-export function layout(node: StyledNode, options: LayoutOptions = { viewport: DEFAULT_VIEWPORT }): void {
+export function layout(
+  node: StyledNode,
+  options: LayoutOptions = { viewport: DEFAULT_VIEWPORT },
+): ReadonlyMap<string, number> {
   clearLayout(node);
 
+  const fragmentPositions = new Map<string, number>();
   const ctx: LayoutContext = {
     x: 0,
     y: 0,
     listDepth: 0,
     availableWidth: options.viewport.width,
+    fragmentPositions,
   };
 
   layoutNode(node, ctx, options.viewport);
+  return fragmentPositions;
 }
 
 export { DEFAULT_VIEWPORT };

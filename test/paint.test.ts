@@ -15,7 +15,7 @@ describe("paint", () => {
     const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport });
-    const displayList = paint(styled);
+    const displayList = paint(styled).displayList;
 
     expect(displayList.length).toBeGreaterThan(0);
     expect(displayList.some((cmd) => isTextCommand(cmd) && cmd.text.includes("Hello"))).toBe(true);
@@ -29,7 +29,7 @@ describe("paint", () => {
     const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport });
-    const displayList = paint(styled);
+    const displayList = paint(styled).displayList;
     const firstText = displayList.find(isTextCommand);
 
     expect(firstText).toEqual({
@@ -48,7 +48,7 @@ describe("paint", () => {
     const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport });
-    const displayList = paint(styled);
+    const displayList = paint(styled).displayList;
 
     expect(
       displayList.some((cmd) => isTextCommand(cmd) && cmd.text.includes("bold") && cmd.bold),
@@ -62,7 +62,7 @@ describe("paint", () => {
     });
 
     layout(styled, { viewport });
-    const displayList = paint(styled, { viewportHeight: viewport.height });
+    const displayList = paint(styled, { viewportHeight: viewport.height }).displayList;
     const bodyFill = displayList.find(
       (command) => isFillCommand(command) && command.bg === "#111111",
     );
@@ -83,7 +83,7 @@ describe("paint", () => {
     const styled = await computeStyles(convert(parseHTML(html)));
 
     layout(styled, { viewport });
-    const displayList = paint(styled, { viewportHeight: viewport.height });
+    const displayList = paint(styled, { viewportHeight: viewport.height }).displayList;
 
     expect(isFillCommand(displayList[0]!)).toBe(true);
     expect(displayList.some((command) => isTextCommand(command) && command.text.includes("hello"))).toBe(
