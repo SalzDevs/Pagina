@@ -1,0 +1,40 @@
+import { convert } from "../parser/convert";
+import { parseHTML } from "../parser/html";
+import { computeStyles } from "../style/style";
+import { resolveDocumentBase } from "./base-url";
+import { buildErrorPageHtml } from "./error-page";
+import { extractPageTitle, isErrorPageTitle } from "./history";
+import { loadHtml } from "./load";
+import type { LoadedPageContent } from "./page-cache";
+
+/** Fetch, parse, and style a page from disk or the network. */
+export async function loadPageContent(pageLocation: string): Promise<LoadedPageContent> {
+  let html: string;
+  let isErrorPage = false;
+
+  try {
+    html = await loadHtml(pageLocation);
+  } catch (error) {
+    html = buildErrorPageHtml(pageLocation, error);
+    isErrorPage = true;
+  }
+
+  const document = parseHTML(html);
+  const dom = convert(document);
+  const documentBase = resolveDocumentBase(dom, pageLocation);
+  const pageTitle = extractPageTitle(dom);
+
+  if (!isErrorPage && isErrorPageTitle(pageTitle)) {
+    isErrorPage = true;
+  }
+
+  const styled = await computeStyles(dom, { pageLocation, documentBase });
+
+  return {
+    pageLocation,
+    documentBase,
+    styled,
+    pageTitle,
+    isErrorPage,
+  };
+}

@@ -1,10 +1,8 @@
 import { CliRenderEvents, createCliRenderer } from "@opentui/core";
 
-import { loadHtml } from "./navigation/load";
-import { buildErrorPageHtml } from "./navigation/error-page";
+import { loadPageContent } from "./navigation/load-page";
 import {
   createBrowserHistory,
-  extractPageTitle,
   formatBreadcrumb,
   formatLoadingBreadcrumb,
   goBack,
@@ -15,14 +13,11 @@ import {
   type BrowserHistory,
 } from "./navigation/history";
 import { normalizePageLocation } from "./navigation/location";
-import { resolveDocumentBase } from "./navigation/base-url";
+import { PageCache, resolveLoadedPage } from "./navigation/page-cache";
 import { splitPageLocation } from "./navigation/fragment";
-import { convert } from "./parser/convert";
-import { parseHTML } from "./parser/html";
 import { BREADCRUMB_HEIGHT, mountBreadcrumb } from "./render/breadcrumb";
 import { mountHelpOverlay } from "./render/help-overlay";
 import type { MountLayout } from "./render/render";
-import { computeStyles, type StyledNode } from "./style/style";
 import { buildPageView } from "./viewport/page-view";
 import { createBrowserSession, type BrowserSession } from "./viewport/session";
 import { clampScrollY } from "./viewport/scroll";
@@ -31,11 +26,7 @@ const DEFAULT_PAGE = "examples/page.html";
 
 type HistoryMode = "push" | "none";
 
-interface LoadedPage {
-  pageLocation: string;
-  documentBase: string;
-  styled: StyledNode;
-}
+type LoadedPage = import("./navigation/page-cache").LoadedPageContent;
 
 async function main() {
   const renderer = await createCliRenderer({
@@ -47,6 +38,7 @@ async function main() {
   const help = mountHelpOverlay(renderer);
   let helpVisible = false;
   let history: BrowserHistory = createBrowserHistory();
+  const pageCache = new PageCache();
   let session: BrowserSession | null = null;
   let loadedPage: LoadedPage | null = null;
   let rendererStarted = false;
@@ -82,7 +74,6 @@ async function main() {
   const mountCurrentPage = (
     fragment: string | null = null,
     historyMode: HistoryMode = "none",
-    pageTitle?: string,
     viewState: { preserveViewState?: boolean; restoreScrollY?: number } = {},
   ) => {
     if (!loadedPage) return;
@@ -104,10 +95,12 @@ async function main() {
       height: chrome.height,
     });
 
-    if (historyMode === "push" && pageTitle !== undefined) {
+    if (historyMode === "push") {
       history = pushHistory(history, {
         location: loadedPage.pageLocation,
-        label: historyEntryLabel(loadedPage.pageLocation, pageTitle),
+        label: historyEntryLabel(loadedPage.pageLocation, loadedPage.pageTitle, {
+          isErrorPage: loadedPage.isErrorPage,
+        }),
       });
     }
 
@@ -194,26 +187,11 @@ async function main() {
     session?.destroy();
     session = null;
 
-    let html: string;
-    try {
-      html = await loadHtml(pageLocation);
-    } catch (error) {
-      html = buildErrorPageHtml(pageLocation, error);
-    }
+    loadedPage = await resolveLoadedPage(pageLocation, pageCache, loadPageContent, {
+      forceReload: historyMode === "push",
+    });
 
-    const document = parseHTML(html);
-    const dom = convert(document);
-    const documentBase = resolveDocumentBase(dom, pageLocation);
-    const pageTitle = extractPageTitle(dom);
-    const styled = await computeStyles(dom, { pageLocation, documentBase });
-
-    loadedPage = {
-      pageLocation,
-      documentBase,
-      styled,
-    };
-
-    mountCurrentPage(fragment, historyMode, pageTitle, { restoreScrollY });
+    mountCurrentPage(fragment, historyMode, { restoreScrollY });
   };
 
   renderer.on(CliRenderEvents.RESIZE, relayoutCurrentPage);
