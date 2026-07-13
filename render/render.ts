@@ -4,6 +4,11 @@ import { BoxRenderable, TextRenderable, createTextAttributes } from "@opentui/co
 import type { DisplayCommand, DisplayList, FillCommand, TextCommand } from "../paint/display-list";
 import { textLinkFocusStyle } from "../links/focus";
 import { commandBottom, isFillCommand, isTextCommand } from "../paint/display-list";
+import {
+  displayListMountEntries,
+  shouldCullDisplayList,
+  type VisibleCommandEntry,
+} from "../viewport/visible";
 
 export interface RenderOptions {
   scrollY?: number;
@@ -160,12 +165,12 @@ function removeMountedCommand(content: BoxRenderable, mounted: MountedCommand): 
 function syncMountedCommands(
   renderer: CliRenderer,
   content: BoxRenderable,
-  styledList: DisplayCommand[],
+  entries: VisibleCommandEntry[],
   mountedCommands: MountedCommand[],
 ): void {
   let mountIndex = 0;
 
-  for (const [commandIndex, command] of styledList.entries()) {
+  for (const { commandIndex, command } of entries) {
     if (isFillCommand(command)) {
       const existing = mountedCommands[mountIndex];
 
@@ -214,7 +219,7 @@ function syncMountedCommands(
   }
 }
 
-/** Mount the full display list once and scroll by moving the content layer. */
+/** Mount the display list and scroll via translation or viewport culling. */
 export function mountDisplayList(
   renderer: CliRenderer,
   displayList: DisplayList,
@@ -226,6 +231,8 @@ export function mountDisplayList(
     width: renderer.width,
   },
 ): MountedDisplayList {
+  const useCulling = shouldCullDisplayList(displayList, contentHeight, layout.height);
+
   const viewport = new BoxRenderable(renderer, {
     id: "pagina-viewport",
     width: layout.width,
@@ -242,21 +249,35 @@ export function mountDisplayList(
     top: 0,
     left: 0,
     width: layout.width,
-    height: Math.max(contentHeight, layout.height),
+    height: useCulling ? layout.height : Math.max(contentHeight, layout.height),
   });
 
   let currentDisplayList = displayList;
   let currentFocusedLinkIndex = focusedLinkIndex;
+  let currentScrollY = 0;
+  let currentContentHeight = contentHeight;
+  let currentLayout = layout;
+  let cullingEnabled = useCulling;
   const mountedCommands: MountedCommand[] = [];
   const linkMounts = new Map<number, LinkMount[]>();
 
   const applyLayout = (nextLayout: MountLayout, nextContentHeight: number) => {
+    currentLayout = nextLayout;
     viewport.width = nextLayout.width;
     viewport.height = nextLayout.height;
     viewport.top = nextLayout.top;
     content.width = nextLayout.width;
-    content.height = Math.max(nextContentHeight, nextLayout.height);
+    content.height = cullingEnabled
+      ? nextLayout.height
+      : Math.max(nextContentHeight, nextLayout.height);
   };
+
+  const mountEntries = (): VisibleCommandEntry[] =>
+    displayListMountEntries(currentDisplayList, {
+      scrollY: currentScrollY,
+      viewportHeight: currentLayout.height,
+      contentHeight: currentContentHeight,
+    });
 
   const applyFocus = (focusedIndex: number | null) => {
     if (currentFocusedLinkIndex === focusedIndex) return;
@@ -274,10 +295,23 @@ export function mountDisplayList(
   };
 
   const syncDisplayList = (nextFocusedLinkIndex: number | null = currentFocusedLinkIndex) => {
-    syncMountedCommands(renderer, content, currentDisplayList, mountedCommands);
+    syncMountedCommands(renderer, content, mountEntries(), mountedCommands);
     rebuildLinkMounts(currentDisplayList, mountedCommands, linkMounts);
+    const previousFocused = currentFocusedLinkIndex;
     currentFocusedLinkIndex = null;
-    applyFocus(nextFocusedLinkIndex);
+    applyFocus(nextFocusedLinkIndex ?? previousFocused);
+    renderer.requestRender();
+  };
+
+  const applyScroll = () => {
+    if (cullingEnabled) {
+      content.top = 0;
+      syncDisplayList();
+      return;
+    }
+
+    content.top = -currentScrollY;
+    renderer.requestRender();
   };
 
   applyLayout(layout, contentHeight);
@@ -288,14 +322,24 @@ export function mountDisplayList(
 
   return {
     setScrollY(scrollY: number) {
-      content.top = -scrollY;
-      renderer.requestRender();
+      if (scrollY === currentScrollY) return;
+      currentScrollY = scrollY;
+      applyScroll();
     },
     setFocusedLink: applyFocus,
     relayout(nextDisplayList, nextContentHeight, nextLayout, nextFocusedLinkIndex) {
       currentDisplayList = nextDisplayList;
+      currentContentHeight = nextContentHeight;
+      cullingEnabled = shouldCullDisplayList(
+        nextDisplayList,
+        nextContentHeight,
+        nextLayout.height,
+      );
       applyLayout(nextLayout, nextContentHeight);
       syncDisplayList(nextFocusedLinkIndex ?? currentFocusedLinkIndex);
+      if (!cullingEnabled) {
+        content.top = -currentScrollY;
+      }
     },
     destroy() {
       viewport.destroyRecursively();

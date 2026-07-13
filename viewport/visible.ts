@@ -1,6 +1,81 @@
 import type { DisplayCommand, DisplayList } from "../paint/display-list";
-import { commandBottom, isTextCommand } from "../paint/display-list";
+import { commandBottom } from "../paint/display-list";
 import type { StyledNode } from "../style/style";
+
+/** Mount only visible commands once the page exceeds this command count. */
+export const CULL_COMMAND_THRESHOLD = 200;
+
+/** Mount only visible commands once content is taller than this many viewports. */
+export const CULL_HEIGHT_VIEWPORTS = 2;
+
+/** Extra rows mounted above and below the viewport to reduce pop-in while scrolling. */
+export const DEFAULT_VISIBLE_BUFFER_ROWS = 2;
+
+export interface VisibleCommandEntry {
+  commandIndex: number;
+  command: DisplayCommand;
+}
+
+/** True when mounting the full display list is likely wasteful. */
+export function shouldCullDisplayList(
+  displayList: DisplayList,
+  contentHeight: number,
+  viewportHeight: number,
+): boolean {
+  return (
+    displayList.length > CULL_COMMAND_THRESHOLD ||
+    contentHeight > viewportHeight * CULL_HEIGHT_VIEWPORTS
+  );
+}
+
+/** Choose the commands to mount for the current scroll position. */
+export function displayListMountEntries(
+  displayList: DisplayList,
+  options: {
+    scrollY: number;
+    viewportHeight: number;
+    contentHeight: number;
+  },
+): VisibleCommandEntry[] {
+  const { scrollY, viewportHeight, contentHeight } = options;
+
+  if (shouldCullDisplayList(displayList, contentHeight, viewportHeight)) {
+    return visibleCommandEntries(displayList, scrollY, viewportHeight);
+  }
+
+  return displayList.map((command, commandIndex) => ({ commandIndex, command }));
+}
+
+/** Keep only commands visible in the scrolled viewport. */
+export function visibleCommandEntries(
+  displayList: DisplayList,
+  scrollY: number,
+  viewportHeight: number,
+  bufferRows = DEFAULT_VISIBLE_BUFFER_ROWS,
+): VisibleCommandEntry[] {
+  const minY = Math.max(0, scrollY - bufferRows);
+  const maxY = scrollY + viewportHeight + bufferRows;
+  const entries: VisibleCommandEntry[] = [];
+
+  for (const [commandIndex, command] of displayList.entries()) {
+    const bottom = commandBottom(command);
+    if (bottom <= minY || command.y >= maxY) continue;
+
+    entries.push({
+      commandIndex,
+      command: offsetCommandY(command, scrollY),
+    });
+  }
+
+  return entries;
+}
+
+function offsetCommandY(command: DisplayCommand, scrollY: number): DisplayCommand {
+  return {
+    ...command,
+    y: command.y - scrollY,
+  };
+}
 
 /** Measure document height from laid-out text fragments only. */
 export function measureContentHeight(styled: StyledNode): number {
@@ -31,27 +106,11 @@ export function visibleCommands(
   displayList: DisplayList,
   scrollY: number,
   viewportHeight: number,
+  bufferRows = DEFAULT_VISIBLE_BUFFER_ROWS,
 ): DisplayCommand[] {
-  const maxY = scrollY + viewportHeight;
-
-  return displayList
-    .filter((command) => {
-      const bottom = commandBottom(command);
-      return bottom > scrollY && command.y < maxY;
-    })
-    .map((command) => {
-      if (isTextCommand(command)) {
-        return {
-          ...command,
-          y: command.y - scrollY,
-        };
-      }
-
-      return {
-        ...command,
-        y: command.y - scrollY,
-      };
-    });
+  return visibleCommandEntries(displayList, scrollY, viewportHeight, bufferRows).map(
+    (entry) => entry.command,
+  );
 }
 
 /** True when the viewport shows at least one command at max scroll. */
