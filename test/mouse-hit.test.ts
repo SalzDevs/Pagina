@@ -18,8 +18,8 @@ const linksPagePath = resolve("examples/links-page.html");
 async function linksFromFile(path: string) {
   const html = await loadHtmlFromFile(path);
   const styled = await computeStyles(convert(parseHTML(html)), { pageLocation: resolve(path) });
-  layout(styled, { viewport });
-  return collectLinks(styled);
+  const laidOut = layout(styled, { viewport });
+  return collectLinks(styled, laidOut.output);
 }
 
 describe("mouseToDocumentPoint", () => {

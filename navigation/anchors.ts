@@ -1,4 +1,5 @@
 import { NodeType } from "../dom/node";
+import type { LayoutOutput } from "../layout/output";
 import type { StyledNode } from "../style/style";
 import type { ScrollViewport } from "../viewport/scroll";
 import { scrollTo, scrollToAlignTop } from "../viewport/scroll";
@@ -18,15 +19,16 @@ export function findElementById(root: StyledNode, id: string): StyledNode | null
 }
 
 /** Top document row for an element, using layout boxes and text fragments. */
-export function elementDocumentTop(node: StyledNode): number | null {
+export function elementDocumentTop(node: StyledNode, layout: LayoutOutput): number | null {
   let minY = Infinity;
 
   const walk = (current: StyledNode): void => {
-    if (current.layout) {
-      minY = Math.min(minY, current.layout.y);
+    const box = layout.getLayout(current);
+    if (box) {
+      minY = Math.min(minY, box.y);
     }
 
-    for (const fragment of current.fragments ?? []) {
+    for (const fragment of layout.getFragments(current)) {
       minY = Math.min(minY, fragment.y);
     }
 
@@ -40,14 +42,17 @@ export function elementDocumentTop(node: StyledNode): number | null {
 }
 
 /** Map element ids to their document-space scroll targets. */
-export function collectFragmentPositions(root: StyledNode): ReadonlyMap<string, number> {
+export function collectFragmentPositions(
+  root: StyledNode,
+  layout: LayoutOutput,
+): ReadonlyMap<string, number> {
   const positions = new Map<string, number>();
 
   const walk = (node: StyledNode): void => {
     if (node.dom.type === NodeType.Element) {
       const id = node.dom.attributes?.id;
       if (id) {
-        const top = elementDocumentTop(node);
+        const top = elementDocumentTop(node, layout);
         if (top !== null) {
           positions.set(id, top);
         }

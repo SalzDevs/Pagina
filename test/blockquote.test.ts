@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
 import { layout } from "../layout/layout";
+import type { LayoutOutput } from "../layout/output";
 import { BLOCKQUOTE_INDENT, computeStyles, type StyledNode } from "../style/style";
 
 function findBody(styled: StyledNode) {
@@ -32,12 +33,15 @@ function findNestedBlockquote(outer: StyledNode | undefined) {
   return walk(outer!);
 }
 
-function textFragments(node: StyledNode | undefined): Array<{ x: number; text: string }> {
+function textFragments(
+  node: StyledNode | undefined,
+  output: LayoutOutput,
+): Array<{ x: number; text: string }> {
   if (!node) return [];
 
   const fragments: Array<{ x: number; text: string }> = [];
   const walk = (current: StyledNode) => {
-    for (const fragment of current.fragments ?? []) {
+    for (const fragment of output.getFragments(current)) {
       fragments.push({ x: fragment.x, text: fragment.text });
     }
     for (const child of current.children) walk(child);
@@ -75,15 +79,15 @@ describe("blockquote layout", () => {
     `;
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
     const paragraph = findByTag(styled, "p");
     const quote = findByTag(styled, "blockquote");
-    const bodyFragments = textFragments(paragraph);
-    const quoteFragments = textFragments(quote);
+    const bodyFragments = textFragments(paragraph, laidOut.output);
+    const quoteFragments = textFragments(quote, laidOut.output);
 
     expect(bodyFragments[0]?.x).toBe(0);
-    expect(quote?.layout?.x).toBe(BLOCKQUOTE_INDENT);
+    expect(laidOut.output.getLayout(quote!)?.x).toBe(BLOCKQUOTE_INDENT);
     expect(quoteFragments[0]?.x).toBe(BLOCKQUOTE_INDENT);
     expect(quoteFragments.some((fragment) => fragment.text.includes("Quoted"))).toBe(true);
   });
@@ -97,33 +101,33 @@ describe("blockquote layout", () => {
     `;
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
     const outer = findByTag(styled, "blockquote");
     const inner = findNestedBlockquote(outer);
 
     expect(outer?.style.marginLeft).toBe(BLOCKQUOTE_INDENT);
     expect(inner?.style.marginLeft).toBe(BLOCKQUOTE_INDENT);
-    expect(textFragments(inner)[0]?.x).toBe(BLOCKQUOTE_INDENT * 2);
+    expect(textFragments(inner, laidOut.output)[0]?.x).toBe(BLOCKQUOTE_INDENT * 2);
   });
 
   test("lays out examples/blockquote-page.html with default and nested quotes", async () => {
     const html = await Bun.file("examples/blockquote-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 50, height: 20 } });
+    const laidOut = layout(styled, { viewport: { width: 50, height: 20 } });
 
     const quotes = findBody(styled)?.children.filter(
       (child) => child.dom.type === "element" && child.dom.tag === "blockquote",
     );
 
     expect((quotes?.length ?? 0) >= 2).toBe(true);
-    expect(textFragments(quotes?.[0]).some((fragment) => fragment.x === BLOCKQUOTE_INDENT)).toBe(
+    expect(textFragments(quotes?.[0], laidOut.output).some((fragment) => fragment.x === BLOCKQUOTE_INDENT)).toBe(
       true,
     );
 
     const nested = findNestedBlockquote(quotes?.[1]);
-    expect(textFragments(nested).some((fragment) => fragment.x === BLOCKQUOTE_INDENT * 2)).toBe(
+    expect(textFragments(nested, laidOut.output).some((fragment) => fragment.x === BLOCKQUOTE_INDENT * 2)).toBe(
       true,
     );
   });

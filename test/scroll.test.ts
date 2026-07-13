@@ -132,9 +132,9 @@ describe("visible commands", () => {
   test("culls long pages to the visible slice", async () => {
     const html = await Bun.file("examples/long-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)));
-    layout(styled, { viewport: { width: 80, height: 24 } });
-    const displayList = paint(styled).displayList;
-    const contentHeight = measureContentHeight(styled);
+    const laidOut = layout(styled, { viewport: { width: 80, height: 24 } });
+    const displayList = paint(styled, laidOut.output).displayList;
+    const contentHeight = measureContentHeight(styled, laidOut.output);
 
     expect(shouldCullDisplayList(displayList, contentHeight, 24)).toBe(true);
 
@@ -151,9 +151,9 @@ describe("visible commands", () => {
 
   test("keeps short pages on the full mount path", async () => {
     const styled = await computeStyles(convert(parseHTML("<p>hello</p>")));
-    layout(styled, { viewport: { width: 40, height: 10 } });
-    const displayList = paint(styled).displayList;
-    const contentHeight = measureContentHeight(styled);
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
+    const displayList = paint(styled, laidOut.output).displayList;
+    const contentHeight = measureContentHeight(styled, laidOut.output);
 
     expect(shouldCullDisplayList(displayList, contentHeight, 10)).toBe(false);
     expect(
@@ -168,9 +168,9 @@ describe("visible commands", () => {
   test("still shows content at max scroll on a long page", async () => {
     const html = await Bun.file("examples/long-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)));
-    layout(styled, { viewport: { width: 80, height: 24 } });
-    const displayList = paint(styled).displayList;
-    const contentHeight = measureContentHeight(styled);
+    const laidOut = layout(styled, { viewport: { width: 80, height: 24 } });
+    const displayList = paint(styled, laidOut.output).displayList;
+    const contentHeight = measureContentHeight(styled, laidOut.output);
 
     expect(
       hasVisibleContentAtMaxScroll(displayList, contentHeight, 24),
@@ -185,8 +185,8 @@ describe("visible commands", () => {
 describe("measureContentHeight", () => {
   test("uses text fragments rather than block boxes", async () => {
     const styled = await computeStyles(convert(parseHTML("<p>top</p><p>bottom</p>")));
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
-    expect(measureContentHeight(styled)).toBeGreaterThan(0);
+    expect(measureContentHeight(styled, laidOut.output)).toBeGreaterThan(0);
   });
 });

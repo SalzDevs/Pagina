@@ -14,8 +14,8 @@ describe("paint", () => {
     const html = "<p>Hello <strong>world</strong></p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport });
-    const displayList = paint(styled).displayList;
+    const laidOut = layout(styled, { viewport });
+    const displayList = paint(styled, laidOut.output).displayList;
 
     expect(displayList.length).toBeGreaterThan(0);
     expect(displayList.some((cmd) => isTextCommand(cmd) && cmd.text.includes("Hello"))).toBe(true);
@@ -28,8 +28,8 @@ describe("paint", () => {
     const html = "<p>ab</p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport });
-    const displayList = paint(styled).displayList;
+    const laidOut = layout(styled, { viewport });
+    const displayList = paint(styled, laidOut.output).displayList;
     const firstText = displayList.find(isTextCommand);
 
     expect(firstText).toEqual({
@@ -47,8 +47,8 @@ describe("paint", () => {
     const html = "<p><strong>bold</strong></p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport });
-    const displayList = paint(styled).displayList;
+    const laidOut = layout(styled, { viewport });
+    const displayList = paint(styled, laidOut.output).displayList;
 
     expect(
       displayList.some((cmd) => isTextCommand(cmd) && cmd.text.includes("bold") && cmd.bold),
@@ -61,8 +61,8 @@ describe("paint", () => {
       pageLocation: "examples/styled-page.html",
     });
 
-    layout(styled, { viewport });
-    const displayList = paint(styled, { viewportHeight: viewport.height }).displayList;
+    const laidOut = layout(styled, { viewport });
+    const displayList = paint(styled, laidOut.output, { viewportHeight: viewport.height }).displayList;
     const bodyFill = displayList.find(
       (command) => isFillCommand(command) && command.bg === "#111111",
     );
@@ -82,8 +82,8 @@ describe("paint", () => {
     `;
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport });
-    const displayList = paint(styled, { viewportHeight: viewport.height }).displayList;
+    const laidOut = layout(styled, { viewport });
+    const displayList = paint(styled, laidOut.output, { viewportHeight: viewport.height }).displayList;
 
     expect(isFillCommand(displayList[0]!)).toBe(true);
     expect(displayList.some((command) => isTextCommand(command) && command.text.includes("hello"))).toBe(

@@ -1,5 +1,7 @@
 import { NodeType } from "../dom/node";
-import type { LayoutFragment, StyledNode } from "../style/style";
+import type { LayoutOutput } from "./output";
+import type { LayoutFragment } from "./types";
+import type { StyledNode } from "../style/style";
 
 export interface FragmentAnchorFrame {
   id: string;
@@ -9,6 +11,7 @@ export interface FragmentAnchorFrame {
 export interface FragmentTracking {
   fragmentPositions: Map<string, number>;
   fragmentAnchorStack: FragmentAnchorFrame[];
+  output: LayoutOutput;
 }
 
 export function elementId(node: StyledNode): string | undefined {
@@ -44,7 +47,6 @@ export function addTrackedFragment(
   node: StyledNode,
   fragment: LayoutFragment,
 ): void {
-  node.fragments ??= [];
-  node.fragments.push(fragment);
+  tracking.output.addFragment(node, fragment);
   noteLayoutY(tracking, fragment.y);
 }

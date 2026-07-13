@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
 import { layout } from "../layout/layout";
+import type { LayoutOutput } from "../layout/output";
 import { computeStyles, type StyledNode } from "../style/style";
 
 function findParagraph(styled: StyledNode) {
@@ -24,8 +25,8 @@ function findHeading(styled: StyledNode, tag: string) {
   );
 }
 
-function fragmentHeight(node: StyledNode | undefined): number {
-  return node?.children.flatMap((child) => child.fragments ?? [])[0]?.height ?? 0;
+function fragmentHeight(node: StyledNode | undefined, output: LayoutOutput): number {
+  return node?.children.flatMap((child) => output.getFragments(child))[0]?.height ?? 0;
 }
 
 describe("layout", () => {
@@ -33,10 +34,10 @@ describe("layout", () => {
     const html = "<p>hello terminal browser engine</p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 10, height: 5 } });
+    const laidOut = layout(styled, { viewport: { width: 10, height: 5 } });
 
     const paragraph = findParagraph(styled);
-    const fragments = paragraph?.children.flatMap((child) => child.fragments ?? []);
+    const fragments = paragraph?.children.flatMap((child) => laidOut.output.getFragments(child));
 
     expect((fragments?.length ?? 0) > 1).toBe(true);
     expect(fragments?.some((fragment) => fragment.text.includes("hello"))).toBe(true);
@@ -47,10 +48,10 @@ describe("layout", () => {
     const html = "<p>Hello <strong>world</strong></p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 5 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 5 } });
 
     const paragraph = findParagraph(styled);
-    const fragments = paragraph?.children.flatMap((child) => child.fragments ?? []);
+    const fragments = paragraph?.children.flatMap((child) => laidOut.output.getFragments(child));
 
     expect(fragments?.every((fragment) => fragment.y === 0)).toBe(true);
   });
@@ -59,17 +60,17 @@ describe("layout", () => {
     const html = "<p>one two three four five six seven eight nine ten</p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 8, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 8, height: 10 } });
 
     const paragraph = findParagraph(styled);
-    expect((paragraph?.layout?.height ?? 0) > 1).toBe(true);
+    expect((laidOut.output.getLayout(paragraph!)?.height ?? 0) > 1).toBe(true);
   });
 
   test("stacks block elements vertically", async () => {
     const html = "<p>first</p><p>second</p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
     const body = styled.children[0]?.children.find(
       (child) => child.dom.type === "element" && child.dom.tag === "body",
@@ -77,18 +78,20 @@ describe("layout", () => {
     const first = body?.children[0];
     const second = body?.children[1];
 
-    expect((first?.layout?.y ?? 0) < (second?.layout?.y ?? 0)).toBe(true);
+    expect(
+      (laidOut.output.getLayout(first!)?.y ?? 0) < (laidOut.output.getLayout(second!)?.y ?? 0),
+    ).toBe(true);
   });
 
   test("gives headings taller line height than body text", async () => {
     const html = "<h1>Title</h1><h2>Section</h2><p>Body copy</p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
-    const h1Height = fragmentHeight(findHeading(styled, "h1"));
-    const h2Height = fragmentHeight(findHeading(styled, "h2"));
-    const bodyHeight = fragmentHeight(findParagraph(styled));
+    const h1Height = fragmentHeight(findHeading(styled, "h1"), laidOut.output);
+    const h2Height = fragmentHeight(findHeading(styled, "h2"), laidOut.output);
+    const bodyHeight = fragmentHeight(findParagraph(styled), laidOut.output);
 
     expect(h1Height).toBeGreaterThan(h2Height);
     expect(h2Height).toBeGreaterThan(bodyHeight);
@@ -106,7 +109,7 @@ describe("layout", () => {
     `;
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
     const body = findBody(styled);
     const lead = body?.children.find(
@@ -122,7 +125,7 @@ describe("layout", () => {
         child.dom.attributes?.class === "small",
     );
 
-    expect(fragmentHeight(lead)).toBe(2);
-    expect(fragmentHeight(small)).toBe(1);
+    expect(fragmentHeight(lead, laidOut.output)).toBe(2);
+    expect(fragmentHeight(small, laidOut.output)).toBe(1);
   });
 });

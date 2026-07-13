@@ -19,14 +19,18 @@ describe("layout relayout", () => {
     const html = "<p>hello terminal browser engine</p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOutWide = layout(styled, { viewport: { width: 40, height: 10 } });
     const wideYs = new Set(
-      findParagraph(styled)?.children.flatMap((child) => child.fragments ?? []).map((fragment) => fragment.y),
+      findParagraph(styled)
+        ?.children.flatMap((child) => laidOutWide.output.getFragments(child))
+        .map((fragment) => fragment.y),
     );
 
-    layout(styled, { viewport: { width: 10, height: 10 } });
+    const laidOutNarrow = layout(styled, { viewport: { width: 10, height: 10 } });
     const narrowYs = new Set(
-      findParagraph(styled)?.children.flatMap((child) => child.fragments ?? []).map((fragment) => fragment.y),
+      findParagraph(styled)
+        ?.children.flatMap((child) => laidOutNarrow.output.getFragments(child))
+        .map((fragment) => fragment.y),
     );
 
     expect(narrowYs.size).toBeGreaterThan(wideYs.size);

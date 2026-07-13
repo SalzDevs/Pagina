@@ -1,10 +1,11 @@
 import { NodeType } from "../dom/node";
+import type { LayoutOutput } from "../layout/output";
 import type { StyledNode } from "../style/style";
 import type { Link, LinkBounds } from "./types";
 
-function collectFragments(node: StyledNode, out: LinkBounds[]): void {
+function collectFragments(node: StyledNode, layout: LayoutOutput, out: LinkBounds[]): void {
   if (node.dom.type === NodeType.Text) {
-    for (const fragment of node.fragments ?? []) {
+    for (const fragment of layout.getFragments(node)) {
       out.push({
         x: fragment.x,
         y: fragment.y,
@@ -16,16 +17,16 @@ function collectFragments(node: StyledNode, out: LinkBounds[]): void {
   }
 
   for (const child of node.children) {
-    collectFragments(child, out);
+    collectFragments(child, layout, out);
   }
 }
 
-function walk(node: StyledNode, links: Link[]): void {
+function walk(node: StyledNode, layout: LayoutOutput, links: Link[]): void {
   if (node.dom.type === NodeType.Element && node.dom.tag === "a") {
     const href = node.dom.attributes?.href;
     if (href) {
       const bounds: LinkBounds[] = [];
-      collectFragments(node, bounds);
+      collectFragments(node, layout, bounds);
       if (bounds.length > 0) {
         links.push({ href, bounds });
       }
@@ -34,13 +35,13 @@ function walk(node: StyledNode, links: Link[]): void {
   }
 
   for (const child of node.children) {
-    walk(child, links);
+    walk(child, layout, links);
   }
 }
 
 /** Collect navigable links from a laid-out styled tree, in document order. */
-export function collectLinks(root: StyledNode): Link[] {
+export function collectLinks(root: StyledNode, layout: LayoutOutput): Link[] {
   const links: Link[] = [];
-  walk(root, links);
+  walk(root, layout, links);
   return links;
 }

@@ -10,15 +10,12 @@ import {
 import { lineHeightForFontSize } from "./line-height";
 import { isHrElement, layoutHr } from "./hr";
 import { isListContainer, layoutListContainer } from "./lists";
-import { isPreElement, layoutPreBlock } from "./pre";
-import type { LayoutFragment, StyledNode } from "../style/style";
+import { LayoutOutput } from "./output";
+import { layoutPreBlock, isPreElement } from "./pre";
+import type { LayoutBox, LayoutFragment } from "./types";
+import type { StyledNode } from "../style/style";
 
-export interface LayoutBox {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+export type { LayoutBox } from "./types";
 
 export interface Viewport {
   width: number;
@@ -27,6 +24,11 @@ export interface Viewport {
 
 export interface LayoutOptions {
   viewport: Viewport;
+}
+
+export interface LayoutResult {
+  fragmentPositions: ReadonlyMap<string, number>;
+  output: LayoutOutput;
 }
 
 export interface LayoutContext extends FragmentTracking {
@@ -318,12 +320,12 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
     ctx.y += node.style.paddingBottom ?? 0;
 
     const contentHeight = Math.max(1, ctx.y - startY);
-    node.layout = {
+    ctx.output.setLayout(node, {
       x: box.layoutX,
       y: startY,
       width: box.layoutWidth,
       height: contentHeight,
-    };
+    });
     noteLayoutY(ctx, startY);
 
     ctx.y += node.style.marginBottom ?? 0;
@@ -362,22 +364,12 @@ function layoutNode(node: StyledNode, ctx: LayoutContext, viewport: Viewport): v
   }
 }
 
-function clearLayout(node: StyledNode): void {
-  delete node.layout;
-  delete node.fragments;
-
-  for (const child of node.children) {
-    clearLayout(child);
-  }
-}
-
 /** Compute geometry for a styled tree. */
 export function layout(
   node: StyledNode,
   options: LayoutOptions = { viewport: DEFAULT_VIEWPORT },
-): ReadonlyMap<string, number> {
-  clearLayout(node);
-
+): LayoutResult {
+  const output = new LayoutOutput();
   const fragmentPositions = new Map<string, number>();
   const ctx: LayoutContext = {
     x: 0,
@@ -386,10 +378,11 @@ export function layout(
     availableWidth: options.viewport.width,
     fragmentPositions,
     fragmentAnchorStack: [],
+    output,
   };
 
   layoutNode(node, ctx, options.viewport);
-  return fragmentPositions;
+  return { fragmentPositions, output };
 }
 
 export { DEFAULT_VIEWPORT };

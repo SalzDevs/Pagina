@@ -1,5 +1,6 @@
 import { NodeType } from "../dom/node";
-import type { LayoutFragment, StyledNode } from "../style/style";
+import type { LayoutFragment } from "./types";
+import type { StyledNode } from "../style/style";
 import { blockBox } from "./box";
 import { noteLayoutY } from "./fragment-anchors";
 import type { LayoutContext } from "./layout";
@@ -39,12 +40,12 @@ export function layoutHr(node: StyledNode, ctx: LayoutContext, deps: HrLayoutDep
 
   ctx.y += node.style.paddingBottom ?? 0;
 
-  node.layout = {
+  ctx.output.setLayout(node, {
     x: box.layoutX,
     y: startY,
     width: box.layoutWidth,
     height: Math.max(1, ctx.y - startY),
-  };
+  });
   noteLayoutY(ctx, startY);
 
   ctx.y += node.style.marginBottom ?? 0;

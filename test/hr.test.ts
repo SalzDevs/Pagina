@@ -62,15 +62,21 @@ describe("horizontal rules", () => {
     const html = "<p>Section one</p><hr><p>Section two</p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 20, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 20, height: 10 } });
 
     const hr = findByTag(styled, "hr");
-    const fragment = hr?.fragments?.[0];
+    const fragment = laidOut.output.getFragments(hr!)[0];
 
     expect(fragment?.text).toBe(formatHrLine(20));
     expect(fragment?.width).toBe(20);
-    expect((findByTag(styled, "p", 0)?.layout?.y ?? 0) < (hr?.layout?.y ?? 0)).toBe(true);
-    expect((hr?.layout?.y ?? 0) < (findByTag(styled, "p", 1)?.layout?.y ?? 0)).toBe(true);
+    expect(
+      (laidOut.output.getLayout(findByTag(styled, "p", 0)!)?.y ?? 0) <
+        (laidOut.output.getLayout(hr!)?.y ?? 0),
+    ).toBe(true);
+    expect(
+      (laidOut.output.getLayout(hr!)?.y ?? 0) <
+        (laidOut.output.getLayout(findByTag(styled, "p", 1)!)?.y ?? 0),
+    ).toBe(true);
   });
 
   test("respects horizontal inset inside padded containers", async () => {
@@ -81,10 +87,10 @@ describe("horizontal rules", () => {
     `;
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 20, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 20, height: 10 } });
 
     const hr = findHrIn(findDiv(styled));
-    const fragment = hr?.fragments?.[0];
+    const fragment = laidOut.output.getFragments(hr!)[0];
 
     expect(fragment?.x).toBe(3);
     expect(fragment?.text).toBe(formatHrLine(15));
@@ -94,8 +100,8 @@ describe("horizontal rules", () => {
     const html = "<hr>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 12, height: 5 } });
-    const displayList = paint(styled).displayList;
+    const laidOut = layout(styled, { viewport: { width: 12, height: 5 } });
+    const displayList = paint(styled, laidOut.output).displayList;
     const hrText = displayList.find(
       (command) => command.kind === "text" && command.text.includes(HR_CHARACTER),
     );
@@ -117,13 +123,13 @@ describe("horizontal rules", () => {
     const html = await Bun.file("examples/hr-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 30, height: 20 } });
+    const laidOut = layout(styled, { viewport: { width: 30, height: 20 } });
 
     const topHr = findByTag(styled, "hr");
     const insetHr = findHrIn(findDiv(styled));
 
-    expect(topHr?.fragments?.[0]?.text).toBe(formatHrLine(30));
-    expect(insetHr?.fragments?.[0]?.x).toBe(4);
-    expect(insetHr?.fragments?.[0]?.text.length).toBe(26);
+    expect(laidOut.output.getFragments(topHr!)[0]?.text).toBe(formatHrLine(30));
+    expect(laidOut.output.getFragments(insetHr!)[0]?.x).toBe(4);
+    expect(laidOut.output.getFragments(insetHr!)[0]?.text.length).toBe(26);
   });
 });

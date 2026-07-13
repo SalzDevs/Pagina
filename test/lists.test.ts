@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
 import { layout } from "../layout/layout";
+import type { LayoutOutput } from "../layout/output";
 import {
   BULLET_MARKER,
   formatListMarker,
@@ -23,12 +24,12 @@ function findList(styled: StyledNode, tag: "ul" | "ol") {
   );
 }
 
-function itemText(li: StyledNode | undefined): string {
+function itemText(li: StyledNode | undefined, output: LayoutOutput): string {
   if (!li) return "";
 
   const parts: string[] = [];
   const walk = (node: StyledNode) => {
-    for (const fragment of node.fragments ?? []) {
+    for (const fragment of output.getFragments(node)) {
       parts.push(fragment.text);
     }
 
@@ -44,15 +45,15 @@ function itemText(li: StyledNode | undefined): string {
   return parts.join("");
 }
 
-function markerX(li: StyledNode | undefined): number | undefined {
-  return li?.fragments?.[0]?.x;
+function markerX(li: StyledNode | undefined, output: LayoutOutput): number | undefined {
+  return output.getFragments(li!)[0]?.x;
 }
 
-function itemTexts(list: StyledNode | undefined): string[] {
+function itemTexts(list: StyledNode | undefined, output: LayoutOutput): string[] {
   return (
     list?.children
       .filter((child) => child.dom.type === "element" && child.dom.tag === "li")
-      .map((item) => itemText(item)) ?? []
+      .map((item) => itemText(item, output)) ?? []
   );
 }
 
@@ -82,10 +83,10 @@ describe("layout lists", () => {
     const html = "<ul><li>One</li><li>Two</li></ul>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
     const list = findList(styled, "ul");
-    const texts = itemTexts(list);
+    const texts = itemTexts(list, laidOut.output);
 
     expect(texts[0]).toBe(`${BULLET_MARKER}One`);
     expect(texts[1]).toBe(`${BULLET_MARKER}Two`);
@@ -95,10 +96,10 @@ describe("layout lists", () => {
     const html = "<ol><li>First</li><li>Second</li></ol>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
     const list = findList(styled, "ol");
-    const texts = itemTexts(list);
+    const texts = itemTexts(list, laidOut.output);
 
     expect(texts[0]).toBe("1. First");
     expect(texts[1]).toBe("2. Second");
@@ -108,7 +109,7 @@ describe("layout lists", () => {
     const html = "<ul><li>Outer<ul><li>Inner</li></ul></li></ul>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
     const outer = findList(styled, "ul");
     const outerItem = outer?.children[0];
@@ -117,16 +118,16 @@ describe("layout lists", () => {
     );
     const innerItem = nestedList?.children[0];
 
-    expect(markerX(outerItem)).toBe(0);
-    expect(markerX(innerItem)).toBe(2);
-    expect(itemText(innerItem)).toBe(`${BULLET_MARKER}Inner`);
+    expect(markerX(outerItem, laidOut.output)).toBe(0);
+    expect(markerX(innerItem, laidOut.output)).toBe(2);
+    expect(itemText(innerItem, laidOut.output)).toBe(`${BULLET_MARKER}Inner`);
   });
 
   test("lays out examples/lists-page.html with bullets and numbers", async () => {
     const html = await Bun.file("examples/lists-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 60, height: 30 } });
+    const laidOut = layout(styled, { viewport: { width: 60, height: 30 } });
 
     const lists = findBody(styled)?.children.filter(
       (child) =>
@@ -134,8 +135,8 @@ describe("layout lists", () => {
     );
 
     expect(lists?.length).toBeGreaterThanOrEqual(3);
-    expect(itemTexts(lists?.[0]).some((text) => text.includes(`${BULLET_MARKER}First`))).toBe(true);
-    expect(itemTexts(lists?.[1]).some((text) => text.includes("1. Step one"))).toBe(true);
+    expect(itemTexts(lists?.[0], laidOut.output).some((text) => text.includes(`${BULLET_MARKER}First`))).toBe(true);
+    expect(itemTexts(lists?.[1], laidOut.output).some((text) => text.includes("1. Step one"))).toBe(true);
 
     const nestedOuter = lists?.[2];
     const nestedItem = nestedOuter?.children.find(
@@ -151,7 +152,7 @@ describe("layout lists", () => {
       (child) => child.dom.type === "element" && child.dom.tag === "li",
     );
 
-    expect(itemText(innerLi)).toBe(`${BULLET_MARKER}Inner A`);
-    expect(markerX(innerLi)).toBe(2);
+    expect(itemText(innerLi, laidOut.output)).toBe(`${BULLET_MARKER}Inner A`);
+    expect(markerX(innerLi, laidOut.output)).toBe(2);
   });
 });

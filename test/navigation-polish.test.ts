@@ -59,7 +59,7 @@ describe("base href", () => {
     const dom = convert(parseHTML(html));
     const documentBase = resolveDocumentBase(dom, catalogPath);
     const styled = await computeStyles(dom, { pageLocation: catalogPath, documentBase });
-    layout(styled, { viewport });
+    const laidOut = layout(styled, { viewport });
 
     const body = styled.children[0]?.children.find(
       (child) => child.dom.type === "element" && child.dom.tag === "body",
@@ -72,7 +72,7 @@ describe("base href", () => {
     expect(body?.style.bg).toBe("#111111");
     expect(heading?.style.fg).toBe("#ffd700");
 
-    const links = collectLinks(styled);
+    const links = collectLinks(styled, laidOut.output);
     expect(links[0]?.href).toBe("links-page.html");
     expect(resolveAgainstBase(links[0]!.href, documentBase, catalogPath)).toBe(linksPagePath);
   });

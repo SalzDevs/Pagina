@@ -13,7 +13,8 @@ import { isSamePage, parseLinkTarget, splitPageLocation } from "../navigation/fr
 import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
 import { layout } from "../layout/layout";
-import { computeStyles } from "../style/style";
+import type { LayoutOutput } from "../layout/output";
+import { computeStyles, type StyledNode } from "../style/style";
 import { createScrollViewport, maxScrollY, scrollToAlignTop } from "../viewport/scroll";
 
 const viewport = { width: 80, height: 10 };
@@ -30,13 +31,14 @@ const CHAPTER_IDS = [
 async function pipelineFromFragmentsPage() {
   const html = await Bun.file("examples/fragments-page.html").text();
   const styled = await computeStyles(convert(parseHTML(html)), { pageLocation: fragmentsPagePath });
-  layout(styled, { viewport });
+  const laidOut = layout(styled, { viewport });
 
   return {
     html,
     styled,
-    links: collectLinks(styled),
-    positions: collectFragmentPositions(styled),
+    output: laidOut.output,
+    links: collectLinks(styled, laidOut.output),
+    positions: collectFragmentPositions(styled, laidOut.output),
   };
 }
 
@@ -47,10 +49,10 @@ function expectedAlignTopScroll(
   return scrollToAlignTop(viewportState, documentY).scrollY;
 }
 
-async function styledFrom(html: string, pageLocation?: string) {
+async function styledFrom(html: string, pageLocation?: string): Promise<{ styled: StyledNode; output: LayoutOutput }> {
   const styled = await computeStyles(convert(parseHTML(html)), { pageLocation });
-  layout(styled, { viewport });
-  return styled;
+  const laidOut = layout(styled, { viewport });
+  return { styled, output: laidOut.output };
 }
 
 describe("splitPageLocation", () => {
@@ -169,12 +171,12 @@ describe("fragments-page.html stress test", () => {
   });
 
   test("findElementById matches collectFragmentPositions for every section", async () => {
-    const { styled, positions } = await pipelineFromFragmentsPage();
+    const { styled, output, positions } = await pipelineFromFragmentsPage();
 
     for (const id of CHAPTER_IDS) {
       const node = findElementById(styled, id);
       expect(node).not.toBeNull();
-      expect(elementDocumentTop(node!)).toBe(positions.get(id));
+      expect(elementDocumentTop(node!, output)).toBe(positions.get(id));
     }
   });
 
@@ -236,7 +238,7 @@ describe("fragments-page.html stress test", () => {
 describe("anchors", () => {
   test("finds elements by id and records their document positions", async () => {
     const html = await Bun.file("examples/fragments-page.html").text();
-    const styled = await styledFrom(html, fragmentsPagePath);
+    const { styled, output } = await styledFrom(html, fragmentsPagePath);
 
     const intro = findElementById(styled, "intro");
     const chapter10 = findElementById(styled, "chapter-10");
@@ -246,9 +248,9 @@ describe("anchors", () => {
     expect(chapter10).not.toBeNull();
     expect(footer).not.toBeNull();
 
-    const introTop = elementDocumentTop(intro!);
-    const chapter10Top = elementDocumentTop(chapter10!);
-    const footerTop = elementDocumentTop(footer!);
+    const introTop = elementDocumentTop(intro!, output);
+    const chapter10Top = elementDocumentTop(chapter10!, output);
+    const footerTop = elementDocumentTop(footer!, output);
 
     expect(introTop).not.toBeNull();
     expect(chapter10Top).not.toBeNull();
@@ -256,7 +258,7 @@ describe("anchors", () => {
     expect(chapter10Top!).toBeGreaterThan(introTop!);
     expect(footerTop!).toBeGreaterThan(chapter10Top!);
 
-    const positions = collectFragmentPositions(styled);
+    const positions = collectFragmentPositions(styled, output);
     expect(positions.get("intro")).toBe(introTop);
     expect(positions.get("chapter-10")).toBe(chapter10Top);
     expect(positions.get("footer")).toBe(footerTop);

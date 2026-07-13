@@ -4,6 +4,7 @@ import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
 import { blockBox } from "../layout/box";
 import { layout } from "../layout/layout";
+import type { LayoutOutput } from "../layout/output";
 import { paint } from "../paint/paint";
 import { parseStylesheet } from "../style/css/parse";
 import { computeStyles, type StyledNode } from "../style/style";
@@ -29,12 +30,15 @@ function findByClass(styled: StyledNode, className: string) {
   );
 }
 
-function textFragments(node: StyledNode | undefined): Array<{ x: number; text: string }> {
+function textFragments(
+  node: StyledNode | undefined,
+  output: LayoutOutput,
+): Array<{ x: number; text: string }> {
   if (!node) return [];
 
   const fragments: Array<{ x: number; text: string }> = [];
   const walk = (current: StyledNode) => {
-    for (const fragment of current.fragments ?? []) {
+    for (const fragment of output.getFragments(current)) {
       fragments.push({ x: fragment.x, text: fragment.text });
     }
     for (const child of current.children) walk(child);
@@ -115,12 +119,12 @@ describe("horizontal inset layout", () => {
     `;
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
     const quote = findByTag(styled, "blockquote");
-    const fragments = textFragments(quote);
+    const fragments = textFragments(quote, laidOut.output);
 
-    expect(quote?.layout?.x).toBe(4);
+    expect(laidOut.output.getLayout(quote!)?.x).toBe(4);
     expect(fragments[0]?.x).toBe(4);
     expect(fragments.some((fragment) => fragment.text.includes("Quoted"))).toBe(true);
   });
@@ -132,13 +136,13 @@ describe("horizontal inset layout", () => {
     `;
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 12, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 12, height: 10 } });
 
     const paragraph = findByTag(styled, "p");
-    const fragments = textFragments(paragraph);
+    const fragments = textFragments(paragraph, laidOut.output);
 
-    expect(paragraph?.layout?.x).toBe(0);
-    expect(paragraph?.layout?.width).toBe(12);
+    expect(laidOut.output.getLayout(paragraph!)?.x).toBe(0);
+    expect(laidOut.output.getLayout(paragraph!)?.width).toBe(12);
     expect(fragments.every((fragment) => fragment.x >= 2)).toBe(true);
     expect(fragments.length).toBeGreaterThan(1);
   });
@@ -150,13 +154,13 @@ describe("horizontal inset layout", () => {
     `;
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 30, height: 10 } });
-    const displayList = paint(styled).displayList;
+    const laidOut = layout(styled, { viewport: { width: 30, height: 10 } });
+    const displayList = paint(styled, laidOut.output).displayList;
     const quote = findByTag(styled, "blockquote");
     const fill = displayList.find(isFillCommand);
 
     expect(fill?.x).toBe(3);
-    expect(fill?.width).toBe(quote?.layout?.width);
+    expect(fill?.width).toBe(laidOut.output.getLayout(quote!)?.width);
     expect(fill?.bg).toBe("#333");
   });
 
@@ -164,14 +168,14 @@ describe("horizontal inset layout", () => {
     const html = await Bun.file("examples/inset-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 20 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 20 } });
 
     const quote = findByTag(styled, "blockquote");
     const narrow = findByClass(styled, "narrow");
 
-    expect((quote?.layout?.x ?? 0) >= 4).toBe(true);
-    expect(textFragments(quote)[0]?.x).toBeGreaterThanOrEqual(6);
-    expect((narrow?.layout?.width ?? 40) < 40).toBe(true);
-    expect(textFragments(narrow).every((fragment) => fragment.x >= 2)).toBe(true);
+    expect((laidOut.output.getLayout(quote!)?.x ?? 0) >= 4).toBe(true);
+    expect(textFragments(quote, laidOut.output)[0]?.x).toBeGreaterThanOrEqual(6);
+    expect((laidOut.output.getLayout(narrow!)?.width ?? 40) < 40).toBe(true);
+    expect(textFragments(narrow, laidOut.output).every((fragment) => fragment.x >= 2)).toBe(true);
   });
 });

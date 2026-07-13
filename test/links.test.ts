@@ -53,21 +53,21 @@ function key(name: string, shift = false) {
 async function pipelineFromFile(path: string) {
   const html = await loadHtmlFromFile(path);
   const styled = await computeStyles(convert(parseHTML(html)), { pageLocation: resolve(path) });
-  layout(styled, { viewport });
+  const laidOut = layout(styled, { viewport });
   return {
     styled,
-    displayList: paint(styled).displayList,
-    links: collectLinks(styled),
+    displayList: paint(styled, laidOut.output).displayList,
+    links: collectLinks(styled, laidOut.output),
   };
 }
 
 async function pipeline(html: string) {
   const styled = await computeStyles(convert(parseHTML(html)));
-  layout(styled, { viewport });
+  const laidOut = layout(styled, { viewport });
   return {
     styled,
-    displayList: paint(styled).displayList,
-    links: collectLinks(styled),
+    displayList: paint(styled, laidOut.output).displayList,
+    links: collectLinks(styled, laidOut.output),
   };
 }
 

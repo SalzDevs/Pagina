@@ -56,8 +56,8 @@ describe("buildErrorPageHtml", () => {
     );
     const dom = convert(parseHTML(html));
     const styled = await computeStyles(dom, { pageLocation: "examples/missing.html" });
-    layout(styled, { viewport: { width: 80, height: 24 } });
-    const links = collectLinks(styled);
+    const laidOut = layout(styled, { viewport: { width: 80, height: 24 } });
+    const links = collectLinks(styled, laidOut.output);
 
     expect(extractPageTitle(dom)).toBe(ERROR_PAGE_TITLE);
     expect(links.some((link) => link.href === "examples/missing.html")).toBe(true);

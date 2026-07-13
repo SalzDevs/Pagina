@@ -1,5 +1,6 @@
 import type { DisplayCommand, DisplayList } from "../paint/display-list";
 import { commandBottom } from "../paint/display-list";
+import type { LayoutOutput } from "../layout/output";
 import type { StyledNode } from "../style/style";
 
 /** Mount only visible commands once the page exceeds this command count. */
@@ -78,11 +79,11 @@ function offsetCommandY(command: DisplayCommand, scrollY: number): DisplayComman
 }
 
 /** Measure document height from laid-out text fragments only. */
-export function measureContentHeight(styled: StyledNode): number {
+export function measureContentHeight(styled: StyledNode, layout: LayoutOutput): number {
   let maxBottom = 0;
 
   const walk = (node: StyledNode): void => {
-    for (const fragment of node.fragments ?? []) {
+    for (const fragment of layout.getFragments(node)) {
       maxBottom = Math.max(maxBottom, fragment.y + fragment.height);
     }
 

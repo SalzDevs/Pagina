@@ -1,5 +1,6 @@
 import { NodeType } from "../dom/node";
-import type { LayoutFragment, StyledNode } from "../style/style";
+import type { LayoutFragment } from "./types";
+import type { StyledNode } from "../style/style";
 import { blockBox } from "./box";
 import { noteLayoutY, pushFragmentAnchor, popFragmentAnchor } from "./fragment-anchors";
 import type { LayoutContext, Viewport } from "./layout";
@@ -86,12 +87,12 @@ export function layoutListItem(
   ctx.y += node.style.marginBottom ?? 0;
   ctx.y += options.blockGap;
 
-  node.layout = {
+  ctx.output.setLayout(node, {
     x: box.layoutX,
     y: itemStartY,
     width: box.layoutWidth,
     height: Math.max(1, ctx.y - itemStartY),
-  };
+  });
   noteLayoutY(ctx, itemStartY);
 
   popFragmentAnchor(ctx, node);
@@ -140,12 +141,12 @@ export function layoutListContainer(
 
   ctx.y += node.style.paddingBottom ?? 0;
 
-  node.layout = {
+  ctx.output.setLayout(node, {
     x: box.layoutX,
     y: startY,
     width: box.layoutWidth,
     height: Math.max(1, ctx.y - startY),
-  };
+  });
   noteLayoutY(ctx, startY);
 
   ctx.y += node.style.marginBottom ?? 0;

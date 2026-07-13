@@ -8,7 +8,8 @@ import {
   isPreElement,
   layoutPreformattedLines,
 } from "../layout/pre";
-import type { LayoutFragment } from "../style/style";
+import type { LayoutFragment } from "../layout/types";
+import type { LayoutOutput } from "../layout/output";
 import { computeStyles, type StyledNode } from "../style/style";
 
 function findBody(styled: StyledNode) {
@@ -29,12 +30,12 @@ function findParagraph(styled: StyledNode) {
   );
 }
 
-function textFragments(node: StyledNode | undefined): LayoutFragment[] {
+function textFragments(node: StyledNode | undefined, output: LayoutOutput): LayoutFragment[] {
   if (!node) return [];
 
   const fragments: LayoutFragment[] = [];
   const walk = (current: StyledNode) => {
-    fragments.push(...(current.fragments ?? []));
+    fragments.push(...output.getFragments(current));
     for (const child of current.children) walk(child);
   };
   walk(node);
@@ -57,10 +58,10 @@ describe("preformatted text", () => {
     const html = `<pre>  alpha\n    beta</pre>`;
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
 
     const pre = findPre(styled);
-    const fragments = textFragments(pre);
+    const fragments = textFragments(pre, laidOut.output);
     expect(fragments.map((fragment) => fragment.text)).toEqual(["  alpha", "    beta"]);
     expect(fragments[0]?.y).toBe(0);
     expect(fragments[1]?.y).toBe(1);
@@ -70,9 +71,9 @@ describe("preformatted text", () => {
     const html = `<pre>${"x".repeat(12)}</pre>`;
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 5, height: 10 } });
+    const laidOut = layout(styled, { viewport: { width: 5, height: 10 } });
 
-    const fragments = textFragments(findPre(styled));
+    const fragments = textFragments(findPre(styled), laidOut.output);
     expect(fragments.map((fragment) => fragment.text)).toEqual(["xxxxx", "xxxxx", "xx"]);
   });
 
@@ -80,10 +81,11 @@ describe("preformatted text", () => {
     const html = "<p>hello terminal browser engine</p>";
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 10, height: 5 } });
+    const laidOut = layout(styled, { viewport: { width: 10, height: 5 } });
 
     const paragraph = findParagraph(styled);
-    const fragments = paragraph?.children.flatMap((child) => child.fragments ?? []) ?? [];
+    const fragments =
+      paragraph?.children.flatMap((child) => laidOut.output.getFragments(child)) ?? [];
     expect(fragments.length).toBeGreaterThan(1);
   });
 
@@ -91,15 +93,15 @@ describe("preformatted text", () => {
     const html = await Bun.file("examples/pre-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)));
 
-    layout(styled, { viewport: { width: 40, height: 20 } });
+    const laidOut = layout(styled, { viewport: { width: 40, height: 20 } });
 
     const codePre = findPre(styled, 0);
     const artPre = findPre(styled, 1);
-    const codeText = textFragments(codePre).map((fragment) => fragment.text).join("\n");
+    const codeText = textFragments(codePre, laidOut.output).map((fragment) => fragment.text).join("\n");
 
     expect(codeText).toContain('function greet(name) {');
     expect(codeText).toContain('  return "hello " + name;');
-    expect(textFragments(artPre).some((fragment) => fragment.text.trim() === "*")).toBe(true);
+    expect(textFragments(artPre, laidOut.output).some((fragment) => fragment.text.trim() === "*")).toBe(true);
   });
 });
 

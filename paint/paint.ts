@@ -1,5 +1,6 @@
 import { NodeType } from "../dom/node";
 import type { Link, LinkBounds } from "../links/types";
+import type { LayoutOutput } from "../layout/output";
 import type { StyledNode } from "../style/style";
 import type { DisplayList, FillCommand, TextCommand } from "./display-list";
 import { commandBottom } from "./display-list";
@@ -53,25 +54,27 @@ function trackLinkBounds(
 
 function paintBlockBackground(
   node: StyledNode,
+  layout: LayoutOutput,
   output: PaintOutput,
   viewportHeight?: number,
 ): void {
-  if (!isBlock(node) || !node.style.bg || !node.layout) return;
+  const box = layout.getLayout(node);
+  if (!isBlock(node) || !node.style.bg || !box) return;
 
   const tag = node.dom.type === NodeType.Element ? node.dom.tag : undefined;
-  let height = node.layout.height;
+  let height = box.height;
 
   if ((tag === "body" || tag === "html") && viewportHeight !== undefined) {
     height = Math.max(height, viewportHeight);
   }
 
-  if (height <= 0 || node.layout.width <= 0) return;
+  if (height <= 0 || box.width <= 0) return;
 
   const fill: FillCommand = {
     kind: "fill",
-    x: node.layout.x,
-    y: node.layout.y,
-    width: node.layout.width,
+    x: box.x,
+    y: box.y,
+    width: box.width,
     height,
     bg: node.style.bg,
   };
@@ -80,7 +83,12 @@ function paintBlockBackground(
   trackBottom(output, fill.y, fill.height);
 }
 
-function paintTextNode(node: StyledNode, output: PaintOutput, ctx: PaintContext): void {
+function paintTextNode(
+  node: StyledNode,
+  layout: LayoutOutput,
+  output: PaintOutput,
+  ctx: PaintContext,
+): void {
   const style = {
     fg: node.style.fg,
     bg: node.style.bg,
@@ -90,8 +98,9 @@ function paintTextNode(node: StyledNode, output: PaintOutput, ctx: PaintContext)
     linkIndex: ctx.linkCollector ? undefined : (ctx.linkIndex ?? undefined),
   };
 
-  if (node.fragments && node.fragments.length > 0) {
-    for (const fragment of node.fragments) {
+  const fragments = layout.getFragments(node);
+  if (fragments.length > 0) {
+    for (const fragment of fragments) {
       if (fragment.text.length === 0) continue;
 
       trackLinkBounds(ctx, fragment.x, fragment.y, fragment.width, fragment.height);
@@ -107,14 +116,15 @@ function paintTextNode(node: StyledNode, output: PaintOutput, ctx: PaintContext)
     return;
   }
 
-  if (!node.layout || !node.dom.value) return;
+  const box = layout.getLayout(node);
+  if (!box || !node.dom.value) return;
 
-  trackLinkBounds(ctx, node.layout.x, node.layout.y, node.layout.width, 1);
-  trackBottom(output, node.layout.y, 1);
+  trackLinkBounds(ctx, box.x, box.y, box.width, 1);
+  trackBottom(output, box.y, 1);
   output.texts.push({
     kind: "text",
-    x: node.layout.x,
-    y: node.layout.y,
+    x: box.x,
+    y: box.y,
     text: node.dom.value,
     ...style,
   });
@@ -122,21 +132,22 @@ function paintTextNode(node: StyledNode, output: PaintOutput, ctx: PaintContext)
 
 function paintNode(
   node: StyledNode,
+  layout: LayoutOutput,
   output: PaintOutput,
   ctx: PaintContext,
   viewportHeight?: number,
 ): void {
   switch (node.dom.type) {
     case NodeType.Text:
-      paintTextNode(node, output, ctx);
+      paintTextNode(node, layout, output, ctx);
       return;
 
     case NodeType.Document:
     case NodeType.Element: {
-      paintBlockBackground(node, output, viewportHeight);
+      paintBlockBackground(node, layout, output, viewportHeight);
 
-      if (node.fragments && node.fragments.length > 0) {
-        paintTextNode(node, output, ctx);
+      if (layout.getFragments(node).length > 0) {
+        paintTextNode(node, layout, output, ctx);
         return;
       }
 
@@ -151,7 +162,7 @@ function paintNode(
         };
 
         for (const child of node.children) {
-          paintNode(child, output, linkCtx, viewportHeight);
+          paintNode(child, layout, output, linkCtx, viewportHeight);
         }
 
         if (collector.bounds.length > 0) {
@@ -171,7 +182,7 @@ function paintNode(
       }
 
       for (const child of node.children) {
-        paintNode(child, output, ctx, viewportHeight);
+        paintNode(child, layout, output, ctx, viewportHeight);
       }
       return;
     }
@@ -183,10 +194,15 @@ function paintNode(
 }
 
 /** Convert a laid-out styled tree into a display list. Does not draw anything. */
-export function paint(node: StyledNode, options: PaintOptions = {}): PaintResult {
+export function paint(
+  node: StyledNode,
+  layout: LayoutOutput,
+  options: PaintOptions = {},
+): PaintResult {
   const output: PaintOutput = { fills: [], texts: [], links: [], maxBottom: 0 };
   paintNode(
     node,
+    layout,
     output,
     { linkIndex: null, nextLinkIndex: { value: 0 }, links: output.links },
     options.viewportHeight,

@@ -26,25 +26,10 @@ export interface ComputedStyle {
   paddingRight?: number;
 }
 
-export interface LayoutFragment {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  text: string;
-}
-
 export interface StyledNode {
   dom: Node;
   style: ComputedStyle;
   children: StyledNode[];
-  layout?: {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-  fragments?: LayoutFragment[];
 }
 
 const DEFAULT_STYLE: ComputedStyle = {
