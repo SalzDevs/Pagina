@@ -1,6 +1,7 @@
 import type { CliRenderer, KeyEvent } from "@opentui/core";
 
 import { linkIndexAtPoint } from "../links/hit";
+import { mouseToDocumentPoint } from "./mouse";
 import type { Link } from "../links/types";
 import {
   createLinkFocusState,
@@ -172,7 +173,8 @@ export function createBrowserSession(
       };
 
       mouseMoveHandler = (event) => {
-        const index = linkIndexAtPoint(links, event.x, event.y + viewport.scrollY);
+        const point = mouseToDocumentPoint(event, options.layout, viewport.scrollY);
+        const index = linkIndexAtPoint(links, point.x, point.y);
         if (index === linkFocus.focusedIndex) return;
         syncLinkFocus({ focusedIndex: index }, false);
       };
@@ -180,7 +182,8 @@ export function createBrowserSession(
       mouseUpHandler = (event) => {
         if (event.button !== 0 || event.type !== "up") return;
 
-        const index = linkIndexAtPoint(links, event.x, event.y + viewport.scrollY);
+        const point = mouseToDocumentPoint(event, options.layout, viewport.scrollY);
+        const index = linkIndexAtPoint(links, point.x, point.y);
         if (index === null) return;
 
         void activateLink(index);
