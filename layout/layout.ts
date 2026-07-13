@@ -1,6 +1,12 @@
 import { NodeType } from "../dom/node";
-import { elementDocumentTop } from "../navigation/anchors";
 import { blockBox } from "./box";
+import {
+  addTrackedFragment,
+  noteLayoutY,
+  popFragmentAnchor,
+  pushFragmentAnchor,
+  type FragmentTracking,
+} from "./fragment-anchors";
 import { lineHeightForFontSize } from "./line-height";
 import { isHrElement, layoutHr } from "./hr";
 import { isListContainer, layoutListContainer } from "./lists";
@@ -23,24 +29,11 @@ export interface LayoutOptions {
   viewport: Viewport;
 }
 
-export interface LayoutContext {
+export interface LayoutContext extends FragmentTracking {
   x: number;
   y: number;
   listDepth: number;
   availableWidth: number;
-  fragmentPositions: Map<string, number>;
-}
-
-function recordFragmentPosition(node: StyledNode, positions: Map<string, number>): void {
-  if (node.dom.type !== NodeType.Element) return;
-
-  const id = node.dom.attributes?.id;
-  if (!id) return;
-
-  const top = elementDocumentTop(node);
-  if (top !== null) {
-    positions.set(id, top);
-  }
 }
 
 interface InlineSegment {
@@ -88,12 +81,8 @@ function collectInlineSegments(node: StyledNode, out: InlineSegment[]): void {
   }
 }
 
-function addFragment(node: StyledNode, fragment: LayoutFragment): void {
-  node.fragments ??= [];
-  node.fragments.push(fragment);
-}
-
 function wrapSegments(
+  ctx: LayoutContext,
   segments: InlineSegment[],
   contentWidth: number,
   startY: number,
@@ -108,7 +97,7 @@ function wrapSegments(
       lineRuns.length === 0 ? 1 : Math.max(...lineRuns.map((run) => nodeLineHeight(run.node)));
 
     for (const run of lineRuns) {
-      addFragment(run.node, {
+      addTrackedFragment(ctx, run.node, {
         x: startX + run.x,
         y: currentY,
         width: run.width,
@@ -142,7 +131,7 @@ function wrapSegments(
         let offset = 0;
         while (offset < part.length) {
           const chunk = part.slice(offset, offset + contentWidth);
-          addFragment(segment.node, {
+          addTrackedFragment(ctx, segment.node, {
             x: startX,
             y: currentY,
             width: chunk.length,
@@ -188,16 +177,25 @@ function layoutInlineBatch(
     collectInlineSegments(node, segments);
   }
 
-  ctx.y = wrapSegments(segments, contentWidth, ctx.y, ctx.x);
+  ctx.y = wrapSegments(ctx, segments, contentWidth, ctx.y, ctx.x);
+}
+
+function layoutFragmentScope(
+  ctx: LayoutContext,
+  node: StyledNode,
+  layout: () => void,
+): void {
+  pushFragmentAnchor(ctx, node);
+  layout();
+  popFragmentAnchor(ctx, node);
 }
 
 function layoutNestedList(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
   ctx.listDepth += 1;
   layoutListContainer(node, ctx, viewport, {
-    addFragment,
+    addFragment: (target, fragment) => addTrackedFragment(ctx, target, fragment),
     layoutListItemContent,
     blockGap: BLOCK_GAP,
-    recordFragmentPosition: (layoutNode) => recordFragmentPosition(layoutNode, ctx.fragmentPositions),
   });
   ctx.listDepth -= 1;
 }
@@ -244,100 +242,96 @@ function layoutListItemContent(
 }
 
 function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
-  if (isListContainer(node)) {
-    layoutListContainer(node, ctx, viewport, {
-      addFragment,
-      layoutListItemContent,
-      blockGap: BLOCK_GAP,
-      recordFragmentPosition: (layoutNode) => recordFragmentPosition(layoutNode, ctx.fragmentPositions),
-    });
-    recordFragmentPosition(node, ctx.fragmentPositions);
-    return;
-  }
-
-  if (isPreElement(node)) {
-    layoutPreBlock(node, ctx, viewport, {
-      addFragment,
-      nodeLineHeight,
-      blockGap: BLOCK_GAP,
-    });
-    recordFragmentPosition(node, ctx.fragmentPositions);
-    return;
-  }
-
-  if (isHrElement(node)) {
-    layoutHr(node, ctx, {
-      addFragment,
-      blockGap: BLOCK_GAP,
-    });
-    recordFragmentPosition(node, ctx.fragmentPositions);
-    return;
-  }
-
-  const box = blockBox(node.style, ctx.x, ctx.availableWidth);
-  const savedX = ctx.x;
-  const savedAvailableWidth = ctx.availableWidth;
-  ctx.x = box.contentX;
-  ctx.availableWidth = box.contentWidth;
-
-  ctx.y += node.style.marginTop ?? 0;
-  const startY = ctx.y;
-  ctx.y += node.style.paddingTop ?? 0;
-
-  let inlineBatch: StyledNode[] = [];
-
-  const flushInlineBatch = () => {
-    if (inlineBatch.length === 0) return;
-    layoutInlineBatch(inlineBatch, ctx, viewport, box.contentWidth);
-    inlineBatch = [];
-  };
-
-  for (const child of node.children) {
-    if (isLineBreak(child)) {
-      flushInlineBatch();
-      ctx.y += 1;
-      continue;
-    }
-
-    if (isListContainer(child)) {
-      flushInlineBatch();
-      layoutListContainer(child, ctx, viewport, {
-        addFragment,
+  layoutFragmentScope(ctx, node, () => {
+    if (isListContainer(node)) {
+      layoutListContainer(node, ctx, viewport, {
+        addFragment: (target, fragment) => addTrackedFragment(ctx, target, fragment),
         layoutListItemContent,
         blockGap: BLOCK_GAP,
-        recordFragmentPosition: (layoutNode) => recordFragmentPosition(layoutNode, ctx.fragmentPositions),
       });
-      continue;
+      return;
     }
 
-    if (isBlock(child)) {
-      flushInlineBatch();
-      layoutBlock(child, ctx, viewport);
-      continue;
+    if (isPreElement(node)) {
+      layoutPreBlock(node, ctx, viewport, {
+        addFragment: (target, fragment) => addTrackedFragment(ctx, target, fragment),
+        nodeLineHeight,
+        blockGap: BLOCK_GAP,
+      });
+      return;
     }
 
-    inlineBatch.push(child);
-  }
+    if (isHrElement(node)) {
+      layoutHr(node, ctx, {
+        addFragment: (target, fragment) => addTrackedFragment(ctx, target, fragment),
+        blockGap: BLOCK_GAP,
+      });
+      return;
+    }
 
-  flushInlineBatch();
+    const box = blockBox(node.style, ctx.x, ctx.availableWidth);
+    const savedX = ctx.x;
+    const savedAvailableWidth = ctx.availableWidth;
+    ctx.x = box.contentX;
+    ctx.availableWidth = box.contentWidth;
 
-  ctx.y += node.style.paddingBottom ?? 0;
+    ctx.y += node.style.marginTop ?? 0;
+    const startY = ctx.y;
+    ctx.y += node.style.paddingTop ?? 0;
 
-  const contentHeight = Math.max(1, ctx.y - startY);
-  node.layout = {
-    x: box.layoutX,
-    y: startY,
-    width: box.layoutWidth,
-    height: contentHeight,
-  };
+    let inlineBatch: StyledNode[] = [];
 
-  ctx.y += node.style.marginBottom ?? 0;
-  ctx.y += BLOCK_GAP;
+    const flushInlineBatch = () => {
+      if (inlineBatch.length === 0) return;
+      layoutInlineBatch(inlineBatch, ctx, viewport, box.contentWidth);
+      inlineBatch = [];
+    };
 
-  ctx.x = savedX;
-  ctx.availableWidth = savedAvailableWidth;
+    for (const child of node.children) {
+      if (isLineBreak(child)) {
+        flushInlineBatch();
+        ctx.y += 1;
+        continue;
+      }
 
-  recordFragmentPosition(node, ctx.fragmentPositions);
+      if (isListContainer(child)) {
+        flushInlineBatch();
+        layoutListContainer(child, ctx, viewport, {
+          addFragment: (target, fragment) => addTrackedFragment(ctx, target, fragment),
+          layoutListItemContent,
+          blockGap: BLOCK_GAP,
+        });
+        continue;
+      }
+
+      if (isBlock(child)) {
+        flushInlineBatch();
+        layoutBlock(child, ctx, viewport);
+        continue;
+      }
+
+      inlineBatch.push(child);
+    }
+
+    flushInlineBatch();
+
+    ctx.y += node.style.paddingBottom ?? 0;
+
+    const contentHeight = Math.max(1, ctx.y - startY);
+    node.layout = {
+      x: box.layoutX,
+      y: startY,
+      width: box.layoutWidth,
+      height: contentHeight,
+    };
+    noteLayoutY(ctx, startY);
+
+    ctx.y += node.style.marginBottom ?? 0;
+    ctx.y += BLOCK_GAP;
+
+    ctx.x = savedX;
+    ctx.availableWidth = savedAvailableWidth;
+  });
 }
 
 function layoutNode(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
@@ -354,11 +348,11 @@ function layoutNode(node: StyledNode, ctx: LayoutContext, viewport: Viewport): v
         break;
       }
 
-      for (const child of node.children) {
-        layoutNode(child, ctx, viewport);
-      }
-
-      recordFragmentPosition(node, ctx.fragmentPositions);
+      layoutFragmentScope(ctx, node, () => {
+        for (const child of node.children) {
+          layoutNode(child, ctx, viewport);
+        }
+      });
       break;
 
     case NodeType.Text:
@@ -391,6 +385,7 @@ export function layout(
     listDepth: 0,
     availableWidth: options.viewport.width,
     fragmentPositions,
+    fragmentAnchorStack: [],
   };
 
   layoutNode(node, ctx, options.viewport);

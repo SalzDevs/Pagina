@@ -1,6 +1,7 @@
 import { NodeType } from "../dom/node";
 import type { LayoutFragment, StyledNode } from "../style/style";
 import { blockBox } from "./box";
+import { noteLayoutY } from "./fragment-anchors";
 import type { LayoutContext, Viewport } from "./layout";
 
 export function isPreElement(node: StyledNode): boolean {
@@ -88,6 +89,7 @@ export function layoutPreBlock(
     width: box.layoutWidth,
     height: Math.max(1, ctx.y - startY),
   };
+  noteLayoutY(ctx, startY);
 
   ctx.y += node.style.marginBottom ?? 0;
   ctx.y += deps.blockGap;

@@ -1,6 +1,7 @@
 import { NodeType } from "../dom/node";
 import type { LayoutFragment, StyledNode } from "../style/style";
 import { blockBox } from "./box";
+import { noteLayoutY } from "./fragment-anchors";
 import type { LayoutContext } from "./layout";
 
 export const HR_CHARACTER = "─";
@@ -44,6 +45,7 @@ export function layoutHr(node: StyledNode, ctx: LayoutContext, deps: HrLayoutDep
     width: box.layoutWidth,
     height: Math.max(1, ctx.y - startY),
   };
+  noteLayoutY(ctx, startY);
 
   ctx.y += node.style.marginBottom ?? 0;
   ctx.y += deps.blockGap;

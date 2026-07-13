@@ -1,6 +1,7 @@
 import { NodeType } from "../dom/node";
 import type { LayoutFragment, StyledNode } from "../style/style";
 import { blockBox } from "./box";
+import { noteLayoutY, pushFragmentAnchor, popFragmentAnchor } from "./fragment-anchors";
 import type { LayoutContext, Viewport } from "./layout";
 
 export const LIST_INDENT = 2;
@@ -47,7 +48,6 @@ export interface ListItemLayoutOptions {
     contentWidth: number,
   ) => void;
   blockGap: number;
-  recordFragmentPosition?: (node: StyledNode) => void;
 }
 
 /** Lay out a single list item with a bullet or number marker. */
@@ -57,6 +57,8 @@ export function layoutListItem(
   viewport: Viewport,
   options: ListItemLayoutOptions,
 ): void {
+  pushFragmentAnchor(ctx, node);
+
   const depthIndent = listItemIndent(options.depth);
   const rowX = ctx.x + depthIndent;
   const rowAvailable = Math.max(1, ctx.availableWidth - depthIndent);
@@ -90,15 +92,15 @@ export function layoutListItem(
     width: box.layoutWidth,
     height: Math.max(1, ctx.y - itemStartY),
   };
+  noteLayoutY(ctx, itemStartY);
 
-  options.recordFragmentPosition?.(node);
+  popFragmentAnchor(ctx, node);
 }
 
 export interface ListContainerLayoutOptions {
   addFragment: ListItemLayoutOptions["addFragment"];
   layoutListItemContent: ListItemLayoutOptions["layoutListItemContent"];
   blockGap: number;
-  recordFragmentPosition?: ListItemLayoutOptions["recordFragmentPosition"];
 }
 
 /** Lay out the direct list items of a ul or ol element. */
@@ -131,7 +133,6 @@ export function layoutListContainer(
       addFragment: options.addFragment,
       layoutListItemContent: options.layoutListItemContent,
       blockGap: options.blockGap,
-      recordFragmentPosition: options.recordFragmentPosition,
     });
 
     if (ordered) counter += 1;
@@ -145,12 +146,11 @@ export function layoutListContainer(
     width: box.layoutWidth,
     height: Math.max(1, ctx.y - startY),
   };
+  noteLayoutY(ctx, startY);
 
   ctx.y += node.style.marginBottom ?? 0;
   ctx.y += options.blockGap;
 
   ctx.x = savedX;
   ctx.availableWidth = savedAvailableWidth;
-
-  options.recordFragmentPosition?.(node);
 }
