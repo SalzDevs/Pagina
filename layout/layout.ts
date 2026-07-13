@@ -1,5 +1,7 @@
 import { NodeType } from "../dom/node";
 import { lineHeightForFontSize } from "./line-height";
+import { isListContainer, layoutListContainer } from "./lists";
+import { isPreElement, layoutPreBlock } from "./pre";
 import type { LayoutFragment, StyledNode } from "../style/style";
 
 export interface LayoutBox {
@@ -21,6 +23,7 @@ export interface LayoutOptions {
 export interface LayoutContext {
   x: number;
   y: number;
+  listDepth: number;
 }
 
 interface InlineSegment {
@@ -73,7 +76,12 @@ function addFragment(node: StyledNode, fragment: LayoutFragment): void {
   node.fragments.push(fragment);
 }
 
-function wrapSegments(segments: InlineSegment[], contentWidth: number, startY: number): number {
+function wrapSegments(
+  segments: InlineSegment[],
+  contentWidth: number,
+  startY: number,
+  startX: number,
+): number {
   let currentY = startY;
   let lineRuns: LineRun[] = [];
   let lineWidth = 0;
@@ -84,7 +92,7 @@ function wrapSegments(segments: InlineSegment[], contentWidth: number, startY: n
 
     for (const run of lineRuns) {
       addFragment(run.node, {
-        x: run.x,
+        x: startX + run.x,
         y: currentY,
         width: run.width,
         height: lineHeight,
@@ -118,7 +126,7 @@ function wrapSegments(segments: InlineSegment[], contentWidth: number, startY: n
         while (offset < part.length) {
           const chunk = part.slice(offset, offset + contentWidth);
           addFragment(segment.node, {
-            x: 0,
+            x: startX,
             y: currentY,
             width: chunk.length,
             height: chunkHeight,
@@ -152,26 +160,43 @@ function wrapSegments(segments: InlineSegment[], contentWidth: number, startY: n
   return currentY;
 }
 
-function layoutInlineBatch(batch: StyledNode[], ctx: LayoutContext, viewport: Viewport): void {
+function layoutInlineBatch(
+  batch: StyledNode[],
+  ctx: LayoutContext,
+  viewport: Viewport,
+  contentWidth = viewport.width - ctx.x,
+): void {
   const segments: InlineSegment[] = [];
   for (const node of batch) {
     collectInlineSegments(node, segments);
   }
 
-  ctx.y = wrapSegments(segments, viewport.width, ctx.y);
-  ctx.x = 0;
+  ctx.y = wrapSegments(segments, contentWidth, ctx.y, ctx.x);
 }
 
-function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
-  ctx.y += node.style.marginTop ?? 0;
-  const startY = ctx.y;
+function layoutNestedList(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
+  ctx.listDepth += 1;
+  layoutListContainer(node, ctx, viewport, {
+    addFragment,
+    layoutListItemContent,
+    blockGap: BLOCK_GAP,
+  });
+  ctx.listDepth -= 1;
+}
+
+function layoutListItemContent(
+  node: StyledNode,
+  ctx: LayoutContext,
+  viewport: Viewport,
+  contentWidth: number,
+): void {
   ctx.y += node.style.paddingTop ?? 0;
 
   let inlineBatch: StyledNode[] = [];
 
   const flushInlineBatch = () => {
     if (inlineBatch.length === 0) return;
-    layoutInlineBatch(inlineBatch, ctx, viewport);
+    layoutInlineBatch(inlineBatch, ctx, viewport, contentWidth);
     inlineBatch = [];
   };
 
@@ -182,11 +207,79 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
       continue;
     }
 
+    if (isListContainer(child)) {
+      flushInlineBatch();
+      layoutNestedList(child, ctx, viewport);
+      continue;
+    }
+
     if (isBlock(child)) {
       flushInlineBatch();
+      layoutBlock(child, ctx, viewport);
+      continue;
+    }
+
+    inlineBatch.push(child);
+  }
+
+  flushInlineBatch();
+}
+
+function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
+  if (isListContainer(node)) {
+    layoutListContainer(node, ctx, viewport, {
+      addFragment,
+      layoutListItemContent,
+      blockGap: BLOCK_GAP,
+    });
+    return;
+  }
+
+  if (isPreElement(node)) {
+    layoutPreBlock(node, ctx, viewport, {
+      addFragment,
+      nodeLineHeight,
+      blockGap: BLOCK_GAP,
+    });
+    return;
+  }
+
+  ctx.y += node.style.marginTop ?? 0;
+  const startY = ctx.y;
+  ctx.y += node.style.paddingTop ?? 0;
+
+  const contentWidth = viewport.width - ctx.x;
+  let inlineBatch: StyledNode[] = [];
+
+  const flushInlineBatch = () => {
+    if (inlineBatch.length === 0) return;
+    layoutInlineBatch(inlineBatch, ctx, viewport, contentWidth);
+    inlineBatch = [];
+  };
+
+  for (const child of node.children) {
+    if (isLineBreak(child)) {
+      flushInlineBatch();
+      ctx.y += 1;
+      continue;
+    }
+
+    if (isListContainer(child)) {
+      flushInlineBatch();
+      layoutListContainer(child, ctx, viewport, {
+        addFragment,
+        layoutListItemContent,
+        blockGap: BLOCK_GAP,
+      });
+      continue;
+    }
+
+    if (isBlock(child)) {
+      flushInlineBatch();
+      const savedX = ctx.x;
       ctx.x = 0;
       layoutBlock(child, ctx, viewport);
-      ctx.x = 0;
+      ctx.x = savedX;
       continue;
     }
 
@@ -199,9 +292,9 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
 
   const contentHeight = Math.max(1, ctx.y - startY);
   node.layout = {
-    x: 0,
+    x: ctx.x,
     y: startY,
-    width: viewport.width,
+    width: contentWidth,
     height: contentHeight,
   };
 
@@ -251,6 +344,7 @@ export function layout(node: StyledNode, options: LayoutOptions = { viewport: DE
   const ctx: LayoutContext = {
     x: 0,
     y: 0,
+    listDepth: 0,
   };
 
   layoutNode(node, ctx, options.viewport);

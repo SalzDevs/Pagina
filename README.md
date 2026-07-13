@@ -39,6 +39,7 @@ bun test
 | Page | Command | What it demonstrates |
 |------|---------|----------------------|
 | `examples/page.html` | `bun run start` | Minimal home page |
+| `examples/lists-page.html` | `bun run index.ts examples/lists-page.html` | Bulleted and numbered lists |
 | `examples/links-page.html` | `bun run index.ts examples/links-page.html` | Link focus, click, keyboard nav |
 | `examples/other-page.html` | (via links demo) | Cross-page navigation |
 | `examples/styled-page.html` | `bun run index.ts examples/styled-page.html` | Inline CSS selectors |

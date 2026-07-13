@@ -97,6 +97,11 @@ function paintNode(
     case NodeType.Element: {
       paintBlockBackground(node, output.fills, viewportHeight);
 
+      if (node.fragments && node.fragments.length > 0) {
+        paintTextNode(node, output.texts, ctx);
+        return;
+      }
+
       if (node.dom.type === NodeType.Element && node.dom.tag === "a" && node.dom.attributes?.href) {
         const linkIndex = ctx.nextLinkIndex.value;
         ctx.nextLinkIndex.value += 1;
