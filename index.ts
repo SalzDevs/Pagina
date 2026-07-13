@@ -20,6 +20,7 @@ import { splitPageLocation } from "./navigation/fragment";
 import { convert } from "./parser/convert";
 import { parseHTML } from "./parser/html";
 import { BREADCRUMB_HEIGHT, mountBreadcrumb } from "./render/breadcrumb";
+import { mountHelpOverlay } from "./render/help-overlay";
 import type { MountLayout } from "./render/render";
 import { computeStyles, type StyledNode } from "./style/style";
 import { buildPageView } from "./viewport/page-view";
@@ -43,6 +44,8 @@ async function main() {
   });
 
   const breadcrumb = mountBreadcrumb(renderer);
+  const help = mountHelpOverlay(renderer);
+  let helpVisible = false;
   let history: BrowserHistory = createBrowserHistory();
   let session: BrowserSession | null = null;
   let loadedPage: LoadedPage | null = null;
@@ -59,6 +62,14 @@ async function main() {
     width: renderer.width,
     height: Math.max(1, renderer.height - BREADCRUMB_HEIGHT),
   });
+
+  const toggleHelp = () => {
+    helpVisible = !helpVisible;
+    help.setVisible(helpVisible);
+    breadcrumb.update(
+      helpVisible ? "Help — press ? to close" : formatBreadcrumb(history, renderer.width),
+    );
+  };
 
   const snapshotScrollIntoHistory = () => {
     if (history.index < 0 || !session) return;
@@ -100,7 +111,9 @@ async function main() {
       });
     }
 
-    breadcrumb.update(formatBreadcrumb(history, renderer.width));
+    breadcrumb.update(
+      helpVisible ? "Help — press ? to close" : formatBreadcrumb(history, renderer.width),
+    );
 
     const initialScrollY = clampScrollY(
       {
@@ -118,6 +131,8 @@ async function main() {
       fragmentPositions: view.fragmentPositions,
       initialScrollY,
       initialFocusedLinkIndex: previousFocusedLink,
+      isHelpVisible: () => helpVisible,
+      onToggleHelp: toggleHelp,
       onNavigate: (target, targetFragment) => loadPage(target, "push", targetFragment ?? null),
       onHistoryBack: async () => {
         snapshotScrollIntoHistory();
@@ -144,6 +159,7 @@ async function main() {
 
   const relayoutCurrentPage = () => {
     if (!loadedPage || !session) return;
+    help.resize(renderer.width, renderer.height);
     mountCurrentPage(null, "none", undefined, { preserveViewState: true });
   };
 
@@ -156,6 +172,11 @@ async function main() {
     const pageLocation = normalizePageLocation(location);
     breadcrumb.update(formatLoadingBreadcrumb(pageLocation, renderer.width));
     startRendererOnce();
+
+    if (helpVisible) {
+      helpVisible = false;
+      help.setVisible(false);
+    }
 
     if (historyMode === "push") {
       snapshotScrollIntoHistory();

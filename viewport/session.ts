@@ -10,6 +10,7 @@ import {
   type LinkFocusState,
 } from "../links/focus";
 import { handleHistoryKey } from "../navigation/history-keys";
+import { isHelpToggleKey } from "./help-key";
 import { isSamePage, parseLinkTarget } from "../navigation/fragment";
 import { scrollToFragment } from "../navigation/anchors";
 import type { DisplayList } from "../paint/display-list";
@@ -29,6 +30,8 @@ export interface BrowserSessionOptions {
   fragmentPositions: ReadonlyMap<string, number>;
   initialScrollY?: number;
   initialFocusedLinkIndex?: number | null;
+  isHelpVisible?: () => boolean;
+  onToggleHelp?: () => void;
   onNavigate: (location: string, fragment?: string | null) => void | Promise<void>;
   onHistoryBack?: () => void | Promise<void>;
   onHistoryForward?: () => void | Promise<void>;
@@ -149,6 +152,13 @@ export function createBrowserSession(
     },
     attach: () => {
       keyHandler = async (key) => {
+        if (isHelpToggleKey(key)) {
+          options.onToggleHelp?.();
+          return;
+        }
+
+        if (options.isHelpVisible?.()) return;
+
         const historyAction = handleHistoryKey(key);
         if (historyAction === "back") {
           await options.onHistoryBack?.();
@@ -178,6 +188,7 @@ export function createBrowserSession(
       renderer._internalKeyInput.onInternal("keypress", keyHandler);
 
       mouseScrollHandler = (event) => {
+        if (options.isHelpVisible?.()) return;
         if (!event.scroll) return;
 
         const delta = event.scroll.direction === "down" ? event.scroll.delta : -event.scroll.delta;
@@ -185,6 +196,8 @@ export function createBrowserSession(
       };
 
       mouseMoveHandler = (event) => {
+        if (options.isHelpVisible?.()) return;
+
         const point = mouseToDocumentPoint(event, options.layout, viewport.scrollY);
         const index = linkIndexAtPoint(links, point.x, point.y);
         if (index === linkFocus.focusedIndex) return;
@@ -192,6 +205,7 @@ export function createBrowserSession(
       };
 
       mouseUpHandler = (event) => {
+        if (options.isHelpVisible?.()) return;
         if (event.button !== 0 || event.type !== "up") return;
 
         const point = mouseToDocumentPoint(event, options.layout, viewport.scrollY);
