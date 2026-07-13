@@ -102,6 +102,9 @@ const HIDDEN_TAGS = new Set([
 /** Default left inset for blockquote elements (terminal columns). */
 export const BLOCKQUOTE_INDENT = 4;
 
+/** Vertical margin above and below horizontal rules. */
+export const HR_VERTICAL_MARGIN = 1;
+
 function uaDisplay(tag: string): Display {
   if (HIDDEN_TAGS.has(tag)) return "none";
   if (BLOCK_TAGS.has(tag)) return "block";
@@ -148,6 +151,13 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
       return {
         ...style,
         marginLeft: BLOCKQUOTE_INDENT,
+      };
+    case "hr":
+      return {
+        ...style,
+        marginTop: HR_VERTICAL_MARGIN,
+        marginBottom: HR_VERTICAL_MARGIN,
+        fg: "#666666",
       };
     default:
       return style;

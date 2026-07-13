@@ -1,6 +1,7 @@
 import { NodeType } from "../dom/node";
 import { blockBox } from "./box";
 import { lineHeightForFontSize } from "./line-height";
+import { isHrElement, layoutHr } from "./hr";
 import { isListContainer, layoutListContainer } from "./lists";
 import { isPreElement, layoutPreBlock } from "./pre";
 import type { LayoutFragment, StyledNode } from "../style/style";
@@ -241,6 +242,14 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
     layoutPreBlock(node, ctx, viewport, {
       addFragment,
       nodeLineHeight,
+      blockGap: BLOCK_GAP,
+    });
+    return;
+  }
+
+  if (isHrElement(node)) {
+    layoutHr(node, ctx, {
+      addFragment,
       blockGap: BLOCK_GAP,
     });
     return;
