@@ -56,16 +56,39 @@ export async function collectStylesheetRules(
   documentBase?: string,
 ): Promise<CssRule[]> {
   const sources = collectCssSources(root);
-  const rules: CssRule[] = [];
   const base = documentBase ?? pageLocation;
+  const fetchedCssByIndex = await fetchLinkedStylesheetCss(sources, base, pageLocation);
 
-  for (const source of sources) {
+  const rules: CssRule[] = [];
+
+  for (let index = 0; index < sources.length; index++) {
+    const source = sources[index]!;
+
     if (source.kind === "inline") {
       rules.push(...parseStylesheet(source.text));
       continue;
     }
 
-    if (!base) continue;
+    const css = fetchedCssByIndex.get(index);
+    if (css) rules.push(...parseStylesheet(css));
+  }
+
+  return rules;
+}
+
+async function fetchLinkedStylesheetCss(
+  sources: CssSource[],
+  base: string | undefined,
+  pageLocation: string | undefined,
+): Promise<Map<number, string>> {
+  const fetchedCssByIndex = new Map<number, string>();
+  if (!base) return fetchedCssByIndex;
+
+  const linkFetches: Array<{ index: number; promise: Promise<string | null> }> = [];
+
+  for (let index = 0; index < sources.length; index++) {
+    const source = sources[index]!;
+    if (source.kind !== "link") continue;
 
     const resourceLocation = resolveAgainstBase(
       source.href,
@@ -74,13 +97,24 @@ export async function collectStylesheetRules(
     );
     if (!resourceLocation) continue;
 
-    try {
-      const css = await loadText(resourceLocation);
-      rules.push(...parseStylesheet(css));
-    } catch {
-      continue;
-    }
+    linkFetches.push({
+      index,
+      promise: loadText(resourceLocation).catch(() => null),
+    });
   }
 
-  return rules;
+  if (linkFetches.length === 0) return fetchedCssByIndex;
+
+  const results = await Promise.all(
+    linkFetches.map(async ({ index, promise }) => ({
+      index,
+      css: await promise,
+    })),
+  );
+
+  for (const { index, css } of results) {
+    if (css !== null) fetchedCssByIndex.set(index, css);
+  }
+
+  return fetchedCssByIndex;
 }

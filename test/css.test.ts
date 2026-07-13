@@ -460,6 +460,70 @@ describe("collectStylesheetRules", () => {
       globalThis.fetch = originalFetch;
     }
   });
+
+  test("fetches linked stylesheets in parallel", async () => {
+    const originalFetch = globalThis.fetch;
+    const release: Array<() => void> = [];
+    let inFlight = 0;
+    let maxInFlight = 0;
+
+    globalThis.fetch = (async () => {
+      inFlight += 1;
+      maxInFlight = Math.max(maxInFlight, inFlight);
+      await new Promise<void>((resolve) => {
+        release.push(resolve);
+      });
+      inFlight -= 1;
+      return new Response("body { color: red; }", { status: 200 });
+    }) as typeof fetch;
+
+    try {
+      const dom = convert(
+        parseHTML(`
+          <link rel="stylesheet" href="a.css" />
+          <link rel="stylesheet" href="b.css" />
+        `),
+      );
+      const pending = collectStylesheetRules(dom, "https://example.com/page.html");
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(maxInFlight).toBe(2);
+
+      for (const resolve of release) resolve();
+      await pending;
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  test("merges inline and linked rules in document order", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async (input) => {
+      const url = String(input);
+      if (url.endsWith("first.css")) {
+        return new Response("body { color: red; }", { status: 200 });
+      }
+      if (url.endsWith("second.css")) {
+        return new Response("body { color: blue; }", { status: 200 });
+      }
+      return new Response("", { status: 404 });
+    }) as typeof fetch;
+
+    try {
+      const dom = convert(
+        parseHTML(`
+          <link rel="stylesheet" href="first.css" />
+          <style>body { color: white; }</style>
+          <link rel="stylesheet" href="second.css" />
+        `),
+      );
+      const rules = await collectStylesheetRules(dom, "https://example.com/page.html");
+
+      expect(rules.map((rule) => rule.declarations.color)).toEqual(["red", "white", "blue"]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });
 
 describe("parseInlineStyle", () => {
