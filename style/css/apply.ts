@@ -60,8 +60,12 @@ function mergeDeclarations(
 
   set("marginTop", declarations.marginTop);
   set("marginBottom", declarations.marginBottom);
+  set("marginLeft", declarations.marginLeft);
+  set("marginRight", declarations.marginRight);
   set("paddingTop", declarations.paddingTop);
   set("paddingBottom", declarations.paddingBottom);
+  set("paddingLeft", declarations.paddingLeft);
+  set("paddingRight", declarations.paddingRight);
 
   return next;
 }

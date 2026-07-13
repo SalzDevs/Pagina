@@ -30,9 +30,10 @@ describe("parseStylesheet", () => {
   });
 
   test("parses spacing properties", () => {
-    const rules = parseStylesheet("p { margin-top: 2; padding-bottom: 1; }");
+    const rules = parseStylesheet("p { margin-top: 2; padding-bottom: 1; margin-left: 3; }");
     expect(rules[0]?.declarations.marginTop).toBe(2);
     expect(rules[0]?.declarations.paddingBottom).toBe(1);
+    expect(rules[0]?.declarations.marginLeft).toBe(3);
   });
 
   test("parses font-size values", () => {

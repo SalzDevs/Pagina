@@ -1,5 +1,6 @@
 import { NodeType } from "../dom/node";
 import type { LayoutFragment, StyledNode } from "../style/style";
+import { blockBox } from "./box";
 import type { LayoutContext, Viewport } from "./layout";
 
 export function isPreElement(node: StyledNode): boolean {
@@ -59,11 +60,12 @@ export function layoutPreBlock(
   viewport: Viewport,
   deps: PreLayoutDeps,
 ): void {
+  const box = blockBox(node.style, ctx.x, ctx.availableWidth);
+
   ctx.y += node.style.marginTop ?? 0;
   const startY = ctx.y;
   ctx.y += node.style.paddingTop ?? 0;
 
-  const contentWidth = Math.max(1, viewport.width - ctx.x);
   const text = collectPreformattedText(node);
   const target = firstTextDescendant(node) ?? node;
   const lineHeight = deps.nodeLineHeight(target);
@@ -71,9 +73,9 @@ export function layoutPreBlock(
   ctx.y = layoutPreformattedLines(
     target,
     text,
-    ctx.x,
+    box.contentX,
     ctx.y,
-    contentWidth,
+    box.contentWidth,
     lineHeight,
     deps.addFragment,
   );
@@ -81,9 +83,9 @@ export function layoutPreBlock(
   ctx.y += node.style.paddingBottom ?? 0;
 
   node.layout = {
-    x: ctx.x,
+    x: box.layoutX,
     y: startY,
-    width: contentWidth,
+    width: box.layoutWidth,
     height: Math.max(1, ctx.y - startY),
   };
 

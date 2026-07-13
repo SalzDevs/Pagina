@@ -17,8 +17,12 @@ export interface ComputedStyle {
   fontSize?: number;
   marginTop?: number;
   marginBottom?: number;
+  marginLeft?: number;
+  marginRight?: number;
   paddingTop?: number;
   paddingBottom?: number;
+  paddingLeft?: number;
+  paddingRight?: number;
 }
 
 export interface LayoutFragment {
@@ -111,8 +115,12 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
     bg: inherited.bg,
     marginTop: inherited.marginTop,
     marginBottom: inherited.marginBottom,
+    marginLeft: inherited.marginLeft,
+    marginRight: inherited.marginRight,
     paddingTop: inherited.paddingTop,
     paddingBottom: inherited.paddingBottom,
+    paddingLeft: inherited.paddingLeft,
+    paddingRight: inherited.paddingRight,
     fontSize: inherited.fontSize,
   };
 

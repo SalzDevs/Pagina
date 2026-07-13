@@ -1,5 +1,6 @@
 import { NodeType } from "../dom/node";
 import type { LayoutFragment, StyledNode } from "../style/style";
+import { blockBox } from "./box";
 import type { LayoutContext, Viewport } from "./layout";
 
 export const LIST_INDENT = 2;
@@ -55,16 +56,18 @@ export function layoutListItem(
   viewport: Viewport,
   options: ListItemLayoutOptions,
 ): void {
-  const indent = listItemIndent(options.depth);
+  const depthIndent = listItemIndent(options.depth);
+  const rowX = ctx.x + depthIndent;
+  const rowAvailable = Math.max(1, ctx.availableWidth - depthIndent);
+  const box = blockBox(node.style, rowX, rowAvailable);
   const marker = formatListMarker(options.ordered, options.markerIndex);
-  const contentX = indent + marker.length;
-  const contentWidth = Math.max(1, viewport.width - contentX);
+  const markerX = Math.max(box.layoutX, box.contentX - marker.length);
 
   const itemStartY = ctx.y;
   ctx.y += node.style.marginTop ?? 0;
 
   options.addFragment(node, {
-    x: indent,
+    x: markerX,
     y: ctx.y,
     width: marker.length,
     height: 1,
@@ -72,8 +75,8 @@ export function layoutListItem(
   });
 
   const savedX = ctx.x;
-  ctx.x = contentX;
-  options.layoutListItemContent(node, ctx, viewport, contentWidth);
+  ctx.x = box.contentX;
+  options.layoutListItemContent(node, ctx, viewport, box.contentWidth);
   ctx.x = savedX;
 
   ctx.y += node.style.paddingBottom ?? 0;
@@ -81,9 +84,9 @@ export function layoutListItem(
   ctx.y += options.blockGap;
 
   node.layout = {
-    x: indent,
+    x: box.layoutX,
     y: itemStartY,
-    width: Math.max(1, viewport.width - indent),
+    width: box.layoutWidth,
     height: Math.max(1, ctx.y - itemStartY),
   };
 }
@@ -103,6 +106,12 @@ export function layoutListContainer(
 ): void {
   const ordered = node.dom.type === NodeType.Element && node.dom.tag === "ol";
   let counter = ordered ? orderedListStart(node) : 1;
+
+  const box = blockBox(node.style, ctx.x, ctx.availableWidth);
+  const savedX = ctx.x;
+  const savedAvailableWidth = ctx.availableWidth;
+  ctx.x = box.contentX;
+  ctx.availableWidth = box.contentWidth;
 
   ctx.y += node.style.marginTop ?? 0;
   const startY = ctx.y;
@@ -126,12 +135,15 @@ export function layoutListContainer(
   ctx.y += node.style.paddingBottom ?? 0;
 
   node.layout = {
-    x: 0,
+    x: box.layoutX,
     y: startY,
-    width: viewport.width,
+    width: box.layoutWidth,
     height: Math.max(1, ctx.y - startY),
   };
 
   ctx.y += node.style.marginBottom ?? 0;
   ctx.y += options.blockGap;
+
+  ctx.x = savedX;
+  ctx.availableWidth = savedAvailableWidth;
 }

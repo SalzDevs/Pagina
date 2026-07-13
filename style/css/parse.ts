@@ -14,13 +14,63 @@ function parseLength(value: string): number | undefined {
   const trimmed = value.trim();
   if (trimmed.length === 0) return undefined;
 
-  const match = trimmed.match(/^(-?\d+(?:\.\d+)?)(px|em|rem|%)?$/);
+  const match = trimmed.match(/^(-?\d+(?:\.\d+)?)(px|em|rem|%|ch)?$/);
   if (!match) return undefined;
 
   const amount = Number(match[1]);
   if (Number.isNaN(amount)) return undefined;
 
   return Math.max(0, Math.round(amount));
+}
+
+type SpacingSide = "Top" | "Right" | "Bottom" | "Left";
+
+function applySpacingShorthand(
+  declarations: CssDeclarations,
+  prefix: "margin" | "padding",
+  value: string,
+): void {
+  const parts = value.split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return;
+
+  const read = (index: number) => parseLength(parts[index]!);
+
+  const sides: Record<SpacingSide, number | undefined> = {
+    Top: undefined,
+    Right: undefined,
+    Bottom: undefined,
+    Left: undefined,
+  };
+
+  if (parts.length === 1) {
+    sides.Top = read(0);
+    sides.Right = read(0);
+    sides.Bottom = read(0);
+    sides.Left = read(0);
+  } else if (parts.length === 2) {
+    sides.Top = read(0);
+    sides.Bottom = read(0);
+    sides.Right = read(1);
+    sides.Left = read(1);
+  } else if (parts.length === 3) {
+    sides.Top = read(0);
+    sides.Right = read(1);
+    sides.Left = read(1);
+    sides.Bottom = read(2);
+  } else {
+    sides.Top = read(0);
+    sides.Right = read(1);
+    sides.Bottom = read(2);
+    sides.Left = read(3);
+  }
+
+  for (const side of ["Top", "Right", "Bottom", "Left"] as const) {
+    const spacing = sides[side];
+    if (spacing === undefined) continue;
+
+    const key = `${prefix}${side}` as keyof CssDeclarations;
+    declarations[key] = spacing;
+  }
 }
 
 function parseFontSize(value: string): number | undefined {
@@ -90,34 +140,30 @@ function parseDeclarations(block: string): CssDeclarations {
       case "margin-bottom":
         declarations.marginBottom = parseLength(value);
         break;
+      case "margin-left":
+        declarations.marginLeft = parseLength(value);
+        break;
+      case "margin-right":
+        declarations.marginRight = parseLength(value);
+        break;
       case "padding-top":
         declarations.paddingTop = parseLength(value);
         break;
       case "padding-bottom":
         declarations.paddingBottom = parseLength(value);
         break;
-      case "margin": {
-        const parts = value.split(/\s+/).filter(Boolean);
-        if (parts.length === 1) {
-          declarations.marginTop = parseLength(parts[0]!);
-          declarations.marginBottom = parseLength(parts[0]!);
-        } else if (parts.length >= 2) {
-          declarations.marginTop = parseLength(parts[0]!);
-          declarations.marginBottom = parseLength(parts[1]!);
-        }
+      case "padding-left":
+        declarations.paddingLeft = parseLength(value);
         break;
-      }
-      case "padding": {
-        const parts = value.split(/\s+/).filter(Boolean);
-        if (parts.length === 1) {
-          declarations.paddingTop = parseLength(parts[0]!);
-          declarations.paddingBottom = parseLength(parts[0]!);
-        } else if (parts.length >= 2) {
-          declarations.paddingTop = parseLength(parts[0]!);
-          declarations.paddingBottom = parseLength(parts[1]!);
-        }
+      case "padding-right":
+        declarations.paddingRight = parseLength(value);
         break;
-      }
+      case "margin":
+        applySpacingShorthand(declarations, "margin", value);
+        break;
+      case "padding":
+        applySpacingShorthand(declarations, "padding", value);
+        break;
     }
   }
 

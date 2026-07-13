@@ -1,4 +1,5 @@
 import { NodeType } from "../dom/node";
+import { blockBox } from "./box";
 import { lineHeightForFontSize } from "./line-height";
 import { isListContainer, layoutListContainer } from "./lists";
 import { isPreElement, layoutPreBlock } from "./pre";
@@ -24,6 +25,7 @@ export interface LayoutContext {
   x: number;
   y: number;
   listDepth: number;
+  availableWidth: number;
 }
 
 interface InlineSegment {
@@ -164,7 +166,7 @@ function layoutInlineBatch(
   batch: StyledNode[],
   ctx: LayoutContext,
   viewport: Viewport,
-  contentWidth = viewport.width - ctx.x,
+  contentWidth = ctx.availableWidth,
 ): void {
   const segments: InlineSegment[] = [];
   for (const node of batch) {
@@ -244,16 +246,21 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
     return;
   }
 
+  const box = blockBox(node.style, ctx.x, ctx.availableWidth);
+  const savedX = ctx.x;
+  const savedAvailableWidth = ctx.availableWidth;
+  ctx.x = box.contentX;
+  ctx.availableWidth = box.contentWidth;
+
   ctx.y += node.style.marginTop ?? 0;
   const startY = ctx.y;
   ctx.y += node.style.paddingTop ?? 0;
 
-  const contentWidth = viewport.width - ctx.x;
   let inlineBatch: StyledNode[] = [];
 
   const flushInlineBatch = () => {
     if (inlineBatch.length === 0) return;
-    layoutInlineBatch(inlineBatch, ctx, viewport, contentWidth);
+    layoutInlineBatch(inlineBatch, ctx, viewport, box.contentWidth);
     inlineBatch = [];
   };
 
@@ -276,10 +283,7 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
 
     if (isBlock(child)) {
       flushInlineBatch();
-      const savedX = ctx.x;
-      ctx.x = 0;
       layoutBlock(child, ctx, viewport);
-      ctx.x = savedX;
       continue;
     }
 
@@ -292,14 +296,17 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
 
   const contentHeight = Math.max(1, ctx.y - startY);
   node.layout = {
-    x: ctx.x,
+    x: box.layoutX,
     y: startY,
-    width: contentWidth,
+    width: box.layoutWidth,
     height: contentHeight,
   };
 
   ctx.y += node.style.marginBottom ?? 0;
   ctx.y += BLOCK_GAP;
+
+  ctx.x = savedX;
+  ctx.availableWidth = savedAvailableWidth;
 }
 
 function layoutNode(node: StyledNode, ctx: LayoutContext, viewport: Viewport): void {
@@ -345,6 +352,7 @@ export function layout(node: StyledNode, options: LayoutOptions = { viewport: DE
     x: 0,
     y: 0,
     listDepth: 0,
+    availableWidth: options.viewport.width,
   };
 
   layoutNode(node, ctx, options.viewport);

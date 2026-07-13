@@ -23,6 +23,10 @@ export interface CssDeclarations {
   display?: string;
   marginTop?: number;
   marginBottom?: number;
+  marginLeft?: number;
+  marginRight?: number;
   paddingTop?: number;
   paddingBottom?: number;
+  paddingLeft?: number;
+  paddingRight?: number;
 }
