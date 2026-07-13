@@ -27,6 +27,8 @@ export interface BrowserSessionOptions {
   documentBase: string;
   layout: MountLayout;
   fragmentPositions: ReadonlyMap<string, number>;
+  initialScrollY?: number;
+  initialFocusedLinkIndex?: number | null;
   onNavigate: (location: string, fragment?: string | null) => void | Promise<void>;
   onHistoryBack?: () => void | Promise<void>;
   onHistoryForward?: () => void | Promise<void>;
@@ -34,6 +36,7 @@ export interface BrowserSessionOptions {
 
 export interface BrowserSession {
   viewport: ScrollViewport;
+  focusedLinkIndex: number | null;
   attach: () => void;
   destroy: () => void;
   setFocusedLink: (focusedIndex: number | null) => void;
@@ -47,8 +50,14 @@ export function createBrowserSession(
   links: Link[],
   options: BrowserSessionOptions,
 ): BrowserSession {
-  let viewport = createScrollViewport(options.layout.height, contentHeight);
-  let linkFocus = createLinkFocusState();
+  let viewport = scrollTo(
+    createScrollViewport(options.layout.height, contentHeight),
+    options.initialScrollY ?? 0,
+  );
+  let linkFocus =
+    options.initialFocusedLinkIndex !== undefined
+      ? { focusedIndex: options.initialFocusedLinkIndex }
+      : createLinkFocusState();
   const mounted: MountedDisplayList = mountDisplayList(
     renderer,
     displayList,
@@ -115,6 +124,9 @@ export function createBrowserSession(
   return {
     get viewport() {
       return viewport;
+    },
+    get focusedLinkIndex() {
+      return linkFocus.focusedIndex;
     },
     setFocusedLink(focusedIndex: number | null) {
       syncLinkFocus({ focusedIndex }, false);

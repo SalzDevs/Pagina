@@ -1,7 +1,5 @@
-import { createCliRenderer } from "@opentui/core";
+import { CliRenderEvents, createCliRenderer } from "@opentui/core";
 
-import { collectLinks } from "./links/collect";
-import { layout } from "./layout/layout";
 import { loadHtml } from "./navigation/load";
 import { buildErrorPageHtml } from "./navigation/error-page";
 import {
@@ -18,18 +16,24 @@ import {
 import { normalizePageLocation } from "./navigation/location";
 import { resolveDocumentBase } from "./navigation/base-url";
 import { splitPageLocation } from "./navigation/fragment";
-import { collectFragmentPositions } from "./navigation/anchors";
 import { convert } from "./parser/convert";
 import { parseHTML } from "./parser/html";
-import { paint } from "./paint/paint";
 import { BREADCRUMB_HEIGHT, mountBreadcrumb } from "./render/breadcrumb";
-import { computeStyles } from "./style/style";
+import type { MountLayout } from "./render/render";
+import { computeStyles, type StyledNode } from "./style/style";
+import { buildPageView } from "./viewport/page-view";
 import { createBrowserSession, type BrowserSession } from "./viewport/session";
-import { measureContentHeight, measureDisplayListHeight } from "./viewport/visible";
+import { clampScrollY } from "./viewport/scroll";
 
 const DEFAULT_PAGE = "examples/page.html";
 
 type HistoryMode = "push" | "none";
+
+interface LoadedPage {
+  pageLocation: string;
+  documentBase: string;
+  styled: StyledNode;
+}
 
 async function main() {
   const renderer = await createCliRenderer({
@@ -40,6 +44,7 @@ async function main() {
   const breadcrumb = mountBreadcrumb(renderer);
   let history: BrowserHistory = createBrowserHistory();
   let session: BrowserSession | null = null;
+  let loadedPage: LoadedPage | null = null;
   let rendererStarted = false;
 
   const startRendererOnce = () => {
@@ -48,66 +53,58 @@ async function main() {
     rendererStarted = true;
   };
 
-  const contentLayout = () => ({
+  const contentLayout = (): MountLayout => ({
     top: BREADCRUMB_HEIGHT,
     width: renderer.width,
     height: Math.max(1, renderer.height - BREADCRUMB_HEIGHT),
   });
 
-  const loadPage = async (
-    location: string,
-    historyMode: HistoryMode = "push",
+  const mountCurrentPage = (
     fragment: string | null = null,
+    historyMode: HistoryMode = "none",
+    pageTitle?: string,
+    preserveViewState = false,
   ) => {
-    const pageLocation = normalizePageLocation(location);
-    breadcrumb.update(formatLoadingBreadcrumb(pageLocation, renderer.width));
-    startRendererOnce();
+    if (!loadedPage) return;
+
+    const previousScrollY = preserveViewState ? (session?.viewport.scrollY ?? 0) : 0;
+    const previousFocusedLink = preserveViewState ? (session?.focusedLinkIndex ?? null) : null;
 
     session?.destroy();
 
-    let html: string;
-    try {
-      html = await loadHtml(pageLocation);
-    } catch (error) {
-      html = buildErrorPageHtml(pageLocation, error);
-    }
-
-    const document = parseHTML(html);
-    const dom = convert(document);
-    const documentBase = resolveDocumentBase(dom, pageLocation);
-    const pageTitle = extractPageTitle(dom);
-    const styled = await computeStyles(dom, { pageLocation, documentBase });
-
     const chrome = contentLayout();
-    layout(styled, {
-      viewport: {
-        width: chrome.width,
-        height: chrome.height,
-      },
+    breadcrumb.resize(renderer.width);
+
+    const view = buildPageView(loadedPage.styled, {
+      width: chrome.width,
+      height: chrome.height,
     });
 
-    const displayList = paint(styled, { viewportHeight: chrome.height });
-    const links = collectLinks(styled);
-    const fragmentPositions = collectFragmentPositions(styled);
-    const contentHeight = Math.max(
-      measureContentHeight(styled),
-      measureDisplayListHeight(displayList),
-    );
-
-    if (historyMode === "push") {
+    if (historyMode === "push" && pageTitle !== undefined) {
       history = pushHistory(history, {
-        location: pageLocation,
-        label: historyEntryLabel(pageLocation, pageTitle),
+        location: loadedPage.pageLocation,
+        label: historyEntryLabel(loadedPage.pageLocation, pageTitle),
       });
     }
 
     breadcrumb.update(formatBreadcrumb(history, renderer.width));
 
-    session = createBrowserSession(renderer, displayList, contentHeight, links, {
-      pageLocation,
-      documentBase,
+    const initialScrollY = clampScrollY(
+      {
+        scrollY: previousScrollY,
+        viewportHeight: chrome.height,
+        contentHeight: view.contentHeight,
+      },
+      previousScrollY,
+    );
+
+    session = createBrowserSession(renderer, view.displayList, view.contentHeight, view.links, {
+      pageLocation: loadedPage.pageLocation,
+      documentBase: loadedPage.documentBase,
       layout: chrome,
-      fragmentPositions,
+      fragmentPositions: view.fragmentPositions,
+      initialScrollY,
+      initialFocusedLinkIndex: previousFocusedLink,
       onNavigate: (target, targetFragment) => loadPage(target, "push", targetFragment ?? null),
       onHistoryBack: async () => {
         const result = goBack(history);
@@ -129,6 +126,47 @@ async function main() {
 
     session.attach();
   };
+
+  const relayoutCurrentPage = () => {
+    if (!loadedPage || !session) return;
+    mountCurrentPage(null, "none", undefined, true);
+  };
+
+  const loadPage = async (
+    location: string,
+    historyMode: HistoryMode = "push",
+    fragment: string | null = null,
+  ) => {
+    const pageLocation = normalizePageLocation(location);
+    breadcrumb.update(formatLoadingBreadcrumb(pageLocation, renderer.width));
+    startRendererOnce();
+
+    session?.destroy();
+    session = null;
+
+    let html: string;
+    try {
+      html = await loadHtml(pageLocation);
+    } catch (error) {
+      html = buildErrorPageHtml(pageLocation, error);
+    }
+
+    const document = parseHTML(html);
+    const dom = convert(document);
+    const documentBase = resolveDocumentBase(dom, pageLocation);
+    const pageTitle = extractPageTitle(dom);
+    const styled = await computeStyles(dom, { pageLocation, documentBase });
+
+    loadedPage = {
+      pageLocation,
+      documentBase,
+      styled,
+    };
+
+    mountCurrentPage(fragment, historyMode, pageTitle, false);
+  };
+
+  renderer.on(CliRenderEvents.RESIZE, relayoutCurrentPage);
 
   const initial = splitPageLocation(process.argv[2] ?? DEFAULT_PAGE);
   await loadPage(

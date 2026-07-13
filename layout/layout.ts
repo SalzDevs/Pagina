@@ -227,8 +227,19 @@ function layoutNode(node: StyledNode, ctx: LayoutContext, viewport: Viewport): v
   }
 }
 
+function clearLayout(node: StyledNode): void {
+  delete node.layout;
+  delete node.fragments;
+
+  for (const child of node.children) {
+    clearLayout(child);
+  }
+}
+
 /** Compute geometry for a styled tree. */
 export function layout(node: StyledNode, options: LayoutOptions = { viewport: DEFAULT_VIEWPORT }): void {
+  clearLayout(node);
+
   const ctx: LayoutContext = {
     x: 0,
     y: 0,

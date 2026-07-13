@@ -6,6 +6,7 @@ export const BREADCRUMB_HEIGHT = 1;
 export interface BreadcrumbBar {
   height: number;
   update: (text: string) => void;
+  resize: (width: number) => void;
   destroy: () => void;
 }
 
@@ -43,6 +44,11 @@ export function mountBreadcrumb(renderer: CliRenderer): BreadcrumbBar {
     height: BREADCRUMB_HEIGHT,
     update(content: string) {
       text.content = content;
+      renderer.requestRender();
+    },
+    resize(width: number) {
+      bar.width = width;
+      text.width = Math.max(0, width - 1);
       renderer.requestRender();
     },
     destroy() {
