@@ -1,6 +1,6 @@
 import type { KeyEvent } from "@opentui/core";
 
-import type { DisplayCommand, DisplayList } from "../paint/display-list";
+import type { DisplayCommand, DisplayList, TextCommand } from "../paint/display-list";
 import { isTextCommand } from "../paint/display-list";
 import type { ScrollViewport } from "../viewport/scroll";
 import { scrollToRevealY } from "../viewport/scroll";
@@ -39,6 +39,50 @@ export function focusPreviousLink(state: LinkFocusState, linkCount: number): Lin
 
 export function commandMatchesLink(command: DisplayCommand, linkIndex: number): boolean {
   return isTextCommand(command) && command.linkIndex === linkIndex;
+}
+
+/** Map each link index to its text command indices in a display list. */
+export function linkCommandIndices(displayList: DisplayList): Map<number, number[]> {
+  const indices = new Map<number, number[]>();
+
+  for (const [commandIndex, command] of displayList.entries()) {
+    if (!isTextCommand(command) || command.linkIndex === undefined) continue;
+
+    const bucket = indices.get(command.linkIndex) ?? [];
+    bucket.push(commandIndex);
+    indices.set(command.linkIndex, bucket);
+  }
+
+  return indices;
+}
+
+export interface FocusedTextStyle {
+  fg?: string;
+  bg?: string;
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+}
+
+/** Return text styles for a link command, focused or at rest. */
+export function textLinkFocusStyle(command: TextCommand, focused: boolean): FocusedTextStyle {
+  if (focused) {
+    return {
+      fg: FOCUSED_LINK_FG,
+      bg: FOCUSED_LINK_BG,
+      bold: command.bold,
+      italic: command.italic,
+      underline: true,
+    };
+  }
+
+  return {
+    fg: command.fg,
+    bg: command.bg,
+    bold: command.bold,
+    italic: command.italic,
+    underline: command.underline,
+  };
 }
 
 export function applyLinkFocus(

@@ -9,8 +9,12 @@ import {
   createLinkFocusState,
   focusNextLink,
   focusPreviousLink,
+  FOCUSED_LINK_BG,
+  FOCUSED_LINK_FG,
   handleLinkKey,
+  linkCommandIndices,
   scrollToFocusedLink,
+  textLinkFocusStyle,
 } from "../links/focus";
 import { loadHtmlFromFile } from "../navigation/load";
 import { resolveHref } from "../navigation/resolve";
@@ -178,6 +182,25 @@ describe("link focus", () => {
     expect(focused[0]?.bg).toBeUndefined();
     expect(focused[1]?.bg).toBeUndefined();
     expect(focused[2]?.bg).toBe("#264f78");
+  });
+
+  test("indexes link command positions for targeted focus updates", () => {
+    const displayList = [
+      { kind: "text" as const, x: 0, y: 0, text: "plain" },
+      { kind: "text" as const, x: 0, y: 1, text: "other", linkIndex: 0 },
+      { kind: "text" as const, x: 0, y: 2, text: "styled", linkIndex: 1 },
+      { kind: "text" as const, x: 0, y: 3, text: "also styled", linkIndex: 1 },
+    ];
+
+    expect(linkCommandIndices(displayList).get(0)).toEqual([1]);
+    expect(linkCommandIndices(displayList).get(1)).toEqual([2, 3]);
+    expect(textLinkFocusStyle(displayList[2]!, true)).toEqual({
+      fg: FOCUSED_LINK_FG,
+      bg: FOCUSED_LINK_BG,
+      bold: undefined,
+      italic: undefined,
+      underline: true,
+    });
   });
 
   test("scrolls the viewport to reveal a link on examples/long-page.html", async () => {

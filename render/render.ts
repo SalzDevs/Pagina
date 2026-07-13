@@ -1,8 +1,8 @@
 import type { CliRenderer } from "@opentui/core";
 import { BoxRenderable, TextRenderable, createTextAttributes } from "@opentui/core";
 
-import { applyLinkFocus } from "../links/focus";
 import type { DisplayCommand, DisplayList, FillCommand, TextCommand } from "../paint/display-list";
+import { textLinkFocusStyle } from "../links/focus";
 import { commandBottom, isFillCommand, isTextCommand } from "../paint/display-list";
 
 export interface RenderOptions {
@@ -32,6 +32,62 @@ export interface MountedDisplayList {
 type MountedCommand =
   | { kind: "fill"; commandIndex: number; renderable: BoxRenderable }
   | { kind: "text"; commandIndex: number; renderable: TextRenderable };
+
+interface LinkMount {
+  commandIndex: number;
+  renderable: TextRenderable;
+}
+
+function applyTextLinkStyle(
+  renderable: TextRenderable,
+  command: TextCommand,
+  focused: boolean,
+): void {
+  const style = textLinkFocusStyle(command, focused);
+  renderable.fg = style.fg;
+  renderable.bg = style.bg;
+  renderable.attributes = createTextAttributes({
+    bold: style.bold,
+    italic: style.italic,
+    underline: style.underline,
+  });
+}
+
+function rebuildLinkMounts(
+  displayList: DisplayList,
+  mountedCommands: MountedCommand[],
+  linkMounts: Map<number, LinkMount[]>,
+): void {
+  linkMounts.clear();
+
+  for (const mounted of mountedCommands) {
+    if (mounted.kind !== "text") continue;
+
+    const command = displayList[mounted.commandIndex];
+    if (!command || !isTextCommand(command) || command.linkIndex === undefined) continue;
+
+    const bucket = linkMounts.get(command.linkIndex) ?? [];
+    bucket.push({
+      commandIndex: mounted.commandIndex,
+      renderable: mounted.renderable,
+    });
+    linkMounts.set(command.linkIndex, bucket);
+  }
+}
+
+function updateLinkFocus(
+  displayList: DisplayList,
+  linkMounts: Map<number, LinkMount[]>,
+  linkIndex: number,
+  focused: boolean,
+): void {
+  for (const mount of linkMounts.get(linkIndex) ?? []) {
+    const command = displayList[mount.commandIndex];
+    if (!command || !isTextCommand(command)) continue;
+
+    applyTextLinkStyle(mount.renderable, command, focused);
+  }
+}
 
 function applyTextCommand(renderable: TextRenderable, command: TextCommand): void {
   renderable.content = command.text;
@@ -192,6 +248,7 @@ export function mountDisplayList(
   let currentDisplayList = displayList;
   let currentFocusedLinkIndex = focusedLinkIndex;
   const mountedCommands: MountedCommand[] = [];
+  const linkMounts = new Map<number, LinkMount[]>();
 
   const applyLayout = (nextLayout: MountLayout, nextContentHeight: number) => {
     viewport.width = nextLayout.width;
@@ -201,11 +258,26 @@ export function mountDisplayList(
     content.height = Math.max(nextContentHeight, nextLayout.height);
   };
 
-  const syncDisplayList = (nextFocusedLinkIndex: number | null = currentFocusedLinkIndex) => {
-    currentFocusedLinkIndex = nextFocusedLinkIndex;
-    const styledList = applyLinkFocus(currentDisplayList, currentFocusedLinkIndex);
-    syncMountedCommands(renderer, content, styledList, mountedCommands);
+  const applyFocus = (focusedIndex: number | null) => {
+    if (currentFocusedLinkIndex === focusedIndex) return;
+
+    if (currentFocusedLinkIndex !== null) {
+      updateLinkFocus(currentDisplayList, linkMounts, currentFocusedLinkIndex, false);
+    }
+
+    if (focusedIndex !== null) {
+      updateLinkFocus(currentDisplayList, linkMounts, focusedIndex, true);
+    }
+
+    currentFocusedLinkIndex = focusedIndex;
     renderer.requestRender();
+  };
+
+  const syncDisplayList = (nextFocusedLinkIndex: number | null = currentFocusedLinkIndex) => {
+    syncMountedCommands(renderer, content, currentDisplayList, mountedCommands);
+    rebuildLinkMounts(currentDisplayList, mountedCommands, linkMounts);
+    currentFocusedLinkIndex = null;
+    applyFocus(nextFocusedLinkIndex);
   };
 
   applyLayout(layout, contentHeight);
@@ -213,28 +285,6 @@ export function mountDisplayList(
 
   viewport.add(content);
   renderer.root.add(viewport);
-
-  const applyFocus = (focusedIndex: number | null) => {
-    const nextList = applyLinkFocus(currentDisplayList, focusedIndex);
-
-    for (const mounted of mountedCommands) {
-      if (mounted.kind !== "text") continue;
-
-      const command = nextList[mounted.commandIndex];
-      if (!command || !isTextCommand(command)) continue;
-
-      mounted.renderable.fg = command.fg;
-      mounted.renderable.bg = command.bg;
-      mounted.renderable.attributes = createTextAttributes({
-        bold: command.bold,
-        italic: command.italic,
-        underline: command.underline,
-      });
-    }
-
-    currentFocusedLinkIndex = focusedIndex;
-    renderer.requestRender();
-  };
 
   return {
     setScrollY(scrollY: number) {
