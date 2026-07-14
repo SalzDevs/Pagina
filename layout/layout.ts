@@ -7,7 +7,11 @@ import {
   pushFragmentAnchor,
   type FragmentTracking,
 } from "./fragment-anchors";
-import { lineHeightForFontSize } from "./line-height";
+import {
+  lineHeightForFontSize,
+  textWrapUnits,
+  wrapCharacterBudget,
+} from "./line-height";
 import { isHrElement, layoutHr } from "./hr";
 import { isListContainer, layoutListContainer } from "./lists";
 import { LayoutOutput } from "./output";
@@ -90,6 +94,7 @@ function wrapSegments(
   let currentY = startY;
   let lineRuns: LineRun[] = [];
   let lineWidth = 0;
+  let lineUnits = 0;
 
   const flushLine = () => {
     const lineHeight =
@@ -111,6 +116,7 @@ function wrapSegments(
 
     lineRuns = [];
     lineWidth = 0;
+    lineUnits = 0;
   };
 
   for (const segment of segments) {
@@ -120,16 +126,19 @@ function wrapSegments(
     }
 
     const parts = segment.text.split(/(\s+)/).filter((part) => part.length > 0);
+    const segmentFontSize = segment.node.style.fontSize;
 
     for (const part of parts) {
       const partWidth = part.length;
-      const spaceRemaining = contentWidth - lineWidth;
+      const partUnits = textWrapUnits(part, segmentFontSize);
+      const spaceRemainingUnits = contentWidth - lineUnits;
+      const maxCharsOnLine = wrapCharacterBudget(contentWidth, segmentFontSize);
 
-      if (partWidth > contentWidth && lineRuns.length === 0) {
+      if (partUnits > contentWidth && lineRuns.length === 0) {
         const chunkHeight = nodeLineHeight(segment.node);
         let offset = 0;
         while (offset < part.length) {
-          const chunk = part.slice(offset, offset + contentWidth);
+          const chunk = part.slice(offset, offset + maxCharsOnLine);
           addTrackedFragment(ctx, segment.node, {
             x: startX,
             y: currentY,
@@ -138,12 +147,12 @@ function wrapSegments(
             text: chunk,
           });
           currentY += chunkHeight;
-          offset += contentWidth;
+          offset += maxCharsOnLine;
         }
         continue;
       }
 
-      if (lineRuns.length > 0 && partWidth > spaceRemaining && !/^\s+$/.test(part)) {
+      if (lineRuns.length > 0 && partUnits > spaceRemainingUnits && !/^\s+$/.test(part)) {
         flushLine();
       }
 
@@ -158,6 +167,7 @@ function wrapSegments(
         width: partWidth,
       });
       lineWidth += partWidth;
+      lineUnits += partUnits;
     }
   }
 

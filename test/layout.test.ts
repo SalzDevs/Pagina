@@ -29,6 +29,22 @@ function fragmentHeight(node: StyledNode | undefined, output: LayoutOutput): num
   return node?.children.flatMap((child) => output.getFragments(child))[0]?.height ?? 0;
 }
 
+function lineCount(node: StyledNode | undefined, output: LayoutOutput): number {
+  const fragments = node?.children.flatMap((child) => output.getFragments(child)) ?? [];
+  return new Set(fragments.map((fragment) => fragment.y)).size;
+}
+
+function maxLineLength(node: StyledNode | undefined, output: LayoutOutput): number {
+  const fragments = node?.children.flatMap((child) => output.getFragments(child)) ?? [];
+  const byLine = new Map<number, number>();
+
+  for (const fragment of fragments) {
+    byLine.set(fragment.y, (byLine.get(fragment.y) ?? 0) + fragment.text.length);
+  }
+
+  return Math.max(0, ...byLine.values());
+}
+
 describe("layout", () => {
   test("wraps long lines to the viewport width", async () => {
     const html = "<p>hello terminal browser engine</p>";
@@ -127,5 +143,50 @@ describe("layout", () => {
 
     expect(fragmentHeight(lead, laidOut.output)).toBe(2);
     expect(fragmentHeight(small, laidOut.output)).toBe(1);
+  });
+
+  test("wraps large font-size text before the viewport width", async () => {
+    const text = "alpha beta gamma delta epsilon zeta eta theta";
+    const html = `<p>${text}</p><h1>${text}</h1>`;
+    const styled = await computeStyles(convert(parseHTML(html)));
+
+    const laidOut = layout(styled, { viewport: { width: 20, height: 20 } });
+
+    const paragraph = findParagraph(styled);
+    const heading = findHeading(styled, "h1");
+
+    expect(lineCount(heading, laidOut.output)).toBeGreaterThan(lineCount(paragraph, laidOut.output));
+    expect(maxLineLength(heading, laidOut.output)).toBeLessThan(
+      maxLineLength(paragraph, laidOut.output),
+    );
+  });
+
+  test("wraps author font-size text using scaled line budgets", async () => {
+    const text = "one two three four five six seven eight nine ten";
+    const html = `
+      <style>
+        p.large { font-size: 2em; }
+      </style>
+      <p>${text}</p>
+      <p class="large">${text}</p>
+    `;
+    const styled = await computeStyles(convert(parseHTML(html)));
+
+    const laidOut = layout(styled, { viewport: { width: 16, height: 20 } });
+    const body = findBody(styled);
+    const normal = body?.children.find(
+      (child) =>
+        child.dom.type === "element" &&
+        child.dom.tag === "p" &&
+        child.dom.attributes?.class === undefined,
+    );
+    const large = body?.children.find(
+      (child) =>
+        child.dom.type === "element" &&
+        child.dom.tag === "p" &&
+        child.dom.attributes?.class === "large",
+    );
+
+    expect(lineCount(large, laidOut.output)).toBeGreaterThan(lineCount(normal, laidOut.output));
   });
 });

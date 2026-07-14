@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 
-import { lineHeightForFontSize } from "../layout/line-height";
+import {
+  lineHeightForFontSize,
+  textWrapUnits,
+  wrapCharacterBudget,
+} from "../layout/line-height";
 
 describe("lineHeightForFontSize", () => {
   test("uses one row for base and smaller sizes", () => {
@@ -13,5 +17,20 @@ describe("lineHeightForFontSize", () => {
     expect(lineHeightForFontSize(1.17)).toBe(2);
     expect(lineHeightForFontSize(1.5)).toBe(2);
     expect(lineHeightForFontSize(2)).toBe(3);
+  });
+});
+
+describe("wrapCharacterBudget", () => {
+  test("scales character budget inversely with font size", () => {
+    expect(wrapCharacterBudget(30)).toBe(30);
+    expect(wrapCharacterBudget(30, 1.5)).toBe(20);
+    expect(wrapCharacterBudget(30, 2)).toBe(15);
+  });
+});
+
+describe("textWrapUnits", () => {
+  test("weights text length by font size", () => {
+    expect(textWrapUnits("hello")).toBe(5);
+    expect(textWrapUnits("hello", 2)).toBe(10);
   });
 });
