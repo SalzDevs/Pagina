@@ -1,4 +1,7 @@
+import { DEFAULT_MEDIA_CONTEXT, matchesMediaQueryList, type MediaContext } from "./media";
 import type { CssDeclarations, CssRule, CssSelector, SimpleSelector } from "./types";
+
+export type { MediaContext } from "./media";
 
 const FONT_SIZE_KEYWORDS: Record<string, number> = {
   "xx-small": 0.6,
@@ -245,7 +248,10 @@ function readAtRuleName(css: string, start: number): { name: string; end: number
 }
 
 /** Remove or unwrap at-rules so the remaining CSS parses as plain rule blocks. */
-export function preprocessStylesheet(css: string): string {
+export function preprocessStylesheet(
+  css: string,
+  context: MediaContext = DEFAULT_MEDIA_CONTEXT,
+): string {
   let result = "";
   let index = 0;
 
@@ -260,10 +266,11 @@ export function preprocessStylesheet(css: string): string {
       if (braceIndex >= css.length) break;
 
       const blockEnd = skipBlock(css, braceIndex);
+      const condition = css.slice(end, braceIndex).trim();
+      const inner = css.slice(braceIndex + 1, blockEnd);
 
-      if (name === "media" || name === "supports") {
-        const inner = css.slice(braceIndex + 1, blockEnd);
-        result += preprocessStylesheet(inner);
+      if (name === "media" && matchesMediaQueryList(condition, context)) {
+        result += preprocessStylesheet(inner, context);
       }
 
       index = blockEnd + 1;
@@ -321,9 +328,12 @@ function extractRuleBlocks(css: string): Array<{ selectorText: string; body: str
 }
 
 /** Parse a minimal stylesheet into rules. */
-export function parseStylesheet(css: string): CssRule[] {
+export function parseStylesheet(
+  css: string,
+  context: MediaContext = DEFAULT_MEDIA_CONTEXT,
+): CssRule[] {
   const rules: CssRule[] = [];
-  const normalized = preprocessStylesheet(css);
+  const normalized = preprocessStylesheet(css, context);
 
   for (const block of extractRuleBlocks(normalized)) {
     const selectors = block.selectorText

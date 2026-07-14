@@ -5,15 +5,18 @@ import { loadPageContent } from "../navigation/load-page";
 import { PageCache, resolveLoadedPage, type LoadedPageContent } from "../navigation/page-cache";
 
 function stubPage(overrides: Partial<LoadedPageContent> = {}): LoadedPageContent {
+  const dom = { type: NodeType.Document, children: [] };
   return {
     pageLocation: "examples/page.html",
     documentBase: "examples/page.html",
+    dom,
     styled: {
-      dom: { type: NodeType.Document, children: [] },
+      dom,
       style: { display: "block", bold: false, italic: false, underline: false },
       children: [],
     },
     isErrorPage: false,
+    stylesViewportWidth: 80,
     ...overrides,
   };
 }

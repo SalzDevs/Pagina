@@ -89,12 +89,29 @@ load → parseHTML → convert → computeStyles → layout → paint → mountD
 
 - Local and remote pages
 - `<link rel="stylesheet">`, `<style>`, and inline CSS
+- Basic `@media` queries (`screen`, `min-width`, `max-width` against terminal columns)
 - `<base href>` for relative URLs
 - Back/forward history with scroll restoration
 - Fragment (`#section`) navigation
 - Navigable error pages when loads fail
 - Terminal resize relayout
 - Mouse hover, click, and wheel scrolling
+
+## CSS support
+
+Pagina implements a small subset of CSS aimed at terminal rendering. Supported today:
+
+- Selectors: tag, class, id, and simple descendant chains
+- Common text and box properties (`color`, `background`, spacing, `font-size`, etc.)
+- `@media` queries for `screen`, `min-width`, and `max-width` (compared against terminal columns; `ch` and `px` map 1:1 to columns)
+
+Not supported or ignored:
+
+- `@supports`, `@keyframes`, and most other at-rules
+- Complex selectors (`:hover`, `::before`, attribute selectors)
+- `@media` features beyond width (orientation, resolution, etc.)
+
+Media queries are evaluated when styles are computed and re-evaluated on terminal resize.
 
 ## License
 

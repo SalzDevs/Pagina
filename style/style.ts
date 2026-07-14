@@ -3,6 +3,7 @@ import type { Node } from "../dom/node";
 import { NodeType } from "../dom/node";
 import { applyAuthorStyles } from "./css/apply";
 import { collectStylesheetRules } from "./css/collect";
+import { DEFAULT_MEDIA_CONTEXT } from "./css/media";
 import { buildRuleIndex, type CssRuleIndex } from "./css/index";
 import type { CssRule } from "./css/types";
 
@@ -208,6 +209,7 @@ function styleNode(
 export interface ComputeStylesOptions {
   pageLocation?: string;
   documentBase?: string;
+  viewportWidth?: number;
 }
 
 /** Apply user-agent defaults and author CSS to a DOM tree. */
@@ -216,7 +218,10 @@ export async function computeStyles(
   options: ComputeStylesOptions = {},
 ): Promise<StyledNode> {
   const documentBase = options.documentBase ?? options.pageLocation;
-  const rules = await collectStylesheetRules(root, options.pageLocation, documentBase);
+  const viewportWidth = options.viewportWidth ?? DEFAULT_MEDIA_CONTEXT.viewportWidth;
+  const rules = await collectStylesheetRules(root, options.pageLocation, documentBase, {
+    viewportWidth,
+  });
   const ruleIndex = buildRuleIndex(rules);
   const ancestors: Node[] = [];
   const styled = styleNode(root, DEFAULT_STYLE, rules, ruleIndex, ancestors);

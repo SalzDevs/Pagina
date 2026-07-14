@@ -1,6 +1,7 @@
 import { CliRenderEvents, createCliRenderer } from "@opentui/core";
 
 import { loadPageContent } from "./navigation/load-page";
+import { computeStyles } from "./style/style";
 import {
   createBrowserHistory,
   formatBreadcrumb,
@@ -150,13 +151,32 @@ async function main() {
     session.attach();
   };
 
-  const relayoutCurrentPage = () => {
+  const ensureStylesForViewport = async (page: LoadedPage, viewportWidth: number) => {
+    if (page.stylesViewportWidth === viewportWidth) return page;
+
+    const styled = await computeStyles(page.dom, {
+      pageLocation: page.pageLocation,
+      documentBase: page.documentBase,
+      viewportWidth,
+    });
+    const updated = {
+      ...page,
+      styled,
+      stylesViewportWidth: viewportWidth,
+    };
+    pageCache.set(updated);
+    return updated;
+  };
+
+  const relayoutCurrentPage = async () => {
     if (!loadedPage || !session) return;
 
     help.resize(renderer.width, renderer.height);
     breadcrumb.resize(renderer.width);
 
     const chrome = contentLayout();
+    loadedPage = await ensureStylesForViewport(loadedPage, chrome.width);
+
     const view = buildPageView(loadedPage.styled, {
       width: chrome.width,
       height: chrome.height,
@@ -187,9 +207,15 @@ async function main() {
     session?.destroy();
     session = null;
 
-    loadedPage = await resolveLoadedPage(pageLocation, pageCache, loadPageContent, {
-      forceReload: historyMode === "push",
-    });
+    loadedPage = await resolveLoadedPage(
+      pageLocation,
+      pageCache,
+      (location) => loadPageContent(location, { viewportWidth: contentLayout().width }),
+      {
+        forceReload: historyMode === "push",
+      },
+    );
+    loadedPage = await ensureStylesForViewport(loadedPage, contentLayout().width);
 
     mountCurrentPage(fragment, historyMode, { restoreScrollY });
   };

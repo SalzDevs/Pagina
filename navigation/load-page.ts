@@ -7,8 +7,15 @@ import { extractPageTitle, isErrorPageTitle } from "./history";
 import { loadHtml } from "./load";
 import type { LoadedPageContent } from "./page-cache";
 
+export interface LoadPageOptions {
+  viewportWidth?: number;
+}
+
 /** Fetch, parse, and style a page from disk or the network. */
-export async function loadPageContent(pageLocation: string): Promise<LoadedPageContent> {
+export async function loadPageContent(
+  pageLocation: string,
+  options: LoadPageOptions = {},
+): Promise<LoadedPageContent> {
   let html: string;
   let isErrorPage = false;
 
@@ -28,13 +35,19 @@ export async function loadPageContent(pageLocation: string): Promise<LoadedPageC
     isErrorPage = true;
   }
 
-  const styled = await computeStyles(dom, { pageLocation, documentBase });
+  const styled = await computeStyles(dom, {
+    pageLocation,
+    documentBase,
+    viewportWidth: options.viewportWidth,
+  });
 
   return {
     pageLocation,
     documentBase,
+    dom,
     styled,
     pageTitle,
     isErrorPage,
+    stylesViewportWidth: options.viewportWidth ?? 80,
   };
 }

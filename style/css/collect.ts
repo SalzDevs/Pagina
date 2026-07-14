@@ -3,6 +3,7 @@ import { NodeType } from "../../dom/node";
 import { loadText } from "../../navigation/load";
 import { resolveResource, resolveAgainstBase } from "../../navigation/resolve";
 import type { CssRule } from "./types";
+import type { MediaContext } from "./parse";
 import { parseStylesheet } from "./parse";
 
 type CssSource =
@@ -54,6 +55,7 @@ export async function collectStylesheetRules(
   root: Node,
   pageLocation?: string,
   documentBase?: string,
+  mediaContext?: MediaContext,
 ): Promise<CssRule[]> {
   const sources = collectCssSources(root);
   const base = documentBase ?? pageLocation;
@@ -65,12 +67,12 @@ export async function collectStylesheetRules(
     const source = sources[index]!;
 
     if (source.kind === "inline") {
-      rules.push(...parseStylesheet(source.text));
+      rules.push(...parseStylesheet(source.text, mediaContext));
       continue;
     }
 
     const css = fetchedCssByIndex.get(index);
-    if (css) rules.push(...parseStylesheet(css));
+    if (css) rules.push(...parseStylesheet(css, mediaContext));
   }
 
   return rules;

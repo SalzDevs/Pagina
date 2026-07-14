@@ -1,11 +1,14 @@
+import type { Node } from "../dom/node";
 import type { StyledNode } from "../style/style";
 
 export interface LoadedPageContent {
   pageLocation: string;
   documentBase: string;
+  dom: Node;
   styled: StyledNode;
   pageTitle?: string;
   isErrorPage: boolean;
+  stylesViewportWidth: number;
 }
 
 export class PageCache {

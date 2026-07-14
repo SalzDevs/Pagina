@@ -83,7 +83,7 @@ describe("parseStylesheet", () => {
     expect(rules[1]?.declarations.color).toBe("blue");
   });
 
-  test("unwraps media blocks and keeps their rules", () => {
+  test("unwraps matching media blocks and keeps their rules", () => {
     const rules = parseStylesheet(`
       body { color: red; }
       @media screen {
@@ -95,6 +95,57 @@ describe("parseStylesheet", () => {
     expect(rules[0]?.declarations.color).toBe("red");
     expect(rules[1]?.selectors[0]).toEqual({ kind: "tag", tag: "h1" });
     expect(rules[1]?.declarations.color).toBe("gold");
+  });
+
+  test("ignores media blocks that do not match the viewport", () => {
+    const rules = parseStylesheet(
+      `
+      body { color: red; }
+      @media (min-width: 120ch) {
+        h1 { color: gold; }
+      }
+    `,
+      { viewportWidth: 80 },
+    );
+
+    expect(rules).toHaveLength(1);
+    expect(rules[0]?.declarations.color).toBe("red");
+  });
+
+  test("evaluates min-width and max-width media features", () => {
+    const wideRules = parseStylesheet(
+      `
+      @media (min-width: 80ch) { .wide { color: blue; } }
+      @media (max-width: 40ch) { .narrow { color: green; } }
+    `,
+      { viewportWidth: 80 },
+    );
+
+    expect(wideRules).toHaveLength(1);
+    expect(wideRules[0]?.selectors[0]).toEqual({ kind: "class", className: "wide" });
+
+    const narrowRules = parseStylesheet(
+      `
+      @media (min-width: 80ch) { .wide { color: blue; } }
+      @media (max-width: 40ch) { .narrow { color: green; } }
+    `,
+      { viewportWidth: 30 },
+    );
+
+    expect(narrowRules).toHaveLength(1);
+    expect(narrowRules[0]?.selectors[0]).toEqual({ kind: "class", className: "narrow" });
+  });
+
+  test("ignores supports blocks", () => {
+    const rules = parseStylesheet(`
+      body { color: red; }
+      @supports (display: grid) {
+        p { color: blue; }
+      }
+    `);
+
+    expect(rules).toHaveLength(1);
+    expect(rules[0]?.declarations.color).toBe("red");
   });
 
   test("preprocessStylesheet removes font-face blocks", () => {
@@ -267,7 +318,7 @@ describe("computeStyles with CSS", () => {
     expect(small?.style.bold).toBe(false);
   });
 
-  test("applies rules wrapped in media queries", async () => {
+  test("applies rules wrapped in matching media queries", async () => {
     const html = `
       <style>
         @media screen {
@@ -288,6 +339,23 @@ describe("computeStyles with CSS", () => {
 
     expect(body?.style.fg).toBe("#cccccc");
     expect(heading?.style.fg).toBe("#ffd700");
+  });
+
+  test("skips rules in media queries that do not match the viewport", async () => {
+    const html = `
+      <style>
+        body { color: red; }
+        @media (min-width: 120ch) {
+          body { color: blue; }
+        }
+      </style>
+      <body>Hello</body>
+    `;
+
+    const styled = await computeStyles(convert(parseHTML(html)), { viewportWidth: 80 });
+    const body = findBody(styled);
+
+    expect(body?.style.fg).toBe("red");
   });
 });
 
