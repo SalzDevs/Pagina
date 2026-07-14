@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        color: #cccccc;
+        background: #111111;
+      }
+
+      h1 {
+        color: #ffd700;
+      }
+
+      .hint {
+        color: #8be9fd;
+      }
+
+      .narrow-only {
+        display: none;
+        color: #f48771;
+      }
+
+      .wide-only {
+        display: none;
+        color: #50fa7b;
+      }
+
+      @media (max-width: 40ch) {
+        .narrow-only {
+          display: block;
+        }
+      }
+
+      @media (min-width: 60ch) {
+        .wide-only {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Responsive CSS Demo</h1>
+    <p class="hint">Resize your terminal to see @media rules change this page.</p>
+    <p class="narrow-only">Narrow viewport: max-width 40ch matched.</p>
+    <p class="wide-only">Wide viewport: min-width 60ch matched.</p>
+    <p>Default paragraph styling always applies.</p>
+  </body>
+</html>

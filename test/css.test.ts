@@ -357,6 +357,41 @@ describe("computeStyles with CSS", () => {
 
     expect(body?.style.fg).toBe("red");
   });
+
+  test("applies examples/responsive-page.html media queries at different viewport widths", async () => {
+    const html = await Bun.file("examples/responsive-page.html").text();
+    const dom = convert(parseHTML(html));
+
+    const findParagraph = (styled: StyledNode, className: string) =>
+      findBody(styled)?.children.find(
+        (child) =>
+          child.dom.type === "element" &&
+          child.dom.tag === "p" &&
+          child.dom.attributes?.class === className,
+      );
+
+    const narrow = await computeStyles(dom, {
+      pageLocation: "examples/responsive-page.html",
+      viewportWidth: 30,
+    });
+    const medium = await computeStyles(dom, {
+      pageLocation: "examples/responsive-page.html",
+      viewportWidth: 50,
+    });
+    const wide = await computeStyles(dom, {
+      pageLocation: "examples/responsive-page.html",
+      viewportWidth: 80,
+    });
+
+    expect(findParagraph(narrow, "narrow-only")?.style.fg).toBe("#f48771");
+    expect(findParagraph(narrow, "wide-only")).toBeUndefined();
+
+    expect(findParagraph(medium, "narrow-only")).toBeUndefined();
+    expect(findParagraph(medium, "wide-only")).toBeUndefined();
+
+    expect(findParagraph(wide, "wide-only")?.style.fg).toBe("#50fa7b");
+    expect(findParagraph(wide, "narrow-only")).toBeUndefined();
+  });
 });
 
 describe("matchesSelector", () => {

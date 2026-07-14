@@ -43,6 +43,7 @@ bun test
 | `examples/links-page.html` | `bun run index.ts examples/links-page.html` | Link focus, click, keyboard nav |
 | `examples/other-page.html` | (via links demo) | Cross-page navigation |
 | `examples/styled-page.html` | `bun run index.ts examples/styled-page.html` | Inline CSS selectors |
+| `examples/responsive-page.html` | `bun run index.ts examples/responsive-page.html` | `@media` queries vs terminal width |
 | `examples/linked-page.html` | `bun run index.ts examples/linked-page.html` | External stylesheet |
 | `examples/long-page.html` | `bun run index.ts examples/long-page.html` | Scrolling |
 | `examples/fragments-page.html` | `bun run index.ts examples/fragments-page.html` | In-page `#fragment` links |
