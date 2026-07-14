@@ -17,24 +17,56 @@ export function createLinkFocusState(): LinkFocusState {
   return { focusedIndex: null };
 }
 
-export function focusNextLink(state: LinkFocusState, linkCount: number): LinkFocusState {
-  if (linkCount === 0) return state;
+/** Indices of the first link for each unique href, in document order. */
+export function uniqueLinkFocusIndices(links: Link[]): number[] {
+  const seen = new Set<string>();
+  const indices: number[] = [];
 
-  const next =
-    state.focusedIndex === null ? 0 : (state.focusedIndex + 1) % linkCount;
+  for (let index = 0; index < links.length; index++) {
+    const href = links[index]?.href;
+    if (!href || seen.has(href)) continue;
 
-  return { focusedIndex: next };
+    seen.add(href);
+    indices.push(index);
+  }
+
+  return indices;
 }
 
-export function focusPreviousLink(state: LinkFocusState, linkCount: number): LinkFocusState {
-  if (linkCount === 0) return state;
+function currentUniqueFocusPosition(
+  order: number[],
+  links: Link[],
+  focusedIndex: number | null,
+): number {
+  if (focusedIndex === null) return -1;
 
+  const href = links[focusedIndex]?.href;
+  if (!href) return -1;
+
+  return order.findIndex((index) => links[index]?.href === href);
+}
+
+export function focusNextLink(state: LinkFocusState, links: Link[]): LinkFocusState {
+  const order = uniqueLinkFocusIndices(links);
+  if (order.length === 0) return state;
+
+  const current = currentUniqueFocusPosition(order, links, state.focusedIndex);
+  const next = current === -1 ? 0 : (current + 1) % order.length;
+
+  return { focusedIndex: order[next]! };
+}
+
+export function focusPreviousLink(state: LinkFocusState, links: Link[]): LinkFocusState {
+  const order = uniqueLinkFocusIndices(links);
+  if (order.length === 0) return state;
+
+  const current = currentUniqueFocusPosition(order, links, state.focusedIndex);
   const next =
-    state.focusedIndex === null
-      ? linkCount - 1
-      : (state.focusedIndex - 1 + linkCount) % linkCount;
+    current === -1
+      ? order.length - 1
+      : (current - 1 + order.length) % order.length;
 
-  return { focusedIndex: next };
+  return { focusedIndex: order[next]! };
 }
 
 export function commandMatchesLink(command: DisplayCommand, linkIndex: number): boolean {
@@ -118,17 +150,17 @@ export type LinkKeyResult =
 /** Handle link navigation keys and Enter/o to follow the focused link. */
 export function handleLinkKey(
   state: LinkFocusState,
-  linkCount: number,
+  links: Link[],
   key: KeyEvent,
 ): LinkKeyResult | null {
   if (key.eventType === "release") return null;
 
   if (key.name === "]") {
-    return { kind: "focus", state: focusNextLink(state, linkCount) };
+    return { kind: "focus", state: focusNextLink(state, links) };
   }
 
   if (key.name === "[") {
-    return { kind: "focus", state: focusPreviousLink(state, linkCount) };
+    return { kind: "focus", state: focusPreviousLink(state, links) };
   }
 
   if ((key.name === "return" || key.name === "o") && state.focusedIndex !== null) {

@@ -15,6 +15,7 @@ import {
   linkCommandIndices,
   scrollToFocusedLink,
   textLinkFocusStyle,
+  uniqueLinkFocusIndices,
 } from "../links/focus";
 import { loadHtmlFromFile } from "../navigation/load";
 import { resolveHref } from "../navigation/resolve";
@@ -126,18 +127,18 @@ describe("link focus", () => {
     const { links } = await pipelineFromFile("examples/links-page.html");
     let state = createLinkFocusState();
 
-    state = focusNextLink(state, links.length);
+    state = focusNextLink(state, links);
     expect(state.focusedIndex).toBe(0);
     expect(links[0]?.href).toBe("other-page.html");
 
-    state = focusNextLink(state, links.length);
+    state = focusNextLink(state, links);
     expect(state.focusedIndex).toBe(1);
     expect(links[1]?.href).toBe("styled-page.html");
 
-    state = focusPreviousLink(state, links.length);
+    state = focusPreviousLink(state, links);
     expect(state.focusedIndex).toBe(0);
 
-    const activate = handleLinkKey(state, links.length, key("return"));
+    const activate = handleLinkKey(state, links, key("return"));
     expect(activate).toEqual({ kind: "activate", index: 0 });
     expect(resolveHref(links[0]!.href, linksPagePath)).toBe(otherPagePath);
   });
@@ -146,27 +147,63 @@ describe("link focus", () => {
     const { links } = await pipelineFromFile("examples/links-page.html");
     let state = createLinkFocusState();
 
-    const first = handleLinkKey(state, links.length, key("]"));
+    const first = handleLinkKey(state, links, key("]"));
     expect(first?.kind).toBe("focus");
     state = first!.kind === "focus" ? first.state : state;
     expect(state.focusedIndex).toBe(0);
 
-    const second = handleLinkKey(state, links.length, key("]"));
+    const second = handleLinkKey(state, links, key("]"));
     expect(second?.kind).toBe("focus");
     state = second!.kind === "focus" ? second.state : state;
     expect(state.focusedIndex).toBe(1);
 
-    const previous = handleLinkKey(state, links.length, key("["));
+    const previous = handleLinkKey(state, links, key("["));
     expect(previous?.kind).toBe("focus");
     state = previous!.kind === "focus" ? previous.state : state;
     expect(state.focusedIndex).toBe(0);
+  });
+
+  test("skips duplicate hrefs when cycling with bracket keys", async () => {
+    const { links } = await pipeline(`
+      <p>
+        <a href="#intro">Intro A</a>
+        <a href="#chapter-01">Chapter 1</a>
+        <a href="#intro">Intro B</a>
+        <a href="#footer">Footer A</a>
+        <a href="#footer">Footer B</a>
+      </p>
+    `);
+
+    expect(links).toHaveLength(5);
+    expect(uniqueLinkFocusIndices(links)).toEqual([0, 1, 3]);
+
+    let state = createLinkFocusState();
+    state = focusNextLink(state, links);
+    expect(state.focusedIndex).toBe(0);
+    expect(links[state.focusedIndex!]?.href).toBe("#intro");
+
+    state = focusNextLink(state, links);
+    expect(state.focusedIndex).toBe(1);
+    expect(links[state.focusedIndex!]?.href).toBe("#chapter-01");
+
+    state = focusNextLink(state, links);
+    expect(state.focusedIndex).toBe(3);
+    expect(links[state.focusedIndex!]?.href).toBe("#footer");
+
+    state = focusNextLink(state, links);
+    expect(state.focusedIndex).toBe(0);
+
+    state = { focusedIndex: 2 };
+    state = focusNextLink(state, links);
+    expect(state.focusedIndex).toBe(1);
+    expect(links[state.focusedIndex!]?.href).toBe("#chapter-01");
   });
 
   test("activates the styled-page link with o", async () => {
     const { links } = await pipelineFromFile("examples/links-page.html");
     const state = { focusedIndex: 1 };
 
-    expect(handleLinkKey(state, links.length, key("o"))).toEqual({ kind: "activate", index: 1 });
+    expect(handleLinkKey(state, links, key("o"))).toEqual({ kind: "activate", index: 1 });
     expect(links[1]?.href).toBe("styled-page.html");
     expect(resolveHref(links[1]!.href, linksPagePath)).toBe(styledPagePath);
   });

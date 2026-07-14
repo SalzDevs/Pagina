@@ -218,7 +218,7 @@ export function createBrowserSession(
           return;
         }
 
-        const linkResult = handleLinkKey(linkFocus, pageLinks.length, key);
+        const linkResult = handleLinkKey(linkFocus, pageLinks, key);
         if (linkResult) {
           if (linkResult.kind === "focus") {
             syncLinkFocus(linkResult.state, true);
