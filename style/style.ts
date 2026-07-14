@@ -143,6 +143,8 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
       return { ...style, fg: "#ce9178" };
     case "pre":
       return { ...style, whiteSpace: "pre" };
+    case "th":
+      return { ...style, bold: true };
     case "blockquote":
       return {
         ...style,
