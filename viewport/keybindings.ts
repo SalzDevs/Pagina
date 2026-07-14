@@ -16,6 +16,7 @@ export const PAGINA_KEYBINDINGS: KeybindingEntry[] = [
   { keys: "Mouse wheel", description: "Scroll page" },
   { keys: "Mouse hover", description: "Focus link under cursor" },
   { keys: "Mouse click", description: "Follow link under cursor" },
+  { keys: ":", description: "Open a URL or file path" },
   { keys: "?", description: "Toggle help" },
   { keys: "Ctrl+C", description: "Quit" },
 ];

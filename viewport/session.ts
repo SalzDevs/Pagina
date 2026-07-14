@@ -34,7 +34,9 @@ export interface BrowserSessionOptions {
   initialScrollY?: number;
   initialFocusedLinkIndex?: number | null;
   isHelpVisible?: () => boolean;
+  isOpenPromptVisible?: () => boolean;
   onToggleHelp?: () => void;
+  onOpenPromptKey?: (key: KeyEvent) => boolean;
   onNavigate: (location: string, fragment?: string | null) => void | Promise<void>;
   onHistoryBack?: () => void | Promise<void>;
   onHistoryForward?: () => void | Promise<void>;
@@ -202,6 +204,8 @@ export function createBrowserSession(
           return;
         }
 
+        if (options.onOpenPromptKey?.(key)) return;
+
         if (options.isHelpVisible?.()) return;
 
         const historyAction = handleHistoryKey(key);
@@ -234,7 +238,7 @@ export function createBrowserSession(
       keyboard.onKeyPress(keyHandler);
 
       mouseScrollHandler = (event) => {
-        if (options.isHelpVisible?.()) return;
+        if (options.isHelpVisible?.() || options.isOpenPromptVisible?.()) return;
         if (!event.scroll) return;
 
         const delta = event.scroll.direction === "down" ? event.scroll.delta : -event.scroll.delta;
@@ -242,7 +246,7 @@ export function createBrowserSession(
       };
 
       mouseMoveHandler = (event) => {
-        if (options.isHelpVisible?.()) return;
+        if (options.isHelpVisible?.() || options.isOpenPromptVisible?.()) return;
 
         const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY);
         const cell = { x: Math.trunc(point.x), y: Math.trunc(point.y) };
@@ -260,7 +264,7 @@ export function createBrowserSession(
       };
 
       mouseUpHandler = (event) => {
-        if (options.isHelpVisible?.()) return;
+        if (options.isHelpVisible?.() || options.isOpenPromptVisible?.()) return;
         if (event.button !== 0 || event.type !== "up") return;
 
         const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY);

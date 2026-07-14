@@ -26,7 +26,7 @@ bun run index.ts https://example.com
 bun run index.ts examples/fragments-page.html#chapter-3
 ```
 
-Press **`?`** at any time to show in-app keyboard and mouse help.
+Press **`?`** at any time to show in-app keyboard and mouse help. Press **`:`** to open a URL or local file path without restarting.
 
 ## Test
 
@@ -66,6 +66,7 @@ bun test
 | Mouse wheel | Scroll |
 | Mouse hover | Focus link under cursor |
 | Mouse click | Follow link under cursor |
+| `:` | Open a URL or file path |
 | `?` | Toggle help overlay |
 | `Ctrl+C` | Quit |
 

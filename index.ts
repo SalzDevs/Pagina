@@ -1,10 +1,9 @@
-import { CliRenderEvents, createCliRenderer } from "@opentui/core";
+import { CliRenderEvents, createCliRenderer, type KeyEvent } from "@opentui/core";
 
 import { loadPageContent } from "./navigation/load-page";
 import { computeStyles } from "./style/style";
 import {
   createBrowserHistory,
-  formatBreadcrumb,
   formatBreadcrumbWithStatus,
   formatLoadingBreadcrumb,
   goBack,
@@ -23,6 +22,12 @@ import type { MountLayout } from "./render/render";
 import { buildPageView } from "./viewport/page-view";
 import { createBrowserSession, type BrowserSession } from "./viewport/session";
 import { clampScrollY } from "./viewport/scroll";
+import {
+  applyOpenPromptKey,
+  createOpenPromptState,
+  formatOpenPromptBreadcrumb,
+  type OpenPromptState,
+} from "./viewport/open-prompt";
 
 const DEFAULT_PAGE = "examples/page.html";
 
@@ -39,6 +44,7 @@ async function main() {
   const breadcrumb = mountBreadcrumb(renderer);
   const help = mountHelpOverlay(renderer);
   let helpVisible = false;
+  let openPrompt: OpenPromptState = createOpenPromptState();
   let history: BrowserHistory = createBrowserHistory();
   const pageCache = new PageCache();
   let session: BrowserSession | null = null;
@@ -57,16 +63,60 @@ async function main() {
     height: Math.max(1, renderer.height - BREADCRUMB_HEIGHT),
   });
 
+  const updateBreadcrumb = () => {
+    if (helpVisible) {
+      breadcrumb.update("Help — press ? to close");
+      return;
+    }
+
+    if (openPrompt.active) {
+      breadcrumb.update(formatOpenPromptBreadcrumb(openPrompt.value, renderer.width));
+      return;
+    }
+
+    breadcrumb.update(
+      formatBreadcrumbWithStatus(history, renderer.width, {
+        cssWarnings: loadedPage?.cssWarnings,
+      }),
+    );
+  };
+
   const toggleHelp = () => {
     helpVisible = !helpVisible;
+    if (helpVisible) {
+      openPrompt = createOpenPromptState();
+    }
     help.setVisible(helpVisible);
-    breadcrumb.update(
-      helpVisible
-        ? "Help — press ? to close"
-        : formatBreadcrumbWithStatus(history, renderer.width, {
-            cssWarnings: loadedPage?.cssWarnings,
-          }),
-    );
+    updateBreadcrumb();
+  };
+
+  const handleOpenPromptKey = (key: KeyEvent): boolean => {
+    const result = applyOpenPromptKey(openPrompt, key);
+
+    switch (result.kind) {
+      case "none":
+        return false;
+      case "open":
+        if (helpVisible) {
+          helpVisible = false;
+          help.setVisible(false);
+        }
+        openPrompt = { active: true, value: "" };
+        updateBreadcrumb();
+        return true;
+      case "update":
+        openPrompt = result.state;
+        updateBreadcrumb();
+        return true;
+      case "cancel":
+        openPrompt = createOpenPromptState();
+        updateBreadcrumb();
+        return true;
+      case "submit":
+        openPrompt = createOpenPromptState();
+        void loadPage(result.location, "push", result.fragment);
+        return true;
+    }
   };
 
   const snapshotScrollIntoHistory = () => {
@@ -110,13 +160,7 @@ async function main() {
       });
     }
 
-    breadcrumb.update(
-      helpVisible
-        ? "Help — press ? to close"
-        : formatBreadcrumbWithStatus(history, renderer.width, {
-            cssWarnings: loadedPage.cssWarnings,
-          }),
-    );
+    updateBreadcrumb();
 
     const initialScrollY = clampScrollY(
       {
@@ -135,7 +179,9 @@ async function main() {
       initialScrollY,
       initialFocusedLinkIndex: previousFocusedLink,
       isHelpVisible: () => helpVisible,
+      isOpenPromptVisible: () => openPrompt.active,
       onToggleHelp: toggleHelp,
+      onOpenPromptKey: handleOpenPromptKey,
       onNavigate: (target, targetFragment) => loadPage(target, "push", targetFragment ?? null),
       onHistoryBack: async () => {
         snapshotScrollIntoHistory();
@@ -192,6 +238,7 @@ async function main() {
     });
 
     session.relayout(view, chrome);
+    updateBreadcrumb();
   };
 
   const loadPage = async (
@@ -208,6 +255,7 @@ async function main() {
       helpVisible = false;
       help.setVisible(false);
     }
+    openPrompt = createOpenPromptState();
 
     if (historyMode === "push") {
       snapshotScrollIntoHistory();
