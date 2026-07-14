@@ -1,10 +1,12 @@
 import { CliRenderEvents, createCliRenderer, type KeyEvent } from "@opentui/core";
 
 import { loadPageContent } from "./navigation/load-page";
+import { isFetchAborted } from "./navigation/load";
 import { computeStyles } from "./style/style";
 import {
   createBrowserHistory,
   formatBreadcrumbWithStatus,
+  formatLoadCancelledBreadcrumb,
   formatLoadingBreadcrumb,
   goBack,
   goForward,
@@ -16,10 +18,13 @@ import {
 import { normalizePageLocation } from "./navigation/location";
 import { PageCache, resolveLoadedPage } from "./navigation/page-cache";
 import { splitPageLocation } from "./navigation/fragment";
+import { isRemoteUrl } from "./navigation/resolve";
 import { BREADCRUMB_HEIGHT, mountBreadcrumb } from "./render/breadcrumb";
 import { mountHelpOverlay } from "./render/help-overlay";
 import { mountLoadingOverlay } from "./render/loading-overlay";
 import type { MountLayout } from "./render/render";
+import { createKeyboardInput } from "./viewport/keyboard";
+import { isLoadCancelKey } from "./viewport/load-cancel-key";
 import { buildPageView } from "./viewport/page-view";
 import { createBrowserSession, type BrowserSession } from "./viewport/session";
 import { clampScrollY } from "./viewport/scroll";
@@ -55,6 +60,7 @@ async function main() {
   let unsupportedLink: string | null = null;
   let rendererStarted = false;
   let loadGeneration = 0;
+  let loadAbortController: AbortController | null = null;
 
   const startRendererOnce = () => {
     if (rendererStarted) return;
@@ -271,7 +277,16 @@ async function main() {
     const pageLocation = normalizePageLocation(location);
     fragmentNotFound = null;
     unsupportedLink = null;
-    breadcrumb.update(formatLoadingBreadcrumb(pageLocation, renderer.width));
+
+    loadAbortController?.abort();
+    const abortController = new AbortController();
+    loadAbortController = abortController;
+
+    breadcrumb.update(
+      formatLoadingBreadcrumb(pageLocation, renderer.width, {
+        cancellable: isRemoteUrl(pageLocation),
+      }),
+    );
 
     const keepCurrentPageVisible = session !== null;
     if (keepCurrentPageVisible) {
@@ -293,20 +308,51 @@ async function main() {
       snapshotScrollIntoHistory();
     }
 
-    loadedPage = await resolveLoadedPage(
-      pageLocation,
-      pageCache,
-      (location) => loadPageContent(location, { viewportWidth: contentLayout().width }),
-      {
-        forceReload: historyMode === "push",
-      },
-    );
-    if (generation !== loadGeneration) return;
+    const cancelKeyboard = createKeyboardInput(renderer);
+    const onLoadingKey = (key: KeyEvent) => {
+      if (!isLoadCancelKey(key)) return;
+      abortController.abort();
+    };
+    cancelKeyboard.onKeyPress(onLoadingKey);
 
-    loadedPage = await ensureStylesForViewport(loadedPage, contentLayout().width);
-    if (generation !== loadGeneration) return;
+    try {
+      loadedPage = await resolveLoadedPage(
+        pageLocation,
+        pageCache,
+        (location) =>
+          loadPageContent(location, {
+            viewportWidth: contentLayout().width,
+            signal: abortController.signal,
+          }),
+        {
+          forceReload: historyMode === "push",
+        },
+      );
+      if (generation !== loadGeneration) return;
 
-    mountCurrentPage(fragment, historyMode, { restoreScrollY });
+      loadedPage = await ensureStylesForViewport(loadedPage, contentLayout().width);
+      if (generation !== loadGeneration) return;
+
+      mountCurrentPage(fragment, historyMode, { restoreScrollY });
+    } catch (error) {
+      if (isFetchAborted(error)) {
+        loading.hide();
+        if (generation === loadGeneration) {
+          breadcrumb.update(formatLoadCancelledBreadcrumb(renderer.width));
+          if (keepCurrentPageVisible && session) {
+            session.attach();
+          }
+        }
+        return;
+      }
+      if (generation !== loadGeneration) return;
+      throw error;
+    } finally {
+      cancelKeyboard.offKeyPress(onLoadingKey);
+      if (loadAbortController === abortController) {
+        loadAbortController = null;
+      }
+    }
   };
 
   renderer.on(CliRenderEvents.RESIZE, relayoutCurrentPage);

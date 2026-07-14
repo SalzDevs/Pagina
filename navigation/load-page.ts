@@ -4,11 +4,12 @@ import { computeStyles } from "../style/style";
 import { resolveDocumentBase } from "./base-url";
 import { buildErrorPageHtml } from "./error-page";
 import { extractPageTitle, isErrorPageTitle } from "./history";
-import { loadHtml } from "./load";
+import { isFetchAborted, loadHtml } from "./load";
 import type { LoadedPageContent } from "./page-cache";
 
 export interface LoadPageOptions {
   viewportWidth?: number;
+  signal?: AbortSignal;
 }
 
 /** Fetch, parse, and style a page from disk or the network. */
@@ -20,8 +21,9 @@ export async function loadPageContent(
   let isErrorPage = false;
 
   try {
-    html = await loadHtml(pageLocation);
+    html = await loadHtml(pageLocation, { signal: options.signal });
   } catch (error) {
+    if (isFetchAborted(error)) throw error;
     html = buildErrorPageHtml(pageLocation, error);
     isErrorPage = true;
   }

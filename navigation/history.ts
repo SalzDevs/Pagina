@@ -316,11 +316,25 @@ export function formatBreadcrumbWithStatus(
 }
 
 /** Format a breadcrumb loading label while a page is being fetched. */
-export function formatLoadingBreadcrumb(location: string, width: number): string {
+export function formatLoadingBreadcrumb(
+  location: string,
+  width: number,
+  options: { cancellable?: boolean } = {},
+): string {
   const label = historyLabel(location);
-  const text = `Loading ${label}…`;
+  let text = `Loading ${label}…`;
+  if (options.cancellable) {
+    text += " (Esc to cancel)";
+  }
 
   if (text.length <= width) return text;
 
+  return text.slice(0, Math.max(0, width - 3)) + "...";
+}
+
+/** Format a breadcrumb label after the user cancels a page load. */
+export function formatLoadCancelledBreadcrumb(width: number): string {
+  const text = "Loading cancelled";
+  if (text.length <= width) return text;
   return text.slice(0, Math.max(0, width - 3)) + "...";
 }

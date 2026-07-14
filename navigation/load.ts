@@ -10,6 +10,18 @@ export interface RemoteFetchLimits {
   timeoutMs?: number;
   maxBytes?: number;
   maxRedirects?: number;
+  signal?: AbortSignal;
+}
+
+/** True when a fetch was aborted by the caller or a timeout. */
+export function isFetchAborted(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "AbortError";
+}
+
+function mergeFetchSignals(timeoutMs: number, external?: AbortSignal): AbortSignal {
+  const timeoutSignal = AbortSignal.timeout(timeoutMs);
+  if (!external) return timeoutSignal;
+  return AbortSignal.any([timeoutSignal, external]);
 }
 
 function concatChunks(chunks: Uint8Array[]): Uint8Array {
@@ -29,6 +41,7 @@ async function readResponseText(
   response: Response,
   url: string,
   maxBytes: number,
+  signal?: AbortSignal,
 ): Promise<string> {
   const contentLength = response.headers.get("content-length");
   if (contentLength !== null) {
@@ -49,6 +62,11 @@ async function readResponseText(
   let total = 0;
 
   while (true) {
+    if (signal?.aborted) {
+      await reader.cancel();
+      throw new DOMException("The operation was aborted.", "AbortError");
+    }
+
     const { done, value } = await reader.read();
     if (done) break;
 
@@ -77,8 +95,12 @@ async function fetchRemoteResponse(
   let redirects = 0;
 
   while (true) {
+    if (limits.signal?.aborted) {
+      throw new DOMException("The operation was aborted.", "AbortError");
+    }
+
     const response = await fetch(currentUrl, {
-      signal: AbortSignal.timeout(timeoutMs),
+      signal: mergeFetchSignals(timeoutMs, limits.signal),
       redirect: "manual",
     });
 
@@ -113,7 +135,7 @@ export async function loadTextFromUrl(
     throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`);
   }
 
-  return readResponseText(response, url, maxBytes);
+  return readResponseText(response, url, maxBytes, limits.signal);
 }
 
 /** Read text from a local file path. */

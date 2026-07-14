@@ -91,4 +91,21 @@ describe("loadPageContent", () => {
     expect(page.isErrorPage).toBe(false);
     expect(page.styled.children.length).toBeGreaterThan(0);
   });
+
+  test("rethrows fetch aborts instead of building an error page", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async (_input, init) =>
+      new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => {
+          reject(new DOMException("The operation was aborted.", "AbortError"));
+        });
+      })) as typeof fetch;
+
+    const controller = new AbortController();
+    const load = loadPageContent("https://example.com/slow", { signal: controller.signal });
+    controller.abort();
+
+    await expect(load).rejects.toThrow();
+    globalThis.fetch = originalFetch;
+  });
 });

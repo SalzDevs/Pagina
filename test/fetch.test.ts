@@ -155,6 +155,21 @@ describe("loadTextFromUrl", () => {
       loadTextFromUrl("https://example.com/slow", { timeoutMs: 25 }),
     ).rejects.toThrow();
   });
+
+  test("aborts when the caller signal is aborted", async () => {
+    globalThis.fetch = (async (_input, init) =>
+      new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => {
+          reject(new DOMException("The operation was aborted.", "AbortError"));
+        });
+      })) as typeof fetch;
+
+    const controller = new AbortController();
+    const load = loadTextFromUrl("https://example.com/slow", { signal: controller.signal });
+    controller.abort();
+
+    await expect(load).rejects.toMatchObject({ name: "AbortError" });
+  });
 });
 
 describe("loadText", () => {

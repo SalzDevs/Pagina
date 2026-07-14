@@ -11,6 +11,7 @@ import {
   formatCssWarningStatus,
   formatFragmentNotFoundStatus,
   formatLoadingBreadcrumb,
+  formatLoadCancelledBreadcrumb,
   formatUnsupportedLinkStatus,
   goBack,
   goForward,
@@ -102,6 +103,16 @@ describe("browser history", () => {
     expect(line.endsWith("...")).toBe(true);
     expect(line.length).toBeLessThanOrEqual(20);
     expect(line.startsWith("Loading ")).toBe(true);
+  });
+
+  test("shows Esc hint for cancellable remote loads", () => {
+    expect(formatLoadingBreadcrumb("https://example.com/page.html", 80, { cancellable: true })).toBe(
+      "Loading example.com/page.html… (Esc to cancel)",
+    );
+  });
+
+  test("formats load-cancelled breadcrumb", () => {
+    expect(formatLoadCancelledBreadcrumb(40)).toBe("Loading cancelled");
   });
 
   test("formats fragment-not-found status for the breadcrumb", () => {
