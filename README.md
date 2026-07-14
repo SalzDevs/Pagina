@@ -50,6 +50,10 @@ bun test
 | `examples/images-page.html` | `bun run index.ts examples/images-page.html` | Image alt-text placeholders |
 | `examples/table-page.html` | `bun run index.ts examples/table-page.html` | Monospace table columns |
 | `examples/definitions-page.html` | `bun run index.ts examples/definitions-page.html` | Definition list indents |
+| `examples/blockquote-page.html` | `bun run index.ts examples/blockquote-page.html` | Nested blockquote indents |
+| `examples/hr-page.html` | `bun run index.ts examples/hr-page.html` | Horizontal rules, inset rules |
+| `examples/pre-page.html` | `bun run index.ts examples/pre-page.html` | `<pre>`, `white-space: pre-wrap` |
+| `examples/inset-page.html` | `bun run index.ts examples/inset-page.html` | Horizontal margins / inset text |
 
 ## Keyboard & mouse
 
