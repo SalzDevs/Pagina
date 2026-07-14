@@ -348,13 +348,6 @@ export function mountDisplayList(
   };
 }
 
-/** @deprecated Prefer mountDisplayList for interactive scrolling. */
-export function clearRenderer(renderer: CliRenderer): void {
-  for (const child of renderer.root.getChildren()) {
-    renderer.root.remove(child);
-  }
-}
-
 /** Draw a visible slice of the display list. Used for static rendering only. */
 export function render(
   renderer: CliRenderer,

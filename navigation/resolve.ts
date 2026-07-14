@@ -43,20 +43,3 @@ export function resolveAgainstBase(
 export function resolveHref(href: string, pageLocation: string): string | null {
   return resolveResource(href, pageLocation);
 }
-
-/** @deprecated Use resolveResource instead. */
-export function resolveLocalPath(url: string, baseFilePath: string): string | null {
-  if (isRemoteUrl(url) || isRemoteUrl(baseFilePath)) {
-    return resolveResource(url, baseFilePath);
-  }
-
-  const trimmed = url.trim();
-  if (!trimmed || trimmed.startsWith("javascript:") || trimmed.startsWith("#")) return null;
-
-  const baseDir = dirname(resolve(baseFilePath));
-  if (trimmed.startsWith("/")) {
-    return resolve(trimmed);
-  }
-
-  return resolve(baseDir, trimmed);
-}

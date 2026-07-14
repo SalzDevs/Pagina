@@ -1,6 +1,7 @@
 import { NodeType } from "../dom/node";
 import type { Link, LinkBounds } from "../links/types";
 import type { LayoutOutput } from "../layout/output";
+import { isBlock } from "../style/display";
 import type { StyledNode } from "../style/style";
 import type { DisplayList, FillCommand, TextCommand } from "./display-list";
 import { commandBottom } from "./display-list";
@@ -32,10 +33,6 @@ interface PaintOutput {
   texts: TextCommand[];
   links: Link[];
   maxBottom: number;
-}
-
-function isBlock(node: StyledNode): boolean {
-  return node.style.display === "block";
 }
 
 function trackBottom(output: PaintOutput, y: number, height: number): void {

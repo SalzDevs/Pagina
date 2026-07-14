@@ -19,7 +19,6 @@ import {
   measureDisplayListHeight,
   shouldCullDisplayList,
   visibleCommandEntries,
-  visibleCommands,
 } from "../viewport/visible";
 
 function key(name: string, eventType: "press" | "release" = "press") {
@@ -100,7 +99,7 @@ describe("visible commands", () => {
   });
 
   test("offsets and filters commands to the visible viewport", () => {
-    const visible = visibleCommands(
+    const visible = visibleCommandEntries(
       [
         { kind: "text", x: 0, y: 0, text: "top" },
         { kind: "text", x: 0, y: 5, text: "middle" },
@@ -108,7 +107,7 @@ describe("visible commands", () => {
       ],
       4,
       4,
-    );
+    ).map((entry) => entry.command);
 
     expect(visible).toEqual([{ kind: "text", x: 0, y: 1, text: "middle" }]);
   });
@@ -177,8 +176,8 @@ describe("visible commands", () => {
     ).toBe(true);
 
     const max = maxScrollY(createScrollViewport(24, contentHeight));
-    expect(visibleCommands(displayList, max, 24).length).toBeGreaterThan(0);
-    expect(visibleCommands(displayList, contentHeight, 24, 0).length).toBe(0);
+    expect(visibleCommandEntries(displayList, max, 24).length).toBeGreaterThan(0);
+    expect(visibleCommandEntries(displayList, contentHeight, 24, 0).length).toBe(0);
   });
 });
 

@@ -102,18 +102,6 @@ export function measureDisplayListHeight(displayList: DisplayList): number {
   return Math.max(...displayList.map((command) => commandBottom(command)));
 }
 
-/** Keep only commands visible in the scrolled viewport. */
-export function visibleCommands(
-  displayList: DisplayList,
-  scrollY: number,
-  viewportHeight: number,
-  bufferRows = DEFAULT_VISIBLE_BUFFER_ROWS,
-): DisplayCommand[] {
-  return visibleCommandEntries(displayList, scrollY, viewportHeight, bufferRows).map(
-    (entry) => entry.command,
-  );
-}
-
 /** True when the viewport shows at least one command at max scroll. */
 export function hasVisibleContentAtMaxScroll(
   displayList: DisplayList,
@@ -121,5 +109,5 @@ export function hasVisibleContentAtMaxScroll(
   viewportHeight: number,
 ): boolean {
   const scrollY = Math.max(0, contentHeight - viewportHeight);
-  return visibleCommands(displayList, scrollY, viewportHeight).length > 0;
+  return visibleCommandEntries(displayList, scrollY, viewportHeight).length > 0;
 }

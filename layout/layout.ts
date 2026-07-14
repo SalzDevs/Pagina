@@ -13,6 +13,7 @@ import { isListContainer, layoutListContainer } from "./lists";
 import { LayoutOutput } from "./output";
 import { layoutPreBlock, isPreElement } from "./pre";
 import type { LayoutBox, LayoutFragment } from "./types";
+import { isBlock } from "../style/display";
 import type { StyledNode } from "../style/style";
 
 export type { LayoutBox } from "./types";
@@ -55,10 +56,6 @@ const DEFAULT_VIEWPORT: Viewport = { width: 80, height: 24 };
 
 function nodeLineHeight(node: StyledNode): number {
   return lineHeightForFontSize(node.style.fontSize);
-}
-
-function isBlock(node: StyledNode): boolean {
-  return node.style.display === "block";
 }
 
 function isLineBreak(node: StyledNode): boolean {
