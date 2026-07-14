@@ -41,6 +41,12 @@ type HistoryMode = "push" | "none";
 
 type LoadedPage = import("./navigation/page-cache").LoadedPageContent;
 
+interface HistoryViewState {
+  scrollY?: number;
+  focusedLinkIndex?: number | null;
+  fragment?: string | null;
+}
+
 async function main() {
   const renderer = await createCliRenderer({
     exitOnCtrlC: true,
@@ -132,29 +138,38 @@ async function main() {
     }
   };
 
-  const snapshotScrollIntoHistory = () => {
+  const snapshotViewStateIntoHistory = () => {
     if (history.index < 0 || !session) return;
 
     history = updateCurrentHistoryEntry(history, {
       scrollY: session.viewport.scrollY,
+      focusedLinkIndex: session.focusedLinkIndex,
     });
   };
 
   const mountCurrentPage = (
     fragment: string | null = null,
     historyMode: HistoryMode = "none",
-    viewState: { preserveViewState?: boolean; restoreScrollY?: number } = {},
+    viewState: {
+      preserveViewState?: boolean;
+      restoreScrollY?: number;
+      restoreFocusedLinkIndex?: number | null;
+      restoreFragment?: string | null;
+    } = {},
   ) => {
     if (!loadedPage) return;
 
     loading.hide();
 
+    const hasSavedScroll = viewState.restoreScrollY !== undefined;
     const previousScrollY = viewState.preserveViewState
       ? (session?.viewport.scrollY ?? 0)
-      : (viewState.restoreScrollY ?? 0);
-    const previousFocusedLink = viewState.preserveViewState
+      : hasSavedScroll
+        ? viewState.restoreScrollY!
+        : 0;
+    const previousFocusedLinkBeforeDestroy = viewState.preserveViewState
       ? (session?.focusedLinkIndex ?? null)
-      : null;
+      : (viewState.restoreFocusedLinkIndex ?? null);
 
     session?.destroy();
 
@@ -166,12 +181,25 @@ async function main() {
       height: chrome.height,
     });
 
+    const previousFocusedLink =
+      previousFocusedLinkBeforeDestroy !== null &&
+      previousFocusedLinkBeforeDestroy >= 0 &&
+      previousFocusedLinkBeforeDestroy < view.links.length
+        ? previousFocusedLinkBeforeDestroy
+        : null;
+
+    const visitFragment =
+      historyMode === "none" && viewState.restoreFragment !== undefined
+        ? viewState.restoreFragment
+        : fragment;
+
     if (historyMode === "push") {
       history = pushHistory(history, {
         location: loadedPage.pageLocation,
         label: historyEntryLabel(loadedPage.pageLocation, loadedPage.pageTitle, {
           isErrorPage: loadedPage.isErrorPage,
         }),
+        fragment: fragment ?? undefined,
       });
     }
 
@@ -199,18 +227,26 @@ async function main() {
       onOpenPromptKey: handleOpenPromptKey,
       onNavigate: (target, targetFragment) => loadPage(target, "push", targetFragment ?? null),
       onHistoryBack: async () => {
-        snapshotScrollIntoHistory();
+        snapshotViewStateIntoHistory();
         const result = goBack(history);
         history = result.history;
         if (!result.entry) return;
-        await loadPage(result.entry.location, "none", null, result.entry.scrollY ?? 0);
+        await loadPage(result.entry.location, "none", null, {
+          scrollY: result.entry.scrollY,
+          focusedLinkIndex: result.entry.focusedLinkIndex,
+          fragment: result.entry.fragment,
+        });
       },
       onHistoryForward: async () => {
-        snapshotScrollIntoHistory();
+        snapshotViewStateIntoHistory();
         const result = goForward(history);
         history = result.history;
         if (!result.entry) return;
-        await loadPage(result.entry.location, "none", null, result.entry.scrollY ?? 0);
+        await loadPage(result.entry.location, "none", null, {
+          scrollY: result.entry.scrollY,
+          focusedLinkIndex: result.entry.focusedLinkIndex,
+          fragment: result.entry.fragment,
+        });
       },
       onFragmentNotFound: (fragment) => {
         fragmentNotFound = fragment;
@@ -224,7 +260,9 @@ async function main() {
       },
     });
 
-    if (fragment !== null) {
+    if (visitFragment !== null && !hasSavedScroll && !viewState.preserveViewState) {
+      session.scrollToFragment(visitFragment);
+    } else if (fragment !== null && historyMode === "push") {
       session.scrollToFragment(fragment);
     }
 
@@ -271,7 +309,7 @@ async function main() {
     location: string,
     historyMode: HistoryMode = "push",
     fragment: string | null = null,
-    restoreScrollY?: number,
+    restore: HistoryViewState = {},
   ) => {
     const generation = ++loadGeneration;
     const pageLocation = normalizePageLocation(location);
@@ -305,7 +343,7 @@ async function main() {
     openPrompt = createOpenPromptState();
 
     if (historyMode === "push") {
-      snapshotScrollIntoHistory();
+      snapshotViewStateIntoHistory();
     }
 
     const cancelKeyboard = createKeyboardInput(renderer);
@@ -333,7 +371,11 @@ async function main() {
       loadedPage = await ensureStylesForViewport(loadedPage, contentLayout().width);
       if (generation !== loadGeneration) return;
 
-      mountCurrentPage(fragment, historyMode, { restoreScrollY });
+      mountCurrentPage(fragment, historyMode, {
+        restoreScrollY: restore.scrollY,
+        restoreFocusedLinkIndex: restore.focusedLinkIndex,
+        restoreFragment: restore.fragment,
+      });
     } catch (error) {
       if (isFetchAborted(error)) {
         loading.hide();

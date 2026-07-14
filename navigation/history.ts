@@ -9,6 +9,8 @@ export interface HistoryEntry {
   location: string;
   label: string;
   scrollY?: number;
+  focusedLinkIndex?: number | null;
+  fragment?: string | null;
 }
 
 export interface BrowserHistory {
@@ -33,7 +35,7 @@ export function pushHistory(history: BrowserHistory, entry: HistoryEntry): Brows
 /** Persist view state on the active history entry before navigating away. */
 export function updateCurrentHistoryEntry(
   history: BrowserHistory,
-  patch: Pick<HistoryEntry, "scrollY">,
+  patch: Pick<HistoryEntry, "scrollY" | "focusedLinkIndex" | "fragment">,
 ): BrowserHistory {
   if (history.index < 0) return history;
 

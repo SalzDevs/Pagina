@@ -224,6 +224,29 @@ describe("browser history", () => {
     expect(forward.entry?.location).toBe("/b");
     expect(forward.entry?.scrollY).toBe(17);
   });
+
+  test("stores and restores link focus and visit fragment on the active entry", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, {
+      location: "/docs",
+      label: "Docs",
+      fragment: "intro",
+    });
+    history = updateCurrentHistoryEntry(history, {
+      scrollY: 12,
+      focusedLinkIndex: 3,
+    });
+    history = pushHistory(history, { location: "/about", label: "About" });
+
+    const back = goBack(history);
+    expect(back.entry).toEqual({
+      location: "/docs",
+      label: "Docs",
+      fragment: "intro",
+      scrollY: 12,
+      focusedLinkIndex: 3,
+    });
+  });
 });
 
 describe("history labels", () => {
