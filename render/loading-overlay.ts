@@ -69,7 +69,9 @@ export function mountLoadingOverlay(renderer: CliRenderer): LoadingOverlay {
   };
 
   const raiseToFront = () => {
-    panel.remove();
+    if (panel.parent === renderer.root) {
+      renderer.root.remove(panel);
+    }
     renderer.root.add(panel);
   };
 
