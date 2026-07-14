@@ -122,6 +122,49 @@ describe("browser history", () => {
     );
   });
 
+  test("uses compact css warning labels on narrow widths", () => {
+    expect(
+      formatCssWarningStatus(
+        ["https://example.com/very/long/path/to/theme.css"],
+        14,
+      ),
+    ).toBe(" | ⚠ CSS");
+
+    expect(formatCssWarningStatus(["https://a.test/one.css", "https://a.test/two.css"], 12)).toBe(
+      " | ⚠ CSS×2",
+    );
+  });
+
+  test("prioritizes breadcrumb trail over css status on narrow widths", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "First Page" });
+    history = pushHistory(history, { location: "/b", label: "Second Page" });
+    history = pushHistory(history, { location: "/c", label: "Current Page" });
+
+    const line = formatBreadcrumbWithStatus(history, 24, {
+      cssWarnings: ["https://example.com/very/long/path/theme.css"],
+    });
+
+    expect(line).toContain("[Current Page]");
+    expect(line.startsWith("...")).toBe(true);
+    expect(line.length).toBeLessThanOrEqual(24);
+    expect(line.endsWith(" | ⚠")).toBe(true);
+  });
+
+  test("drops css status when the breadcrumb needs the full width", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "First Page" });
+    history = pushHistory(history, { location: "/b", label: "Second Page" });
+    history = pushHistory(history, { location: "/c", label: "Current Page" });
+
+    const line = formatBreadcrumbWithStatus(history, 18, {
+      cssWarnings: ["https://example.com/theme.css"],
+    });
+
+    expect(line).toContain("[Current Page]");
+    expect(line).not.toContain("⚠");
+  });
+
   test("stores and restores scroll position on the active entry", () => {
     let history = createBrowserHistory();
     history = pushHistory(history, { location: "/a", label: "A" });

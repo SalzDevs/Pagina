@@ -197,18 +197,35 @@ function cssWarningLabel(url: string): string {
   return historyLabel(url);
 }
 
+function cssWarningStatusVariants(warnings: string[]): string[] {
+  if (warnings.length === 1) {
+    const label = cssWarningLabel(warnings[0]!);
+    return [` | ⚠ CSS failed: ${label}`, " | ⚠ CSS failed", " | ⚠ CSS", " | ⚠"];
+  }
+
+  return [
+    ` | ⚠ ${warnings.length} CSS files failed`,
+    ` | ⚠ CSS×${warnings.length}`,
+    " | ⚠ CSS",
+    " | ⚠",
+  ];
+}
+
+function truncateStatus(status: string, width: number): string {
+  if (status.length <= width) return status;
+  return status.slice(0, Math.max(0, width - 3)) + "...";
+}
+
 /** Append CSS load failure status to a breadcrumb when stylesheets failed. */
 export function formatCssWarningStatus(warnings: string[], width: number): string {
   if (warnings.length === 0) return "";
 
-  const status =
-    warnings.length === 1
-      ? ` | ⚠ CSS failed: ${cssWarningLabel(warnings[0]!)}`
-      : ` | ⚠ ${warnings.length} CSS files failed`;
+  const variants = cssWarningStatusVariants(warnings);
+  for (const status of variants) {
+    if (status.length <= width) return status;
+  }
 
-  if (status.length <= width) return status;
-
-  return status.slice(0, Math.max(0, width - 3)) + "...";
+  return truncateStatus(variants[variants.length - 1]!, width);
 }
 
 /** Format the history trail and any CSS load warnings for the breadcrumb bar. */
@@ -218,17 +235,30 @@ export function formatBreadcrumbWithStatus(
   options: { cssWarnings?: string[] } = {},
 ): string {
   const warnings = options.cssWarnings ?? [];
-  const status = formatCssWarningStatus(warnings, width);
+  if (warnings.length === 0) return formatBreadcrumb(history, width);
 
-  if (!status) return formatBreadcrumb(history, width);
+  const breadcrumbOnly = formatBreadcrumb(history, width);
+  let best = breadcrumbOnly;
+  let bestBreadcrumbLength = breadcrumbOnly.length;
 
-  const breadcrumbWidth = Math.max(0, width - status.length);
-  const breadcrumb = formatBreadcrumb(history, breadcrumbWidth);
-  const combined = breadcrumb + status;
+  for (const status of cssWarningStatusVariants(warnings)) {
+    const breadcrumbWidth = width - status.length;
+    if (breadcrumbWidth < 0) continue;
 
-  if (combined.length <= width) return combined;
+    const breadcrumb = formatBreadcrumb(history, breadcrumbWidth);
+    const combined = breadcrumb + status;
+    if (combined.length > width) continue;
 
-  return status.slice(0, width);
+    if (
+      breadcrumb.length > bestBreadcrumbLength ||
+      (breadcrumb.length === bestBreadcrumbLength && combined.length > best.length)
+    ) {
+      best = combined;
+      bestBreadcrumbLength = breadcrumb.length;
+    }
+  }
+
+  return best;
 }
 
 /** Format a breadcrumb loading label while a page is being fetched. */
