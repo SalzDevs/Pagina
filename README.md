@@ -116,6 +116,7 @@ Pagina implements a small subset of CSS aimed at terminal rendering. Supported t
 - Selectors: tag, class, id, and simple descendant chains
 - Common text and box properties (`color`, `background`, spacing, `font-size`, etc.)
 - `@media` queries for `screen`, `min-width`, and `max-width` (compared against terminal columns; `ch` and `px` map 1:1 to columns)
+- `:root` custom properties and basic `var(--token)` resolution for colors
 
 Not supported or ignored:
 

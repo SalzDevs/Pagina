@@ -123,6 +123,12 @@ function parseDeclarations(block: string): CssDeclarations {
     if (value.length === 0) continue;
 
     switch (property) {
+      default:
+        if (property.startsWith("--")) {
+          declarations.customProperties ??= {};
+          declarations.customProperties[property] = value;
+        }
+        break;
       case "color":
         declarations.color = value;
         break;
@@ -189,6 +195,10 @@ function parseDeclarations(block: string): CssDeclarations {
 function parseSimpleSelector(raw: string): SimpleSelector | null {
   const selector = raw.trim();
   if (selector.length === 0) return null;
+
+  if (selector === ":root") {
+    return { kind: "tag", tag: "html" };
+  }
 
   const tagClass = selector.match(/^([a-zA-Z][\w-]*)\.([a-zA-Z][\w-]*)$/);
   if (tagClass) {

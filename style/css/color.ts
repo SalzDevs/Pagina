@@ -1,3 +1,5 @@
+import { resolveVarReferences } from "./variables";
+
 /** CSS color values safe to pass to the terminal renderer. */
 const KEYWORD_COLORS = new Set([
   "aliceblue",
@@ -198,15 +200,22 @@ function extractColorToken(value: string): string | undefined {
 }
 
 /** Normalize a CSS color value, ignoring unsupported author styles. */
-export function normalizeColor(value: string | undefined): string | undefined {
+export function normalizeColor(
+  value: string | undefined,
+  variables: Record<string, string> = {},
+): string | undefined {
   if (!value) return undefined;
-  return extractColorToken(value.trim());
+  const resolved = resolveVarReferences(value.trim(), variables);
+  return extractColorToken(resolved);
 }
 
 /** Extract a background color from a CSS background or background-color value. */
 export function normalizeBackgroundColor(
   backgroundColor: string | undefined,
   background: string | undefined,
+  variables: Record<string, string> = {},
 ): string | undefined {
-  return normalizeColor(backgroundColor) ?? normalizeColor(background);
+  return (
+    normalizeColor(backgroundColor, variables) ?? normalizeColor(background, variables)
+  );
 }

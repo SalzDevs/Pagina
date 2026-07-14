@@ -11,6 +11,11 @@ describe("normalizeColor", () => {
 
   test("rejects css variables, urls, and keywords", () => {
     expect(normalizeColor("var(--color-background-page)")).toBeUndefined();
+    expect(
+      normalizeColor("var(--color-background-page)", {
+        "--color-background-page": "#111111",
+      }),
+    ).toBe("#111111");
     expect(normalizeColor('url("triangle.svg")')).toBeUndefined();
     expect(normalizeColor("initial")).toBeUndefined();
     expect(normalizeColor("transparent")).toBeUndefined();

@@ -30,4 +30,5 @@ export interface CssDeclarations {
   paddingBottom?: number;
   paddingLeft?: number;
   paddingRight?: number;
+  customProperties?: Record<string, string>;
 }

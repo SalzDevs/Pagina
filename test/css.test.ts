@@ -162,6 +162,26 @@ describe("parseStylesheet", () => {
     expect(css).toContain("p { color: blue; }");
     expect(css).not.toContain("@font-face");
   });
+
+  test("parses custom properties and :root selectors", () => {
+    const rules = parseStylesheet(`
+      :root {
+        --text-primary: #cccccc;
+        --surface: #111111;
+      }
+      body {
+        color: var(--text-primary);
+        background-color: var(--surface);
+      }
+    `);
+
+    expect(rules[0]?.selectors[0]).toEqual({ kind: "tag", tag: "html" });
+    expect(rules[0]?.declarations.customProperties).toEqual({
+      "--text-primary": "#cccccc",
+      "--surface": "#111111",
+    });
+    expect(rules[1]?.declarations.color).toBe("var(--text-primary)");
+  });
 });
 
 describe("computeStyles with CSS", () => {
@@ -670,6 +690,69 @@ describe("collectStylesheetRules", () => {
     } finally {
       globalThis.fetch = originalFetch;
     }
+  });
+});
+
+describe("custom properties", () => {
+  test("applies :root tokens to descendant elements", async () => {
+    const html = `
+      <style>
+        :root {
+          --text-primary: #cccccc;
+          --surface: #111111;
+        }
+        body {
+          color: var(--text-primary);
+          background-color: var(--surface);
+        }
+        .accent {
+          color: var(--accent, #ffd700);
+        }
+      </style>
+      <body>
+        <p>Body text</p>
+        <p class="accent">Accent text</p>
+      </body>
+    `;
+
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const body = findBody(styled);
+    const accent = body?.children.find(
+      (child) =>
+        child.dom.type === "element" &&
+        child.dom.tag === "p" &&
+        child.dom.attributes?.class === "accent",
+    );
+    const normal = body?.children.find(
+      (child) =>
+        child.dom.type === "element" &&
+        child.dom.tag === "p" &&
+        child.dom.attributes?.class === undefined,
+    );
+
+    expect(body?.style.fg).toBe("#cccccc");
+    expect(body?.style.bg).toBe("#111111");
+    expect(normal?.style.fg).toBe("#cccccc");
+    expect(accent?.style.fg).toBe("#ffd700");
+  });
+
+  test("inherits custom properties to nested elements", async () => {
+    const html = `
+      <style>
+        :root { --text-primary: #abcdef; }
+        body { color: var(--text-primary); }
+      </style>
+      <body><p><span>Nested</span></p></body>
+    `;
+
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const body = findBody(styled);
+    const paragraph = body?.children[0];
+    const span = paragraph?.children[0];
+
+    expect(body?.style.fg).toBe("#abcdef");
+    expect(paragraph?.style.fg).toBe("#abcdef");
+    expect(span?.style.fg).toBe("#abcdef");
   });
 });
 

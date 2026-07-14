@@ -50,7 +50,14 @@ function mergeDeclarations(
   style: ComputedStyle,
   declarations: CssDeclarations,
 ): ComputedStyle {
-  const next = { ...style };
+  const variables = {
+    ...style.customProperties,
+    ...declarations.customProperties,
+  };
+  const next: ComputedStyle = {
+    ...style,
+    customProperties: Object.keys(variables).length > 0 ? variables : style.customProperties,
+  };
 
   const set = <K extends keyof ComputedStyle>(
     key: K,
@@ -61,8 +68,8 @@ function mergeDeclarations(
     }
   };
 
-  set("fg", normalizeColor(declarations.color));
-  set("bg", normalizeBackgroundColor(declarations.backgroundColor, declarations.background));
+  set("fg", normalizeColor(declarations.color, variables));
+  set("bg", normalizeBackgroundColor(declarations.backgroundColor, declarations.background, variables));
   set("bold", isBold(declarations.fontWeight));
   set("italic", isItalic(declarations.fontStyle));
   set("underline", isUnderline(declarations.textDecoration));

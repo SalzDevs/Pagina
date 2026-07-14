@@ -28,6 +28,7 @@ export interface ComputedStyle {
   paddingBottom?: number;
   paddingLeft?: number;
   paddingRight?: number;
+  customProperties?: Record<string, string>;
 }
 
 export interface StyledNode {
@@ -120,6 +121,9 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
     bg: inherited.bg,
     fontSize: inherited.fontSize,
     whiteSpace: inherited.whiteSpace,
+    customProperties: inherited.customProperties
+      ? { ...inherited.customProperties }
+      : undefined,
   };
 
   switch (tag) {
