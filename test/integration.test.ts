@@ -10,6 +10,7 @@ import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
 import { mountDisplayList } from "../render/render";
 import { BREADCRUMB_HEIGHT } from "../render/breadcrumb";
+import { isTextCommand } from "../paint/display-list";
 import { buildPageView } from "../viewport/page-view";
 import { createBrowserSession } from "../viewport/session";
 import { clampScrollY } from "../viewport/scroll";
@@ -49,6 +50,21 @@ async function ensureStylesForViewport(
     cssWarnings,
   };
 }
+
+describe("painted page content", () => {
+  test("includes list item text in the display list from examples/lists-page.html", async () => {
+    const page = await loadPageContent("examples/lists-page.html");
+    const view = buildPageView(page.styled, { width: 60, height: 30 });
+    const text = view.displayList
+      .filter(isTextCommand)
+      .map((command) => command.text)
+      .join("");
+
+    expect(text).toContain("First item");
+    expect(text).toContain("Step one");
+    expect(text).toContain("Inner A");
+  });
+});
 
 describe("mountDisplayList lifecycle", () => {
   test("cleans up renderables across destroy and remount cycles", async () => {
