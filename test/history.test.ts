@@ -9,6 +9,7 @@ import {
   formatBreadcrumb,
   formatBreadcrumbWithStatus,
   formatCssWarningStatus,
+  formatFragmentNotFoundStatus,
   formatLoadingBreadcrumb,
   goBack,
   goForward,
@@ -100,6 +101,20 @@ describe("browser history", () => {
     expect(line.endsWith("...")).toBe(true);
     expect(line.length).toBeLessThanOrEqual(20);
     expect(line.startsWith("Loading ")).toBe(true);
+  });
+
+  test("formats fragment-not-found status for the breadcrumb", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "Fragments" });
+
+    expect(formatFragmentNotFoundStatus("does-not-exist", 40)).toBe(
+      " | ⚠ #does-not-exist not found",
+    );
+    expect(
+      formatBreadcrumbWithStatus(history, 50, {
+        fragmentNotFound: "does-not-exist",
+      }),
+    ).toBe("[Fragments] | ⚠ #does-not-exist not found");
   });
 
   test("appends CSS failure status to the breadcrumb", () => {

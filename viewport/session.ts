@@ -40,6 +40,7 @@ export interface BrowserSessionOptions {
   onNavigate: (location: string, fragment?: string | null) => void | Promise<void>;
   onHistoryBack?: () => void | Promise<void>;
   onHistoryForward?: () => void | Promise<void>;
+  onFragmentNotFound?: (fragment: string | null) => void;
 }
 
 export interface BrowserSession {
@@ -117,6 +118,18 @@ export function createBrowserSession(
     }
   };
 
+  const applyFragmentScroll = (fragment: string | null) => {
+    const result = scrollToFragment(viewport, fragmentPositions, fragment);
+    syncViewport(result.viewport);
+
+    if (result.status === "missing" && result.fragment) {
+      options.onFragmentNotFound?.(result.fragment);
+      return;
+    }
+
+    options.onFragmentNotFound?.(null);
+  };
+
   const activateLink = async (index: number) => {
     const link = pageLinks[index];
     if (!link) return;
@@ -125,12 +138,12 @@ export function createBrowserSession(
     if (!target) return;
 
     if (target.location === null) {
-      syncViewport(scrollToFragment(viewport, fragmentPositions, target.fragment));
+      applyFragmentScroll(target.fragment);
       return;
     }
 
     if (target.fragment !== null && isSamePage(target.location, options.pageLocation)) {
-      syncViewport(scrollToFragment(viewport, fragmentPositions, target.fragment));
+      applyFragmentScroll(target.fragment);
       return;
     }
 
@@ -138,7 +151,7 @@ export function createBrowserSession(
   };
 
   const scrollToFragmentId = (fragment: string | null) => {
-    syncViewport(scrollToFragment(viewport, fragmentPositions, fragment));
+    applyFragmentScroll(fragment);
   };
 
   const relayout = (view: PageView, layout: MountLayout) => {

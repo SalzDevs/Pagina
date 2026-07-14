@@ -205,13 +205,16 @@ describe("fragments-page.html stress test", () => {
     viewportState = { ...viewportState, scrollY: maxScrollY(viewportState) };
 
     const toIntro = scrollToFragment(viewportState, positions, "intro");
-    expect(toIntro.scrollY).toBe(expectedAlignTopScroll(viewportState, positions.get("intro")!));
+    expect(toIntro.status).toBe("found");
+    expect(toIntro.viewport.scrollY).toBe(expectedAlignTopScroll(viewportState, positions.get("intro")!));
 
-    const toMiddle = scrollToFragment(toIntro, positions, "chapter-10");
-    expect(toMiddle.scrollY).toBe(expectedAlignTopScroll(toIntro, positions.get("chapter-10")!));
+    const toMiddle = scrollToFragment(toIntro.viewport, positions, "chapter-10");
+    expect(toMiddle.status).toBe("found");
+    expect(toMiddle.viewport.scrollY).toBe(expectedAlignTopScroll(toIntro.viewport, positions.get("chapter-10")!));
 
-    const toFooter = scrollToFragment(toMiddle, positions, "footer");
-    expect(toFooter.scrollY).toBe(expectedAlignTopScroll(toMiddle, positions.get("footer")!));
+    const toFooter = scrollToFragment(toMiddle.viewport, positions, "footer");
+    expect(toFooter.status).toBe("found");
+    expect(toFooter.viewport.scrollY).toBe(expectedAlignTopScroll(toMiddle.viewport, positions.get("footer")!));
   });
 
   test("aligns every chapter id to the top of the viewport", async () => {
@@ -221,8 +224,9 @@ describe("fragments-page.html stress test", () => {
 
     for (const id of CHAPTER_IDS) {
       const next = scrollToFragment(viewportState, positions, id);
-      expect(next.scrollY).toBe(expectedAlignTopScroll(viewportState, positions.get(id)!));
-      viewportState = next;
+      expect(next.status).toBe("found");
+      expect(next.viewport.scrollY).toBe(expectedAlignTopScroll(viewportState, positions.get(id)!));
+      viewportState = next.viewport;
     }
   });
 
@@ -232,16 +236,19 @@ describe("fragments-page.html stress test", () => {
 
     const next = scrollToFragment(viewportState, new Map(), null);
 
-    expect(next.scrollY).toBe(0);
+    expect(next.status).toBe("cleared");
+    expect(next.viewport.scrollY).toBe(0);
   });
 
-  test("leaves scroll unchanged for unknown fragment ids", async () => {
+  test("scrolls to the top and reports missing fragment ids", async () => {
     const { positions } = await pipelineFromFragmentsPage();
     const viewportState = { ...createScrollViewport(80, 10, 80, 200), scrollY: 42 };
 
     const next = scrollToFragment(viewportState, positions, "missing-section");
 
-    expect(next.scrollY).toBe(42);
+    expect(next.status).toBe("missing");
+    expect(next.fragment).toBe("missing-section");
+    expect(next.viewport.scrollY).toBe(0);
   });
 });
 

@@ -2,7 +2,15 @@ import { NodeType } from "../dom/node";
 import type { LayoutOutput } from "../layout/output";
 import type { StyledNode } from "../style/style";
 import type { ScrollViewport } from "../viewport/scroll";
-import { scrollTo, scrollToAlignTop } from "../viewport/scroll";
+import { scrollToAlignTop, withScroll } from "../viewport/scroll";
+
+export type FragmentScrollStatus = "found" | "missing" | "cleared";
+
+export interface FragmentScrollResult {
+  viewport: ScrollViewport;
+  status: FragmentScrollStatus;
+  fragment: string | null;
+}
 
 /** Find the first laid-out element with the given id attribute. */
 export function findElementById(root: StyledNode, id: string): StyledNode | null {
@@ -73,13 +81,27 @@ export function scrollToFragment(
   viewport: ScrollViewport,
   fragmentPositions: ReadonlyMap<string, number>,
   fragment: string | null,
-): ScrollViewport {
+): FragmentScrollResult {
   if (fragment === null) {
-    return scrollTo(viewport, 0);
+    return {
+      viewport: withScroll(viewport, { scrollY: 0 }),
+      status: "cleared",
+      fragment: null,
+    };
   }
 
   const top = fragmentPositions.get(fragment);
-  if (top === undefined) return viewport;
+  if (top === undefined) {
+    return {
+      viewport: withScroll(viewport, { scrollY: 0 }),
+      status: "missing",
+      fragment,
+    };
+  }
 
-  return scrollToAlignTop(viewport, top);
+  return {
+    viewport: scrollToAlignTop(viewport, top),
+    status: "found",
+    fragment,
+  };
 }

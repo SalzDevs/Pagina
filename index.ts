@@ -51,6 +51,7 @@ async function main() {
   const pageCache = new PageCache();
   let session: BrowserSession | null = null;
   let loadedPage: LoadedPage | null = null;
+  let fragmentNotFound: string | null = null;
   let rendererStarted = false;
   let loadGeneration = 0;
 
@@ -80,6 +81,7 @@ async function main() {
     breadcrumb.update(
       formatBreadcrumbWithStatus(history, renderer.width, {
         cssWarnings: loadedPage?.cssWarnings,
+        fragmentNotFound,
       }),
     );
   };
@@ -202,6 +204,10 @@ async function main() {
         if (!result.entry) return;
         await loadPage(result.entry.location, "none", null, result.entry.scrollY ?? 0);
       },
+      onFragmentNotFound: (fragment) => {
+        fragmentNotFound = fragment;
+        updateBreadcrumb();
+      },
     });
 
     if (fragment !== null) {
@@ -255,6 +261,7 @@ async function main() {
   ) => {
     const generation = ++loadGeneration;
     const pageLocation = normalizePageLocation(location);
+    fragmentNotFound = null;
     breadcrumb.update(formatLoadingBreadcrumb(pageLocation, renderer.width));
 
     const keepCurrentPageVisible = session !== null;

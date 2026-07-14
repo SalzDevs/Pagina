@@ -228,12 +228,32 @@ export function formatCssWarningStatus(warnings: string[], width: number): strin
   return truncateStatus(variants[variants.length - 1]!, width);
 }
 
+/** Append fragment-not-found status to a breadcrumb when an anchor is missing. */
+export function formatFragmentNotFoundStatus(fragment: string, width: number): string {
+  const variants = [` | ⚠ #${fragment} not found`, " | ⚠ Fragment not found", " | ⚠"];
+
+  for (const status of variants) {
+    if (status.length <= width) return status;
+  }
+
+  return truncateStatus(variants[variants.length - 1]!, width);
+}
+
 /** Format the history trail and any CSS load warnings for the breadcrumb bar. */
 export function formatBreadcrumbWithStatus(
   history: BrowserHistory,
   width: number,
-  options: { cssWarnings?: string[] } = {},
+  options: { cssWarnings?: string[]; fragmentNotFound?: string | null } = {},
 ): string {
+  const fragment = options.fragmentNotFound ?? null;
+  if (fragment) {
+    const status = formatFragmentNotFoundStatus(fragment, width);
+    const breadcrumbWidth = width - status.length;
+    if (breadcrumbWidth >= 0) {
+      return formatBreadcrumb(history, breadcrumbWidth) + status;
+    }
+  }
+
   const warnings = options.cssWarnings ?? [];
   if (warnings.length === 0) return formatBreadcrumb(history, width);
 
