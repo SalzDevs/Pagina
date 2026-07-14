@@ -39,6 +39,16 @@ describe("keybindings", () => {
     expect(lines.every((line) => line.length <= 60)).toBe(true);
   });
 
+  test("includes failed stylesheet urls in help when present", () => {
+    const lines = formatHelpLines(60, {
+      cssWarnings: ["https://example.com/theme.css"],
+    });
+
+    expect(lines.join("\n")).toContain("Failed stylesheets:");
+    expect(lines.join("\n")).toContain("example.com/theme.css");
+    expect(lines.at(-1)).toBe("Press ? to close this screen.");
+  });
+
   test("truncates long binding lines on narrow terminals", () => {
     const line = formatKeybindingLine(
       { keys: "Option+← / →", description: "Back / forward (macOS)" },

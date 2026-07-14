@@ -6,12 +6,14 @@ import { formatHelpLines } from "../viewport/keybindings";
 
 export interface HelpOverlay {
   setVisible: (visible: boolean) => void;
+  setCssWarnings: (warnings: string[]) => void;
   resize: (width: number, height: number) => void;
   destroy: () => void;
 }
 
 /** Mount a full-screen help overlay below the breadcrumb bar. */
 export function mountHelpOverlay(renderer: CliRenderer): HelpOverlay {
+  let cssWarnings: string[] = [];
   const panel = new BoxRenderable(renderer, {
     id: "pagina-help",
     width: renderer.width,
@@ -41,7 +43,7 @@ export function mountHelpOverlay(renderer: CliRenderer): HelpOverlay {
   renderer.root.add(panel);
 
   const refresh = (width: number) => {
-    text.content = formatHelpLines(width).join("\n");
+    text.content = formatHelpLines(width, { cssWarnings }).join("\n");
     text.width = Math.max(0, width - 2);
     renderer.requestRender();
   };
@@ -52,6 +54,10 @@ export function mountHelpOverlay(renderer: CliRenderer): HelpOverlay {
     setVisible(visible: boolean) {
       panel.visible = visible;
       renderer.requestRender();
+    },
+    setCssWarnings(warnings: string[]) {
+      cssWarnings = warnings;
+      refresh(renderer.width);
     },
     resize(width: number, height: number) {
       panel.width = width;

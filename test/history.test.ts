@@ -8,6 +8,7 @@ import {
   extractPageTitle,
   formatBreadcrumb,
   formatBreadcrumbWithStatus,
+  formatCssWarningHelpSection,
   formatCssWarningStatus,
   formatFragmentNotFoundStatus,
   formatLoadingBreadcrumb,
@@ -186,13 +187,13 @@ describe("browser history", () => {
       cssWarnings: ["https://example.com/very/long/path/theme.css"],
     });
 
-    expect(line).toContain("[Current Page]");
+    expect(line).toContain("Current Page");
     expect(line.startsWith("...")).toBe(true);
     expect(line.length).toBeLessThanOrEqual(24);
-    expect(line.endsWith(" | ⚠")).toBe(true);
+    expect(line).toContain("⚠");
   });
 
-  test("drops css status when the breadcrumb needs the full width", () => {
+  test("keeps a css warning visible when the breadcrumb needs most of the width", () => {
     let history = createBrowserHistory();
     history = pushHistory(history, { location: "/a", label: "First Page" });
     history = pushHistory(history, { location: "/b", label: "Second Page" });
@@ -202,8 +203,20 @@ describe("browser history", () => {
       cssWarnings: ["https://example.com/theme.css"],
     });
 
-    expect(line).toContain("[Current Page]");
-    expect(line).not.toContain("⚠");
+    expect(line).toContain("Current");
+    expect(line).toContain("⚠");
+    expect(line.length).toBeLessThanOrEqual(18);
+  });
+
+  test("lists failed stylesheet urls in the help section", () => {
+    const lines = formatCssWarningHelpSection(
+      ["https://example.com/theme.css", "https://cdn.example.com/extra.css"],
+      60,
+    );
+
+    expect(lines.join("\n")).toContain("Failed stylesheets:");
+    expect(lines.join("\n")).toContain("example.com/theme.css");
+    expect(lines.join("\n")).toContain("cdn.example.com/extra.css");
   });
 
   test("stores and restores scroll position on the active entry", () => {

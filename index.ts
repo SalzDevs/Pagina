@@ -86,6 +86,10 @@ async function main() {
     height: Math.max(1, renderer.height - BREADCRUMB_HEIGHT),
   });
 
+  const syncCssWarnings = () => {
+    help.setCssWarnings(loadedPage?.cssWarnings ?? []);
+  };
+
   const updateBreadcrumb = () => {
     if (helpVisible) {
       breadcrumb.update("Help — press ? to close");
@@ -312,6 +316,7 @@ async function main() {
 
     session.relayout(view, chrome);
     updateBreadcrumb();
+    syncCssWarnings();
   };
 
   const loadPage = async (
@@ -349,6 +354,7 @@ async function main() {
         restoreFocusedLinkIndex: restore.focusedLinkIndex,
         restoreFragment: restore.fragment,
       });
+      syncCssWarnings();
       return;
     }
 
@@ -400,6 +406,7 @@ async function main() {
         restoreFocusedLinkIndex: restore.focusedLinkIndex,
         restoreFragment: restore.fragment,
       });
+      syncCssWarnings();
     } catch (error) {
       if (isFetchAborted(error)) {
         loading.hide();

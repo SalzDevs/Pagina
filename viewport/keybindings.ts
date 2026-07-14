@@ -1,3 +1,5 @@
+import { formatCssWarningHelpSection } from "../navigation/history";
+
 export interface KeybindingEntry {
   keys: string;
   description: string;
@@ -43,7 +45,10 @@ export function formatKeybindingLine(entry: KeybindingEntry, width: number): str
 }
 
 /** Format help overlay lines for the current terminal width. */
-export function formatHelpLines(width: number): string[] {
+export function formatHelpLines(
+  width: number,
+  options: { cssWarnings?: string[] } = {},
+): string[] {
   const title = "Pagina — keyboard & mouse";
   const hint = "Press ? to close";
 
@@ -54,6 +59,12 @@ export function formatHelpLines(width: number): string[] {
   }
 
   lines.push("", "On Linux/Windows, use u / U for back and forward.");
-  lines.push("", hint);
+
+  if (options.cssWarnings?.length) {
+    lines.push(...formatCssWarningHelpSection(options.cssWarnings, width));
+  } else {
+    lines.push("", hint);
+  }
+
   return lines;
 }

@@ -199,18 +199,53 @@ function cssWarningLabel(url: string): string {
   return historyLabel(url);
 }
 
+function minimalCssStatusVariants(warnings: string[]): string[] {
+  if (warnings.length === 1) {
+    return [" |⚠CSS", " |⚠", "⚠"];
+  }
+
+  const count = warnings.length;
+  return [` |⚠CSS×${count}`, ` |⚠×${count}`, " |⚠", "⚠"];
+}
+
 function cssWarningStatusVariants(warnings: string[]): string[] {
   if (warnings.length === 1) {
     const label = cssWarningLabel(warnings[0]!);
-    return [` | ⚠ CSS failed: ${label}`, " | ⚠ CSS failed", " | ⚠ CSS", " | ⚠"];
+    return [` | ⚠ CSS failed: ${label}`, " | ⚠ CSS failed", " | ⚠ CSS", ...minimalCssStatusVariants(warnings)];
   }
 
   return [
     ` | ⚠ ${warnings.length} CSS files failed`,
     ` | ⚠ CSS×${warnings.length}`,
-    " | ⚠ CSS",
-    " | ⚠",
+    ...minimalCssStatusVariants(warnings),
   ];
+}
+
+/** Format failed stylesheet URLs for the help overlay. */
+export function formatCssWarningHelpSection(warnings: string[], width: number): string[] {
+  if (warnings.length === 0) return [];
+
+  const lines = ["", "Failed stylesheets:"];
+
+  for (const url of warnings) {
+    const label = cssWarningLabel(url);
+    const primary =
+      label.length <= width - 4
+        ? label
+        : `${label.slice(0, Math.max(0, width - 7))}...`;
+    lines.push(`  • ${primary}`);
+
+    if (url !== label) {
+      const detail =
+        url.length <= width - 4 ? url : `${url.slice(0, Math.max(0, width - 7))}...`;
+      if (detail !== primary) {
+        lines.push(`    ${detail}`);
+      }
+    }
+  }
+
+  lines.push("", "Press ? to close this screen.");
+  return lines.map((line) => (line.length <= width ? line : `${line.slice(0, Math.max(0, width - 3))}...`));
 }
 
 function truncateStatus(status: string, width: number): string {
@@ -312,6 +347,21 @@ export function formatBreadcrumbWithStatus(
       best = combined;
       bestBreadcrumbLength = breadcrumb.length;
     }
+  }
+
+  if (best.includes("⚠")) return best;
+
+  for (const status of minimalCssStatusVariants(warnings)) {
+    const breadcrumbWidth = width - status.length;
+    if (breadcrumbWidth < 0) continue;
+
+    const breadcrumb = formatBreadcrumb(history, breadcrumbWidth);
+    const combined = breadcrumb + status;
+    if (combined.length <= width) return combined;
+  }
+
+  if (width >= 1) {
+    return `${formatBreadcrumb(history, Math.max(0, width - 1)).slice(0, Math.max(0, width - 1))}⚠`;
   }
 
   return best;
