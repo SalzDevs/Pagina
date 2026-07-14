@@ -36,4 +36,22 @@ describe("computeStyles", () => {
     expect(strong?.style.bold).toBe(true);
     expect(em?.style.italic).toBe(true);
   });
+
+  test("applies inline code foreground and background", async () => {
+    const dom = convert(parseHTML("<p><code>bun start</code></p>"));
+    const styled = await computeStyles(dom);
+
+    const body = styled.children[0]?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "body",
+    );
+    const code = body?.children[0]?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "code",
+    );
+    const text = code?.children[0];
+
+    expect(code?.style.fg).toBe("#ce9178");
+    expect(code?.style.bg).toBe("#2a2a2a");
+    expect(text?.style.fg).toBe("#ce9178");
+    expect(text?.style.bg).toBe("#2a2a2a");
+  });
 });

@@ -63,7 +63,7 @@ export function buildErrorPageHtml(failedLocation: string, error: unknown): stri
     <style>
       body { color: #cccccc; background: #111111; }
       h1 { color: #f48771; }
-      code { color: #ce9178; }
+      code { color: #ce9178; background-color: #2a2a2a; }
       a { color: #569cd6; }
       p { margin: 0 0 1em 0; }
     </style>

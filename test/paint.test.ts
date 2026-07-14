@@ -55,6 +55,20 @@ describe("paint", () => {
     ).toBe(true);
   });
 
+  test("paints inline code with a background color", async () => {
+    const html = "<p>Run <code>bun start</code> to launch.</p>";
+    const styled = await computeStyles(convert(parseHTML(html)));
+
+    const laidOut = layout(styled, { viewport });
+    const displayList = paint(styled, laidOut.output).displayList;
+    const codeText = displayList.find(
+      (cmd) => isTextCommand(cmd) && cmd.text === "bun",
+    );
+
+    expect(codeText?.fg).toBe("#ce9178");
+    expect(codeText?.bg).toBe("#2a2a2a");
+  });
+
   test("paints block backgrounds as fill commands", async () => {
     const html = await Bun.file("examples/styled-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)), {

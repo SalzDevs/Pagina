@@ -98,6 +98,12 @@ export const HR_VERTICAL_MARGIN = 1;
 /** Default foreground for image placeholders. */
 export const IMG_PLACEHOLDER_FG = "#888888";
 
+/** User-agent colors for inline `<code>` elements. */
+export const INLINE_CODE_FG = "#ce9178";
+export const INLINE_CODE_BG = "#2a2a2a";
+
+const INLINE_BG_PARENT_TAGS = new Set(["code", "kbd", "samp"]);
+
 function uaDisplay(tag: string): Display {
   if (HIDDEN_TAGS.has(tag)) return "none";
   if (BLOCK_TAGS.has(tag)) return "block";
@@ -140,7 +146,7 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
         fontSize: HEADING_FONT_SIZES[tag] ?? style.fontSize,
       };
     case "code":
-      return { ...style, fg: "#ce9178" };
+      return { ...style, fg: INLINE_CODE_FG, bg: INLINE_CODE_BG };
     case "pre":
       return { ...style, whiteSpace: "pre" };
     case "th":
@@ -208,12 +214,17 @@ function styleNode(
     case NodeType.Text: {
       if (!node.value || node.value.length === 0) return null;
 
+      const parentTag =
+        ancestors.at(-1)?.type === NodeType.Element ? ancestors.at(-1)?.tag : undefined;
+      const preserveInlineBg =
+        parentTag !== undefined && INLINE_BG_PARENT_TAGS.has(parentTag) && inherited.bg !== undefined;
+
       return {
         dom: node,
         style: {
           ...inherited,
           display: "inline",
-          bg: undefined,
+          bg: preserveInlineBg ? inherited.bg : undefined,
         },
         children: [],
       };
