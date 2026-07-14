@@ -17,6 +17,17 @@ export function createLinkFocusState(): LinkFocusState {
   return { focusedIndex: null };
 }
 
+/** Indices of every focusable link in document order. */
+export function documentLinkFocusIndices(links: Link[]): number[] {
+  const indices: number[] = [];
+
+  for (let index = 0; index < links.length; index++) {
+    if (links[index]?.href) indices.push(index);
+  }
+
+  return indices;
+}
+
 /** Indices of the first link for each unique href, in document order. */
 export function uniqueLinkFocusIndices(links: Link[]): number[] {
   const seen = new Set<string>();
@@ -33,34 +44,26 @@ export function uniqueLinkFocusIndices(links: Link[]): number[] {
   return indices;
 }
 
-function currentUniqueFocusPosition(
-  order: number[],
-  links: Link[],
-  focusedIndex: number | null,
-): number {
+function currentFocusPosition(order: number[], focusedIndex: number | null): number {
   if (focusedIndex === null) return -1;
-
-  const href = links[focusedIndex]?.href;
-  if (!href) return -1;
-
-  return order.findIndex((index) => links[index]?.href === href);
+  return order.indexOf(focusedIndex);
 }
 
 export function focusNextLink(state: LinkFocusState, links: Link[]): LinkFocusState {
-  const order = uniqueLinkFocusIndices(links);
+  const order = documentLinkFocusIndices(links);
   if (order.length === 0) return state;
 
-  const current = currentUniqueFocusPosition(order, links, state.focusedIndex);
+  const current = currentFocusPosition(order, state.focusedIndex);
   const next = current === -1 ? 0 : (current + 1) % order.length;
 
   return { focusedIndex: order[next]! };
 }
 
 export function focusPreviousLink(state: LinkFocusState, links: Link[]): LinkFocusState {
-  const order = uniqueLinkFocusIndices(links);
+  const order = documentLinkFocusIndices(links);
   if (order.length === 0) return state;
 
-  const current = currentUniqueFocusPosition(order, links, state.focusedIndex);
+  const current = currentFocusPosition(order, state.focusedIndex);
   const next =
     current === -1
       ? order.length - 1

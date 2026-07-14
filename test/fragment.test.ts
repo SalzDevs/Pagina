@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, test } from "bun:test";
 
 import { collectLinks } from "../links/collect";
-import { uniqueLinkFocusIndices } from "../links/focus";
+import { documentLinkFocusIndices, focusNextLink, uniqueLinkFocusIndices } from "../links/focus";
 import {
   collectFragmentPositions,
   elementDocumentTop,
@@ -158,13 +158,26 @@ describe("fragments-page.html stress test", () => {
     }
   });
 
-  test("deduplicates repeated fragment hrefs for keyboard link focus", async () => {
+  test("registers every fragment link for keyboard focus in document order", async () => {
     const { links } = await pipelineFromFragmentsPage();
+    const order = documentLinkFocusIndices(links);
     const unique = uniqueLinkFocusIndices(links);
 
     expect(links.length).toBeGreaterThan(unique.length);
+    expect(order).toHaveLength(links.length);
     expect(unique).toHaveLength(CHAPTER_IDS.length);
     expect(new Set(unique.map((index) => links[index]?.href)).size).toBe(CHAPTER_IDS.length);
+
+    let state = { focusedIndex: null as number | null };
+    const visited: number[] = [];
+
+    for (let step = 0; step < order.length; step++) {
+      state = focusNextLink(state, links);
+      visited.push(state.focusedIndex!);
+    }
+
+    expect(new Set(visited).size).toBe(order.length);
+    expect(visited).toEqual(order);
   });
 
   test("registers every section id in document order", async () => {

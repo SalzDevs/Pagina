@@ -166,7 +166,7 @@ describe("link focus", () => {
     expect(state.focusedIndex).toBe(0);
   });
 
-  test("skips duplicate hrefs when cycling with bracket keys", async () => {
+  test("visits every link in document order including duplicate hrefs", async () => {
     const { links } = await pipeline(`
       <p>
         <a href="#intro">Intro A</a>
@@ -183,23 +183,26 @@ describe("link focus", () => {
     let state = createLinkFocusState();
     state = focusNextLink(state, links);
     expect(state.focusedIndex).toBe(0);
-    expect(links[state.focusedIndex!]?.href).toBe("#intro");
 
     state = focusNextLink(state, links);
     expect(state.focusedIndex).toBe(1);
-    expect(links[state.focusedIndex!]?.href).toBe("#chapter-01");
+
+    state = focusNextLink(state, links);
+    expect(state.focusedIndex).toBe(2);
+    expect(links[state.focusedIndex!]?.href).toBe("#intro");
 
     state = focusNextLink(state, links);
     expect(state.focusedIndex).toBe(3);
-    expect(links[state.focusedIndex!]?.href).toBe("#footer");
+
+    state = focusNextLink(state, links);
+    expect(state.focusedIndex).toBe(4);
 
     state = focusNextLink(state, links);
     expect(state.focusedIndex).toBe(0);
 
     state = { focusedIndex: 2 };
     state = focusNextLink(state, links);
-    expect(state.focusedIndex).toBe(1);
-    expect(links[state.focusedIndex!]?.href).toBe("#chapter-01");
+    expect(state.focusedIndex).toBe(3);
   });
 
   test("activates the styled-page link with o", async () => {
