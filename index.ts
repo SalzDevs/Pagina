@@ -18,10 +18,12 @@ import { PageCache, resolveLoadedPage } from "./navigation/page-cache";
 import { splitPageLocation } from "./navigation/fragment";
 import { BREADCRUMB_HEIGHT, mountBreadcrumb } from "./render/breadcrumb";
 import { mountHelpOverlay } from "./render/help-overlay";
+import { mountLoadingOverlay } from "./render/loading-overlay";
 import type { MountLayout } from "./render/render";
 import { buildPageView } from "./viewport/page-view";
 import { createBrowserSession, type BrowserSession } from "./viewport/session";
 import { clampScrollY } from "./viewport/scroll";
+import { isRemoteUrl } from "./navigation/resolve";
 import {
   applyOpenPromptKey,
   createOpenPromptState,
@@ -43,6 +45,7 @@ async function main() {
 
   const breadcrumb = mountBreadcrumb(renderer);
   const help = mountHelpOverlay(renderer);
+  const loading = mountLoadingOverlay(renderer);
   let helpVisible = false;
   let openPrompt: OpenPromptState = createOpenPromptState();
   let history: BrowserHistory = createBrowserHistory();
@@ -134,6 +137,8 @@ async function main() {
   ) => {
     if (!loadedPage) return;
 
+    loading.setVisible(false);
+
     const previousScrollY = viewState.preserveViewState
       ? (session?.viewport.scrollY ?? 0)
       : (viewState.restoreScrollY ?? 0);
@@ -224,10 +229,11 @@ async function main() {
   };
 
   const relayoutCurrentPage = async () => {
-    if (!loadedPage || !session) return;
-
     help.resize(renderer.width, renderer.height);
     breadcrumb.resize(renderer.width);
+    loading.resize(renderer.width, renderer.height);
+
+    if (!loadedPage || !session) return;
 
     const chrome = contentLayout();
     loadedPage = await ensureStylesForViewport(loadedPage, chrome.width);
@@ -249,6 +255,17 @@ async function main() {
   ) => {
     const pageLocation = normalizePageLocation(location);
     breadcrumb.update(formatLoadingBreadcrumb(pageLocation, renderer.width));
+
+    const showLoadingOverlay =
+      isRemoteUrl(pageLocation) &&
+      (historyMode === "push" || pageCache.get(pageLocation) === undefined);
+    if (showLoadingOverlay) {
+      loading.update(pageLocation);
+      loading.setVisible(true);
+    } else {
+      loading.setVisible(false);
+    }
+
     startRendererOnce();
 
     if (helpVisible) {
