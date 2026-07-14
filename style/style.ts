@@ -92,6 +92,9 @@ export const BLOCKQUOTE_INDENT = 4;
 /** Vertical margin above and below horizontal rules. */
 export const HR_VERTICAL_MARGIN = 1;
 
+/** Default foreground for image placeholders. */
+export const IMG_PLACEHOLDER_FG = "#888888";
+
 function uaDisplay(tag: string): Display {
   if (HIDDEN_TAGS.has(tag)) return "none";
   if (BLOCK_TAGS.has(tag)) return "block";
@@ -145,6 +148,12 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
         marginTop: HR_VERTICAL_MARGIN,
         marginBottom: HR_VERTICAL_MARGIN,
         fg: "#666666",
+      };
+    case "img":
+      return {
+        ...style,
+        italic: true,
+        fg: IMG_PLACEHOLDER_FG,
       };
     default:
       return style;

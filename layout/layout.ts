@@ -13,6 +13,7 @@ import {
   wrapCharacterBudget,
 } from "./line-height";
 import { isHrElement, layoutHr } from "./hr";
+import { imagePlaceholderText, isImgElement, layoutImgBlock } from "./img";
 import { isListContainer, layoutListContainer } from "./lists";
 import { LayoutOutput } from "./output";
 import { layoutPreBlock, isPreElement } from "./pre";
@@ -74,6 +75,11 @@ function collectInlineSegments(node: StyledNode, out: InlineSegment[]): void {
 
   if (isLineBreak(node)) {
     out.push({ node, text: "\n" });
+    return;
+  }
+
+  if (isImgElement(node)) {
+    out.push({ node, text: imagePlaceholderText(node) });
     return;
   }
 
@@ -272,6 +278,14 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
 
     if (isHrElement(node)) {
       layoutHr(node, ctx, {
+        addFragment: (target, fragment) => addTrackedFragment(ctx, target, fragment),
+        blockGap: BLOCK_GAP,
+      });
+      return;
+    }
+
+    if (isImgElement(node)) {
+      layoutImgBlock(node, ctx, viewport, {
         addFragment: (target, fragment) => addTrackedFragment(ctx, target, fragment),
         blockGap: BLOCK_GAP,
       });

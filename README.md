@@ -47,6 +47,7 @@ bun test
 | `examples/long-page.html` | `bun run index.ts examples/long-page.html` | Scrolling |
 | `examples/fragments-page.html` | `bun run index.ts examples/fragments-page.html` | In-page `#fragment` links |
 | `examples/nested/catalog.html` | `bun run index.ts examples/nested/catalog.html` | `<base href>` resolution |
+| `examples/images-page.html` | `bun run index.ts examples/images-page.html` | Image alt-text placeholders |
 
 ## Keyboard & mouse
 
