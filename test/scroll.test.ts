@@ -21,13 +21,13 @@ import {
   visibleCommandEntries,
 } from "../viewport/visible";
 
-function key(name: string, eventType: "press" | "release" = "press") {
+function key(name: string, eventType: "press" | "release" = "press", shift = false) {
   return {
     name,
     eventType,
     ctrl: false,
     meta: false,
-    shift: false,
+    shift,
     option: false,
     sequence: "",
     number: false,
@@ -65,6 +65,8 @@ describe("scroll viewport", () => {
     expect(handleScrollKey(scrollTo(viewport, 12), key("pageup"))?.scrollY).toBe(3);
     expect(handleScrollKey(viewport, key("end"))?.scrollY).toBe(15);
     expect(handleScrollKey(scrollTo(viewport, 8), key("home"))?.scrollY).toBe(0);
+    expect(handleScrollKey(scrollTo(viewport, 8), key("g"))?.scrollY).toBe(0);
+    expect(handleScrollKey(viewport, key("g", "press", true))?.scrollY).toBe(15);
   });
 
   test("ignores ctrl-modified keys", () => {

@@ -57,7 +57,7 @@ bun test
 |------|--------|
 | `↑` / `↓`, `j` / `k` | Scroll one line |
 | `PgUp` / `PgDn` | Scroll one page |
-| `Home` / `End` | Jump to top / bottom |
+| `Home` / `End`, `g` / `G` | Jump to top / bottom |
 | `[` / `]` | Previous / next link |
 | `Enter`, `o` | Follow focused link |
 | `u` | Back |

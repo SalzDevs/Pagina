@@ -86,6 +86,8 @@ export function handleScrollKey(viewport: ScrollViewport, key: KeyEvent): Scroll
       return scrollTo(viewport, 0);
     case "end":
       return scrollTo(viewport, maxScrollY(viewport));
+    case "g":
+      return scrollTo(viewport, key.shift ? maxScrollY(viewport) : 0);
     default:
       return null;
   }

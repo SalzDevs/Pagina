@@ -7,7 +7,7 @@ export interface KeybindingEntry {
 export const PAGINA_KEYBINDINGS: KeybindingEntry[] = [
   { keys: "↑ / ↓, j / k", description: "Scroll one line" },
   { keys: "PgUp / PgDn", description: "Scroll one page" },
-  { keys: "Home / End", description: "Jump to top / bottom" },
+  { keys: "Home / End, g / G", description: "Jump to top / bottom" },
   { keys: "[ / ]", description: "Previous / next link" },
   { keys: "Enter, o", description: "Follow focused link" },
   { keys: "u", description: "Back" },
