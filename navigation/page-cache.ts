@@ -36,7 +36,7 @@ export class PageCache {
   }
 }
 
-/** Load a page from cache or fetch it when history navigation allows reuse. */
+/** Load a page from cache or fetch it when not cached or reload is forced. */
 export async function resolveLoadedPage(
   pageLocation: string,
   cache: PageCache,

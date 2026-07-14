@@ -41,6 +41,10 @@ type HistoryMode = "push" | "none";
 
 type LoadedPage = import("./navigation/page-cache").LoadedPageContent;
 
+interface LoadPageOptions {
+  forceReload?: boolean;
+}
+
 interface HistoryViewState {
   scrollY?: number;
   focusedLinkIndex?: number | null;
@@ -310,11 +314,38 @@ async function main() {
     historyMode: HistoryMode = "push",
     fragment: string | null = null,
     restore: HistoryViewState = {},
+    options: LoadPageOptions = {},
   ) => {
     const generation = ++loadGeneration;
     const pageLocation = normalizePageLocation(location);
+    const forceReload = options.forceReload ?? false;
     fragmentNotFound = null;
     unsupportedLink = null;
+
+    if (historyMode === "push") {
+      snapshotViewStateIntoHistory();
+    }
+
+    startRendererOnce();
+
+    if (helpVisible) {
+      helpVisible = false;
+      help.setVisible(false);
+    }
+    openPrompt = createOpenPromptState();
+
+    const cachedPage = !forceReload ? pageCache.get(pageLocation) : undefined;
+    if (cachedPage) {
+      loadedPage = await ensureStylesForViewport(cachedPage, contentLayout().width);
+      if (generation !== loadGeneration) return;
+
+      mountCurrentPage(fragment, historyMode, {
+        restoreScrollY: restore.scrollY,
+        restoreFocusedLinkIndex: restore.focusedLinkIndex,
+        restoreFragment: restore.fragment,
+      });
+      return;
+    }
 
     loadAbortController?.abort();
     const abortController = new AbortController();
@@ -334,18 +365,6 @@ async function main() {
       loading.show(pageLocation, { dimContent: true });
     }
 
-    startRendererOnce();
-
-    if (helpVisible) {
-      helpVisible = false;
-      help.setVisible(false);
-    }
-    openPrompt = createOpenPromptState();
-
-    if (historyMode === "push") {
-      snapshotViewStateIntoHistory();
-    }
-
     const cancelKeyboard = createKeyboardInput(renderer);
     const onLoadingKey = (key: KeyEvent) => {
       if (!isLoadCancelKey(key)) return;
@@ -363,7 +382,7 @@ async function main() {
             signal: abortController.signal,
           }),
         {
-          forceReload: historyMode === "push",
+          forceReload,
         },
       );
       if (generation !== loadGeneration) return;
