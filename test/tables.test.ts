@@ -5,6 +5,7 @@ import { parseHTML } from "../parser/html";
 import {
   collectCellText,
   collectTableRows,
+  formatTableHeaderRule,
   isTableElement,
   measureTable,
   TABLE_CELL_GAP,
@@ -111,6 +112,31 @@ describe("table layout", () => {
     expect(measured.columnWidths).toEqual([2, 6]);
   });
 
+  test("formats a header underline aligned to column widths", () => {
+    expect(formatTableHeaderRule([4, 5], TABLE_CELL_GAP)).toBe("────  ─────");
+  });
+
+  test("draws a header underline after the first header row", async () => {
+    const html = `
+      <table>
+        <tr><th>Name</th><th>Value</th></tr>
+        <tr><td>Alpha</td><td>1</td></tr>
+      </table>
+    `;
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const table = findTable(styled)!;
+    const laidOut = layout(styled, { viewport });
+    const measured = measureTable(table, viewport.width);
+    const expectedRule = formatTableHeaderRule(measured.columnWidths, TABLE_CELL_GAP);
+    const tableRule = laidOut.output.getFragments(table);
+    const fragments = tableFragments(table, laidOut.output);
+    const byText = new Map(fragments.map((fragment) => [fragment.text, fragment]));
+
+    expect(tableRule.some((fragment) => fragment.text === expectedRule)).toBe(true);
+    expect(byText.get("Name")?.y).toBeLessThan(tableRule[0]!.y);
+    expect(byText.get("Alpha")?.y).toBeGreaterThan(tableRule[0]!.y);
+  });
+
   test("paints aligned table text commands", async () => {
     const html = `
       <table>
@@ -126,6 +152,7 @@ describe("table layout", () => {
     expect(texts).toContain("Name");
     expect(texts).toContain("Alpha");
     expect(texts).toContain("1");
+    expect(texts.some((text) => text.includes("────"))).toBe(true);
   });
 
   test("lays out examples/table-page.html with aligned headers and values", async () => {

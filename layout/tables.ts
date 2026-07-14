@@ -5,6 +5,7 @@ import { blockBox } from "./box";
 import { noteLayoutY } from "./fragment-anchors";
 import type { LayoutContext, Viewport } from "./layout";
 import { firstTextDescendant } from "./pre";
+import { HR_CHARACTER } from "./hr";
 
 export const TABLE_CELL_GAP = 2;
 
@@ -120,6 +121,21 @@ export function columnOffsets(columnWidths: number[], startX: number, gap: numbe
   return offsets;
 }
 
+/** Build a header underline that spans each column width. */
+export function formatTableHeaderRule(columnWidths: number[], gap: number): string {
+  if (columnWidths.length === 0) return "";
+
+  return columnWidths
+    .map((width) => HR_CHARACTER.repeat(Math.max(1, width)))
+    .join(" ".repeat(gap));
+}
+
+export function rowHasHeaderCells(row: StyledNode): boolean {
+  return collectRowCells(row).some(
+    (cell) => cell.dom.type === NodeType.Element && cell.dom.tag === "th",
+  );
+}
+
 export interface TableLayoutDeps {
   addFragment: (node: StyledNode, fragment: LayoutFragment) => void;
   nodeLineHeight: (node: StyledNode) => number;
@@ -168,6 +184,18 @@ export function layoutTable(
     }
 
     ctx.y += rowHeight;
+
+    if (rowIndex === 0 && rowHasHeaderCells(row)) {
+      const rule = formatTableHeaderRule(columnWidths, TABLE_CELL_GAP);
+      deps.addFragment(node, {
+        x: offsets[0]!,
+        y: ctx.y,
+        width: rule.length,
+        height: 1,
+        text: rule,
+      });
+      ctx.y += 1;
+    }
   }
 
   ctx.y += node.style.paddingBottom ?? 0;
