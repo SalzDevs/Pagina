@@ -87,6 +87,7 @@ describe("loadPageContent", () => {
     const page = await loadPageContent("examples/page.html");
 
     expect(page.pageLocation).toBe("examples/page.html");
+    expect(page.pageTitle).toBe("Hello!");
     expect(page.isErrorPage).toBe(false);
     expect(page.styled.children.length).toBeGreaterThan(0);
   });

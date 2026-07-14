@@ -166,6 +166,83 @@ describe("history labels", () => {
     expect(historyLabel("examples/links-page.html", "Links Demo")).toBe("Links Demo");
   });
 
+  test("falls back to the first h1 when title is missing", () => {
+    const dom: Node = {
+      type: NodeType.Element,
+      tag: "html",
+      children: [
+        {
+          type: NodeType.Element,
+          tag: "body",
+          children: [
+            {
+              type: NodeType.Element,
+              tag: "h1",
+              children: [{ type: NodeType.Text, value: "Hello!" }],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(extractPageTitle(dom)).toBe("Hello!");
+  });
+
+  test("falls back to h2 when title and h1 are missing", () => {
+    const dom: Node = {
+      type: NodeType.Element,
+      tag: "html",
+      children: [
+        {
+          type: NodeType.Element,
+          tag: "body",
+          children: [
+            {
+              type: NodeType.Element,
+              tag: "h2",
+              children: [{ type: NodeType.Text, value: "Chapter One" }],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(extractPageTitle(dom)).toBe("Chapter One");
+  });
+
+  test("prefers title over h1 when both are present", () => {
+    const dom: Node = {
+      type: NodeType.Element,
+      tag: "html",
+      children: [
+        {
+          type: NodeType.Element,
+          tag: "head",
+          children: [
+            {
+              type: NodeType.Element,
+              tag: "title",
+              children: [{ type: NodeType.Text, value: "Document Title" }],
+            },
+          ],
+        },
+        {
+          type: NodeType.Element,
+          tag: "body",
+          children: [
+            {
+              type: NodeType.Element,
+              tag: "h1",
+              children: [{ type: NodeType.Text, value: "Heading Title" }],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(extractPageTitle(dom)).toBe("Document Title");
+  });
+
   test("falls back to hostname or file name", () => {
     expect(historyLabel("https://example.com/docs/page.html")).toBe("example.com/docs/page.html");
     expect(historyLabel("/tmp/examples/page.html")).toBe("page.html");

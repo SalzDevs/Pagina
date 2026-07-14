@@ -86,26 +86,47 @@ export function canGoForward(history: BrowserHistory): boolean {
 
 /** Extract the document title from a DOM tree, if present. */
 export function extractPageTitle(root: Node): string | undefined {
-  const walk = (node: Node): string | undefined => {
-    if (node.type === NodeType.Element && node.tag === "title") {
-      const text = node.children
-        ?.filter((child) => child.type === NodeType.Text)
-        .map((child) => child.value ?? "")
-        .join("")
-        .trim();
+  let title: string | undefined;
+  let h1: string | undefined;
+  let h2: string | undefined;
 
-      return text || undefined;
+  const elementText = (node: Node): string | undefined => {
+    const parts: string[] = [];
+
+    const walk = (current: Node): void => {
+      if (current.type === NodeType.Text) {
+        parts.push(current.value ?? "");
+        return;
+      }
+
+      for (const child of current.children ?? []) {
+        walk(child);
+      }
+    };
+
+    walk(node);
+    const text = parts.join("").replace(/\s+/g, " ").trim();
+    return text || undefined;
+  };
+
+  const walk = (node: Node): void => {
+    if (node.type === NodeType.Element) {
+      if (node.tag === "title" && !title) {
+        title = elementText(node);
+      } else if (node.tag === "h1" && !h1) {
+        h1 = elementText(node);
+      } else if (node.tag === "h2" && !h2) {
+        h2 = elementText(node);
+      }
     }
 
     for (const child of node.children ?? []) {
-      const title = walk(child);
-      if (title) return title;
+      walk(child);
     }
-
-    return undefined;
   };
 
-  return walk(root);
+  walk(root);
+  return title ?? h1 ?? h2;
 }
 
 /** Build a short breadcrumb label from a page location and optional title. */
