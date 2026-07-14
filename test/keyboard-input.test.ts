@@ -41,7 +41,7 @@ describe("keyboard input adapter", () => {
       height: 24,
     });
 
-    let viewport = createScrollViewport(10, 25);
+    let viewport = createScrollViewport(10, 10, 10, 25);
     const keyboard = createKeyboardInput(renderer);
     const handler = (key: Parameters<typeof handleScrollKey>[1]) => {
       const next = handleScrollKey(viewport, key);

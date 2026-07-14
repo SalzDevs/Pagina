@@ -17,16 +17,22 @@ describe("history scroll restore", () => {
     const short = buildPageView(styled, { width: 40, height: 10 });
     const restored = clampScrollY(
       {
+        scrollX: 0,
         scrollY: savedScrollY,
+        viewportWidth: 40,
         viewportHeight: 10,
+        contentWidth: short.contentWidth,
         contentHeight: short.contentHeight,
       },
       savedScrollY,
     );
 
     expect(restored).toBe(maxScrollY({
+      scrollX: 0,
       scrollY: 0,
+      viewportWidth: 40,
       viewportHeight: 10,
+      contentWidth: short.contentWidth,
       contentHeight: short.contentHeight,
     }));
   });

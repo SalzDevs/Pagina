@@ -58,16 +58,22 @@ describe("buildPageView resize", () => {
     const short = buildPageView(styled, { width: 40, height: 10 });
     const clamped = clampScrollY(
       {
+        scrollX: 0,
         scrollY: scrolledFar,
+        viewportWidth: 40,
         viewportHeight: 10,
+        contentWidth: short.contentWidth,
         contentHeight: short.contentHeight,
       },
       scrolledFar,
     );
 
     expect(clamped).toBe(maxScrollY({
+      scrollX: 0,
       scrollY: 0,
+      viewportWidth: 40,
       viewportHeight: 10,
+      contentWidth: short.contentWidth,
       contentHeight: short.contentHeight,
     }));
     expect(clamped).toBeLessThan(scrolledFar);

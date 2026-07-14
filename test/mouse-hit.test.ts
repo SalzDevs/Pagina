@@ -32,6 +32,12 @@ describe("mouseToDocumentPoint", () => {
     ).toEqual({ x: 10, y: 24 });
   });
 
+  test("adds horizontal scroll offset to document x", () => {
+    expect(
+      mouseToDocumentPoint({ x: 2, y: 5 }, { top: BREADCRUMB_HEIGHT }, 0, 8),
+    ).toEqual({ x: 10, y: 4 });
+  });
+
   test("maps root mouse coords to link bounds on links-page.html", async () => {
     const links = await linksFromFile(linksPagePath);
     const hitIndex = buildLinkHitIndex(links);

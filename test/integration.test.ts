@@ -80,7 +80,7 @@ describe("mountDisplayList lifecycle", () => {
       null,
       layout,
     );
-    firstMount.setScrollY(3);
+    firstMount.setScroll(3, 0);
     expect(renderer.root.getChildren()).toHaveLength(1);
 
     firstMount.destroy();
@@ -123,6 +123,7 @@ describe("browser session relayout", () => {
     const session = createBrowserSession(
       renderer,
       narrowView.displayList,
+      narrowView.contentWidth,
       narrowView.contentHeight,
       narrowView.links,
       {
@@ -144,8 +145,11 @@ describe("browser session relayout", () => {
     expect(session.viewport.scrollY).toBe(
       clampScrollY(
         {
+          scrollX: 0,
           scrollY: scrolledFar,
+          viewportWidth: wideLayout.width,
           viewportHeight: wideLayout.height,
+          contentWidth: wideView.contentWidth,
           contentHeight: wideView.contentHeight,
         },
         scrolledFar,

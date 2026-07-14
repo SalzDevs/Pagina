@@ -15,9 +15,10 @@ export function mouseToDocumentPoint(
   event: MouseEventPoint,
   layout: Pick<MountLayout, "top">,
   scrollY: number,
+  scrollX = 0,
 ): DocumentPoint {
   return {
-    x: event.x,
+    x: event.x + scrollX,
     y: event.y - layout.top + scrollY,
   };
 }

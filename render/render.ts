@@ -6,6 +6,7 @@ import { textLinkFocusStyle } from "../links/focus";
 import { commandBottom, isFillCommand, isTextCommand } from "../paint/display-list";
 import {
   displayListMountEntries,
+  measureDisplayListWidth,
   shouldCullDisplayList,
   type VisibleCommandEntry,
 } from "../viewport/visible";
@@ -22,7 +23,7 @@ export interface MountLayout {
 }
 
 export interface MountedDisplayList {
-  setScrollY: (scrollY: number) => void;
+  setScroll: (scrollY: number, scrollX: number) => void;
   setFocusedLink: (focusedIndex: number | null) => void;
   relayout: (
     displayList: DisplayList,
@@ -253,19 +254,22 @@ export function mountDisplayList(
 
   let currentDisplayList = displayList;
   let currentFocusedLinkIndex = focusedLinkIndex;
+  let currentScrollX = 0;
   let currentScrollY = 0;
+  let currentContentWidth = measureDisplayListWidth(displayList);
   let currentContentHeight = contentHeight;
   let currentLayout = layout;
   let cullingEnabled = useCulling;
   const mountedCommands: MountedCommand[] = [];
   const linkMounts = new Map<number, LinkMount[]>();
 
-  const applyLayout = (nextLayout: MountLayout, nextContentHeight: number) => {
+  const applyLayout = (nextLayout: MountLayout, nextContentHeight: number, nextContentWidth: number) => {
     currentLayout = nextLayout;
+    currentContentWidth = nextContentWidth;
     viewport.width = nextLayout.width;
     viewport.height = nextLayout.height;
     viewport.top = nextLayout.top;
-    content.width = nextLayout.width;
+    content.width = Math.max(nextLayout.width, nextContentWidth);
     content.height = cullingEnabled
       ? nextLayout.height
       : Math.max(nextContentHeight, nextLayout.height);
@@ -273,8 +277,11 @@ export function mountDisplayList(
 
   const mountEntries = (): VisibleCommandEntry[] =>
     displayListMountEntries(currentDisplayList, {
+      scrollX: currentScrollX,
       scrollY: currentScrollY,
+      viewportWidth: currentLayout.width,
       viewportHeight: currentLayout.height,
+      contentWidth: currentContentWidth,
       contentHeight: currentContentHeight,
     });
 
@@ -305,39 +312,44 @@ export function mountDisplayList(
   const applyScroll = () => {
     if (cullingEnabled) {
       content.top = 0;
+      content.left = 0;
       syncDisplayList();
       return;
     }
 
     content.top = -currentScrollY;
+    content.left = -currentScrollX;
     renderer.requestRender();
   };
 
-  applyLayout(layout, contentHeight);
+  applyLayout(layout, contentHeight, currentContentWidth);
   syncDisplayList(focusedLinkIndex);
 
   viewport.add(content);
   renderer.root.add(viewport);
 
   return {
-    setScrollY(scrollY: number) {
-      if (scrollY === currentScrollY) return;
+    setScroll(scrollY: number, scrollX: number) {
+      if (scrollY === currentScrollY && scrollX === currentScrollX) return;
       currentScrollY = scrollY;
+      currentScrollX = scrollX;
       applyScroll();
     },
     setFocusedLink: applyFocus,
     relayout(nextDisplayList, nextContentHeight, nextLayout, nextFocusedLinkIndex) {
       currentDisplayList = nextDisplayList;
       currentContentHeight = nextContentHeight;
+      currentContentWidth = measureDisplayListWidth(nextDisplayList);
       cullingEnabled = shouldCullDisplayList(
         nextDisplayList,
         nextContentHeight,
         nextLayout.height,
       );
-      applyLayout(nextLayout, nextContentHeight);
+      applyLayout(nextLayout, nextContentHeight, currentContentWidth);
       syncDisplayList(nextFocusedLinkIndex ?? currentFocusedLinkIndex);
       if (!cullingEnabled) {
         content.top = -currentScrollY;
+        content.left = -currentScrollX;
       }
     },
     destroy() {
@@ -356,5 +368,5 @@ export function render(
   const contentHeight =
     displayList.length === 0 ? 0 : Math.max(...displayList.map((command) => commandBottom(command)));
   const mounted = mountDisplayList(renderer, displayList, contentHeight);
-  mounted.setScrollY(options.scrollY ?? 0);
+  mounted.setScroll(options.scrollY ?? 0, 0);
 }

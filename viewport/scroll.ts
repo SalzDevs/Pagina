@@ -1,44 +1,77 @@
 import type { KeyEvent } from "@opentui/core";
 
 export interface ScrollViewport {
+  scrollX: number;
   scrollY: number;
+  viewportWidth: number;
   viewportHeight: number;
+  contentWidth: number;
   contentHeight: number;
 }
 
 export function createScrollViewport(
+  viewportWidth: number,
   viewportHeight: number,
+  contentWidth: number,
   contentHeight: number,
 ): ScrollViewport {
   return {
+    scrollX: 0,
     scrollY: 0,
+    viewportWidth,
     viewportHeight,
+    contentWidth,
     contentHeight,
   };
 }
 
-export function maxScrollY(viewport: ScrollViewport): number {
+export function maxScrollX(viewport: Pick<ScrollViewport, "viewportWidth" | "contentWidth">): number {
+  return Math.max(0, viewport.contentWidth - viewport.viewportWidth);
+}
+
+export function maxScrollY(viewport: Pick<ScrollViewport, "viewportHeight" | "contentHeight">): number {
   return Math.max(0, viewport.contentHeight - viewport.viewportHeight);
+}
+
+export function clampScrollX(viewport: ScrollViewport, scrollX: number): number {
+  return Math.min(maxScrollX(viewport), Math.max(0, scrollX));
 }
 
 export function clampScrollY(viewport: ScrollViewport, scrollY: number): number {
   return Math.min(maxScrollY(viewport), Math.max(0, scrollY));
 }
 
-export function scrollTo(viewport: ScrollViewport, scrollY: number): ScrollViewport {
+export function clampScrollViewport(viewport: ScrollViewport): ScrollViewport {
   return {
     ...viewport,
-    scrollY: clampScrollY(viewport, scrollY),
+    scrollX: clampScrollX(viewport, viewport.scrollX),
+    scrollY: clampScrollY(viewport, viewport.scrollY),
   };
 }
 
+export function withScroll(
+  viewport: ScrollViewport,
+  patch: Partial<Pick<ScrollViewport, "scrollX" | "scrollY">>,
+): ScrollViewport {
+  return clampScrollViewport({ ...viewport, ...patch });
+}
+
+/** @deprecated Use withScroll(viewport, { scrollY }). */
+export function scrollTo(viewport: ScrollViewport, scrollY: number): ScrollViewport {
+  return withScroll(viewport, { scrollY });
+}
+
 export function scrollBy(viewport: ScrollViewport, delta: number): ScrollViewport {
-  return scrollTo(viewport, viewport.scrollY + delta);
+  return withScroll(viewport, { scrollY: viewport.scrollY + delta });
+}
+
+export function scrollByX(viewport: ScrollViewport, delta: number): ScrollViewport {
+  return withScroll(viewport, { scrollX: viewport.scrollX + delta });
 }
 
 /** Scroll so a document row sits at the top of the viewport. */
 export function scrollToAlignTop(viewport: ScrollViewport, documentY: number): ScrollViewport {
-  return scrollTo(viewport, documentY);
+  return withScroll(viewport, { scrollY: documentY });
 }
 
 /** Scroll the viewport so a document row range is visible. */
@@ -48,12 +81,12 @@ export function scrollToRevealY(
   height = 1,
 ): ScrollViewport {
   if (top < viewport.scrollY) {
-    return scrollTo(viewport, top);
+    return withScroll(viewport, { scrollY: top });
   }
 
   const bottom = top + height;
   if (bottom > viewport.scrollY + viewport.viewportHeight) {
-    return scrollTo(viewport, bottom - viewport.viewportHeight);
+    return withScroll(viewport, { scrollY: bottom - viewport.viewportHeight });
   }
 
   return viewport;
@@ -83,11 +116,17 @@ export function handleScrollKey(viewport: ScrollViewport, key: KeyEvent): Scroll
     case "pagedown":
       return scrollBy(viewport, pageStep);
     case "home":
-      return scrollTo(viewport, 0);
+      return withScroll(viewport, { scrollY: 0 });
     case "end":
-      return scrollTo(viewport, maxScrollY(viewport));
+      return withScroll(viewport, { scrollY: maxScrollY(viewport) });
     case "g":
-      return scrollTo(viewport, key.shift ? maxScrollY(viewport) : 0);
+      return withScroll(viewport, { scrollY: key.shift ? maxScrollY(viewport) : 0 });
+    case "h":
+    case "left":
+      return scrollByX(viewport, -1);
+    case "l":
+    case "right":
+      return scrollByX(viewport, 1);
     default:
       return null;
   }

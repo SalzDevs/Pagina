@@ -18,11 +18,11 @@ import { mountDisplayList, type MountLayout, type MountedDisplayList } from "../
 import { createKeyboardInput, type KeyboardInput } from "./keyboard";
 import type { PageView } from "./page-view";
 import {
+  clampScrollViewport,
   createScrollViewport,
-  clampScrollY,
   handleScrollKey,
   scrollBy,
-  scrollTo,
+  withScroll,
   type ScrollViewport,
 } from "../viewport/scroll";
 
@@ -57,13 +57,23 @@ export interface BrowserSession {
 export function createBrowserSession(
   renderer: CliRenderer,
   displayList: DisplayList,
+  contentWidth: number,
   contentHeight: number,
   links: Link[],
   options: BrowserSessionOptions,
 ): BrowserSession {
-  let viewport = scrollTo(
-    createScrollViewport(options.layout.height, contentHeight),
-    options.initialScrollY ?? 0,
+  let pageContentWidth = contentWidth;
+  let pageContentHeight = contentHeight;
+  let pageLayout = options.layout;
+
+  let viewport = withScroll(
+    createScrollViewport(
+      pageLayout.width,
+      pageLayout.height,
+      pageContentWidth,
+      pageContentHeight,
+    ),
+    { scrollY: options.initialScrollY ?? 0 },
   );
   let linkFocus =
     options.initialFocusedLinkIndex !== undefined
@@ -72,8 +82,6 @@ export function createBrowserSession(
   let pageLinks = links;
   let pageLinkHitIndex: LinkHitIndex = buildLinkHitIndex(links);
   let fragmentPositions = options.fragmentPositions;
-  let pageContentHeight = contentHeight;
-  let pageLayout = options.layout;
   let pageDisplayList = displayList;
 
   let lastHoverCell: { x: number; y: number } | null = null;
@@ -87,15 +95,14 @@ export function createBrowserSession(
   );
 
   const syncViewport = (next: ScrollViewport) => {
-    viewport = scrollTo(
-      {
-        ...next,
-        viewportHeight: pageLayout.height,
-        contentHeight: pageContentHeight,
-      },
-      next.scrollY,
-    );
-    mounted.setScrollY(viewport.scrollY);
+    viewport = clampScrollViewport({
+      ...next,
+      viewportWidth: pageLayout.width,
+      viewportHeight: pageLayout.height,
+      contentWidth: pageContentWidth,
+      contentHeight: pageContentHeight,
+    });
+    mounted.setScroll(viewport.scrollY, viewport.scrollX);
   };
 
   const syncLinkFocus = (next: LinkFocusState, scroll = false) => {
@@ -140,6 +147,7 @@ export function createBrowserSession(
     pageLinkHitIndex = buildLinkHitIndex(view.links);
     fragmentPositions = view.fragmentPositions;
     pageContentHeight = view.contentHeight;
+    pageContentWidth = view.contentWidth;
     pageLayout = layout;
     lastHoverCell = null;
 
@@ -151,14 +159,13 @@ export function createBrowserSession(
     );
 
     syncViewport(
-      scrollTo(viewport, clampScrollY(
-        {
-          scrollY: viewport.scrollY,
-          viewportHeight: pageLayout.height,
-          contentHeight: pageContentHeight,
-        },
-        viewport.scrollY,
-      )),
+      clampScrollViewport({
+        ...viewport,
+        viewportWidth: pageLayout.width,
+        viewportHeight: pageLayout.height,
+        contentWidth: pageContentWidth,
+        contentHeight: pageContentHeight,
+      }),
     );
   };
 
@@ -256,7 +263,7 @@ export function createBrowserSession(
       mouseMoveHandler = (event) => {
         if (options.isHelpVisible?.() || options.isOpenPromptVisible?.()) return;
 
-        const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY);
+        const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY, viewport.scrollX);
         const cell = { x: Math.trunc(point.x), y: Math.trunc(point.y) };
         if (
           lastHoverCell?.x === cell.x &&
@@ -275,7 +282,7 @@ export function createBrowserSession(
         if (options.isHelpVisible?.() || options.isOpenPromptVisible?.()) return;
         if (event.button !== 0 || event.type !== "up") return;
 
-        const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY);
+        const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY, viewport.scrollX);
         const index = linkIndexAtPoint(pageLinkHitIndex, point.x, point.y);
         if (index === null) return;
 
@@ -298,9 +305,10 @@ export interface ScrollSession {
 export function createScrollSession(
   renderer: CliRenderer,
   displayList: DisplayList,
+  contentWidth: number,
   contentHeight: number,
 ): ScrollSession {
-  const session = createBrowserSession(renderer, displayList, contentHeight, [], {
+  const session = createBrowserSession(renderer, displayList, contentWidth, contentHeight, [], {
     pageLocation: "",
     documentBase: "",
     layout: {

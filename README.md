@@ -61,6 +61,7 @@ bun test
 | Keys | Action |
 |------|--------|
 | `↑` / `↓`, `j` / `k` | Scroll one line |
+| `←` / `→`, `h` / `l` | Scroll one column |
 | `PgUp` / `PgDn` | Scroll one page |
 | `Home` / `End`, `g` / `G` | Jump to top / bottom |
 | `[` / `]` | Previous / next link |

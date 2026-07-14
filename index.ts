@@ -176,7 +176,7 @@ async function main() {
       previousScrollY,
     );
 
-    session = createBrowserSession(renderer, view.displayList, view.contentHeight, view.links, {
+    session = createBrowserSession(renderer, view.displayList, view.contentWidth, view.contentHeight, view.links, {
       pageLocation: loadedPage.pageLocation,
       documentBase: loadedPage.documentBase,
       layout: chrome,

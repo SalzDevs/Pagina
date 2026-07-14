@@ -1,5 +1,5 @@
 import type { DisplayCommand, DisplayList } from "../paint/display-list";
-import { commandBottom } from "../paint/display-list";
+import { commandBottom, commandRight } from "../paint/display-list";
 import type { LayoutOutput } from "../layout/output";
 import type { StyledNode } from "../style/style";
 
@@ -33,15 +33,18 @@ export function shouldCullDisplayList(
 export function displayListMountEntries(
   displayList: DisplayList,
   options: {
+    scrollX: number;
     scrollY: number;
+    viewportWidth: number;
     viewportHeight: number;
+    contentWidth: number;
     contentHeight: number;
   },
 ): VisibleCommandEntry[] {
-  const { scrollY, viewportHeight, contentHeight } = options;
+  const { scrollX, scrollY, viewportWidth, viewportHeight, contentHeight } = options;
 
   if (shouldCullDisplayList(displayList, contentHeight, viewportHeight)) {
-    return visibleCommandEntries(displayList, scrollY, viewportHeight);
+    return visibleCommandEntries(displayList, scrollX, scrollY, viewportWidth, viewportHeight);
   }
 
   return displayList.map((command, commandIndex) => ({ commandIndex, command }));
@@ -50,30 +53,36 @@ export function displayListMountEntries(
 /** Keep only commands visible in the scrolled viewport. */
 export function visibleCommandEntries(
   displayList: DisplayList,
+  scrollX: number,
   scrollY: number,
+  viewportWidth: number,
   viewportHeight: number,
   bufferRows = DEFAULT_VISIBLE_BUFFER_ROWS,
 ): VisibleCommandEntry[] {
   const minY = Math.max(0, scrollY - bufferRows);
   const maxY = scrollY + viewportHeight + bufferRows;
+  const minX = Math.max(0, scrollX - 1);
+  const maxX = scrollX + viewportWidth + 1;
   const entries: VisibleCommandEntry[] = [];
 
   for (const [commandIndex, command] of displayList.entries()) {
     const bottom = commandBottom(command);
     if (bottom <= minY || command.y >= maxY) continue;
+    if (commandRight(command) <= minX || command.x >= maxX) continue;
 
     entries.push({
       commandIndex,
-      command: offsetCommandY(command, scrollY),
+      command: offsetCommand(command, scrollX, scrollY),
     });
   }
 
   return entries;
 }
 
-function offsetCommandY(command: DisplayCommand, scrollY: number): DisplayCommand {
+function offsetCommand(command: DisplayCommand, scrollX: number, scrollY: number): DisplayCommand {
   return {
     ...command,
+    x: command.x - scrollX,
     y: command.y - scrollY,
   };
 }
@@ -96,6 +105,12 @@ export function measureContentHeight(styled: StyledNode, layout: LayoutOutput): 
   return maxBottom;
 }
 
+/** Measure document width from a display list. */
+export function measureDisplayListWidth(displayList: DisplayList): number {
+  if (displayList.length === 0) return 0;
+  return Math.max(...displayList.map((command) => commandRight(command)));
+}
+
 /** Measure document height from a display list. */
 export function measureDisplayListHeight(displayList: DisplayList): number {
   if (displayList.length === 0) return 0;
@@ -109,5 +124,5 @@ export function hasVisibleContentAtMaxScroll(
   viewportHeight: number,
 ): boolean {
   const scrollY = Math.max(0, contentHeight - viewportHeight);
-  return visibleCommandEntries(displayList, scrollY, viewportHeight).length > 0;
+  return visibleCommandEntries(displayList, 0, scrollY, Number.MAX_SAFE_INTEGER, viewportHeight).length > 0;
 }

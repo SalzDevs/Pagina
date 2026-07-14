@@ -6,6 +6,7 @@ export interface KeybindingEntry {
 /** Canonical list of Pagina keyboard and mouse bindings. */
 export const PAGINA_KEYBINDINGS: KeybindingEntry[] = [
   { keys: "↑ / ↓, j / k", description: "Scroll one line" },
+  { keys: "← / →, h / l", description: "Scroll one column" },
   { keys: "PgUp / PgDn", description: "Scroll one page" },
   { keys: "Home / End, g / G", description: "Jump to top / bottom" },
   { keys: "[ / ]", description: "Previous / next link" },

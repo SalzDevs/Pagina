@@ -16,6 +16,7 @@ describe("browser session", () => {
     const session = createBrowserSession(
       renderer,
       view.displayList,
+      view.contentWidth,
       view.contentHeight,
       view.links,
       {

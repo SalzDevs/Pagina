@@ -200,7 +200,7 @@ describe("fragments-page.html stress test", () => {
   test("scrolls to the top, middle, and bottom sections", async () => {
     const { positions } = await pipelineFromFragmentsPage();
     const contentHeight = positions.get("footer")! + 20;
-    let viewportState = createScrollViewport(10, contentHeight);
+    let viewportState = createScrollViewport(80, 10, 80, contentHeight);
 
     viewportState = { ...viewportState, scrollY: maxScrollY(viewportState) };
 
@@ -217,7 +217,7 @@ describe("fragments-page.html stress test", () => {
   test("aligns every chapter id to the top of the viewport", async () => {
     const { positions } = await pipelineFromFragmentsPage();
     const contentHeight = positions.get("footer")! + 20;
-    let viewportState = createScrollViewport(10, contentHeight);
+    let viewportState = createScrollViewport(80, 10, 80, contentHeight);
 
     for (const id of CHAPTER_IDS) {
       const next = scrollToFragment(viewportState, positions, id);
@@ -227,7 +227,7 @@ describe("fragments-page.html stress test", () => {
   });
 
   test("scrolls to the top for an empty fragment", () => {
-    let viewportState = createScrollViewport(10, 200);
+    let viewportState = createScrollViewport(80, 10, 80, 200);
     viewportState = { ...viewportState, scrollY: 120 };
 
     const next = scrollToFragment(viewportState, new Map(), null);
@@ -237,7 +237,7 @@ describe("fragments-page.html stress test", () => {
 
   test("leaves scroll unchanged for unknown fragment ids", async () => {
     const { positions } = await pipelineFromFragmentsPage();
-    const viewportState = { ...createScrollViewport(10, 200), scrollY: 42 };
+    const viewportState = { ...createScrollViewport(80, 10, 80, 200), scrollY: 42 };
 
     const next = scrollToFragment(viewportState, positions, "missing-section");
 

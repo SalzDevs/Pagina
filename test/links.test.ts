@@ -245,7 +245,7 @@ describe("link focus", () => {
     const link = links[0];
     expect(link).toBeDefined();
 
-    const viewportState = createScrollViewport(10, 50);
+    const viewportState = createScrollViewport(80, 10, 80, 50);
     const next = scrollToFocusedLink(viewportState, link!);
 
     expect(next.scrollY).toBeGreaterThan(0);

@@ -40,3 +40,12 @@ export function commandBottom(command: DisplayCommand): number {
 
   return command.y + 1;
 }
+
+/** Right edge of a display command in document columns. */
+export function commandRight(command: DisplayCommand): number {
+  if (isFillCommand(command)) {
+    return command.x + command.width;
+  }
+
+  return command.x + command.text.length;
+}
