@@ -75,6 +75,8 @@ bun test
 | `?` | Toggle help overlay |
 | `Ctrl+C` | Quit |
 
+On Linux and Windows, use `u` and `U` for back and forward. `Option+←/→` is macOS only.
+
 The breadcrumb bar at the top shows your navigation trail. The current page is wrapped in `[brackets]`.
 
 ## Pipeline

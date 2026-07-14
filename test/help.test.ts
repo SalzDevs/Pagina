@@ -34,6 +34,7 @@ describe("keybindings", () => {
   test("formats help lines within terminal width", () => {
     const lines = formatHelpLines(60);
     expect(lines[0]).toContain("Pagina");
+    expect(lines.some((line) => line.includes("Linux/Windows"))).toBe(true);
     expect(lines.at(-1)).toBe("Press ? to close");
     expect(lines.every((line) => line.length <= 60)).toBe(true);
   });

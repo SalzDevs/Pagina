@@ -51,6 +51,7 @@ export function formatHelpLines(width: number): string[] {
     lines.push(formatKeybindingLine(entry, width));
   }
 
+  lines.push("", "On Linux/Windows, use u / U for back and forward.");
   lines.push("", hint);
   return lines;
 }
