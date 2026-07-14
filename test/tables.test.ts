@@ -9,6 +9,8 @@ import {
   isTableElement,
   measureTable,
   TABLE_CELL_GAP,
+  TABLE_ELLIPSIS,
+  truncateTableCellText,
 } from "../layout/tables";
 import { layout } from "../layout/layout";
 import { paint } from "../paint/paint";
@@ -165,5 +167,28 @@ describe("table layout", () => {
 
     expect(byText.get("Name")?.x).toBe(byText.get("Alpha")?.x);
     expect(byText.get("Value")?.x).toBe(byText.get("1")?.x);
+  });
+
+  test("truncates squeezed cells with an ellipsis", () => {
+    expect(truncateTableCellText("Quarterly revenue", 4)).toBe("Qua…");
+    expect(truncateTableCellText("Quarterly revenue", 1)).toBe(TABLE_ELLIPSIS);
+    expect(truncateTableCellText("Alpha", 5)).toBe("Alpha");
+  });
+
+  test("shows ellipsis in narrow table layouts", async () => {
+    const html = `
+      <table>
+        <tr><th>Product</th><th>Revenue</th></tr>
+        <tr><td>Quarterly report</td><td>1000000</td></tr>
+      </table>
+    `;
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const table = findTable(styled)!;
+    const laidOut = layout(styled, { viewport: { width: 14, height: 10 } });
+    const fragments = tableFragments(table, laidOut.output);
+
+    const truncated = fragments.find((fragment) => fragment.text.endsWith(TABLE_ELLIPSIS));
+    expect(truncated).toBeDefined();
+    expect(truncated!.text.length).toBeLessThan("Quarterly report".length);
   });
 });

@@ -8,6 +8,8 @@ import { firstTextDescendant } from "./pre";
 import { HR_CHARACTER } from "./hr";
 
 export const TABLE_CELL_GAP = 2;
+export const MIN_TABLE_COLUMN_WIDTH = 3;
+export const TABLE_ELLIPSIS = "…";
 
 export function isTableElement(node: StyledNode): boolean {
   return node.dom.type === NodeType.Element && node.dom.tag === "table";
@@ -95,6 +97,7 @@ export function fitColumnWidths(
   columnWidths: number[],
   contentWidth: number,
   gap: number,
+  minColumnWidth = MIN_TABLE_COLUMN_WIDTH,
 ): number[] {
   if (columnWidths.length === 0) return columnWidths;
 
@@ -106,7 +109,31 @@ export function fitColumnWidths(
   const natural = columnWidths.reduce((sum, width) => sum + width, 0);
   if (natural === 0) return columnWidths.map(() => 1);
 
-  return columnWidths.map((width) => Math.max(1, Math.floor((width * available) / natural)));
+  for (const floor of [minColumnWidth, 1] as const) {
+    const widths = proportionalColumnWidths(columnWidths, available, natural, floor);
+    if (widths.reduce((sum, width) => sum + width, 0) <= available) {
+      return widths;
+    }
+  }
+
+  return proportionalColumnWidths(columnWidths, available, natural, 1);
+}
+
+function proportionalColumnWidths(
+  columnWidths: number[],
+  available: number,
+  natural: number,
+  floor: number,
+): number[] {
+  return columnWidths.map((width) => Math.max(floor, Math.floor((width * available) / natural)));
+}
+
+/** Trim cell text to a column width and append an ellipsis when truncated. */
+export function truncateTableCellText(text: string, width: number): string {
+  if (width <= 0 || text.length === 0) return "";
+  if (text.length <= width) return text;
+  if (width === 1) return TABLE_ELLIPSIS;
+  return `${text.slice(0, width - TABLE_ELLIPSIS.length)}${TABLE_ELLIPSIS}`;
 }
 
 export function columnOffsets(columnWidths: number[], startX: number, gap: number): number[] {
@@ -171,7 +198,8 @@ export function layoutTable(
 
     for (let column = 0; column < columnCount; column++) {
       const cell = cells[column];
-      const text = (texts[column] ?? "").slice(0, columnWidths[column]);
+      const rawText = texts[column] ?? "";
+      const text = truncateTableCellText(rawText, columnWidths[column]!);
       if (!cell || text.length === 0) continue;
 
       deps.addFragment(cell, {
