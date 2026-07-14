@@ -480,7 +480,7 @@ describe("buildRuleIndex", () => {
 describe("collectStylesheetRules", () => {
   test("reads rules from style elements", async () => {
     const dom = convert(parseHTML("<html><head><style>h1 { color: red; }</style></head></html>"));
-    const rules = await collectStylesheetRules(dom);
+    const { rules } = await collectStylesheetRules(dom);
 
     expect(rules).toHaveLength(1);
     expect(rules[0]?.declarations.color).toBe("red");
@@ -506,7 +506,7 @@ describe("collectStylesheetRules", () => {
 
   test("loads linked rules when a base path is provided", async () => {
     const dom = convert(parseHTML('<link rel="stylesheet" href="theme.css" />'));
-    const rules = await collectStylesheetRules(dom, resolve("examples/linked-page.html"));
+    const { rules } = await collectStylesheetRules(dom, resolve("examples/linked-page.html"));
 
     expect(rules.some((rule) => rule.declarations.color === "#cccccc")).toBe(true);
     expect(rules.some((rule) => rule.declarations.color === "#ffd700")).toBe(true);
@@ -521,7 +521,7 @@ describe("collectStylesheetRules", () => {
 
     try {
       const dom = convert(parseHTML('<link rel="stylesheet" href="theme.css" />'));
-      const rules = await collectStylesheetRules(dom, "https://example.com/page.html");
+      const { rules } = await collectStylesheetRules(dom, "https://example.com/page.html");
 
       expect(rules.some((rule) => rule.declarations.color === "navy")).toBe(true);
     } finally {
@@ -585,9 +585,53 @@ describe("collectStylesheetRules", () => {
           <link rel="stylesheet" href="second.css" />
         `),
       );
-      const rules = await collectStylesheetRules(dom, "https://example.com/page.html");
+      const { rules } = await collectStylesheetRules(dom, "https://example.com/page.html");
 
       expect(rules.map((rule) => rule.declarations.color)).toEqual(["red", "white", "blue"]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  test("records failed linked stylesheet URLs", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async (input) => {
+      if (String(input).endsWith("missing.css")) {
+        return new Response("missing", { status: 404, statusText: "Not Found" });
+      }
+      return new Response("body { color: red; }", { status: 200 });
+    }) as typeof fetch;
+
+    try {
+      const dom = convert(
+        parseHTML(`
+          <link rel="stylesheet" href="theme.css" />
+          <link rel="stylesheet" href="missing.css" />
+        `),
+      );
+      const { rules, warnings } = await collectStylesheetRules(dom, "https://example.com/page.html");
+
+      expect(rules.some((rule) => rule.declarations.color === "red")).toBe(true);
+      expect(warnings).toEqual(["https://example.com/missing.css"]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  test("surfaces CSS load failures through computeStyles", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async () =>
+      new Response("missing", { status: 404, statusText: "Not Found" })) as typeof fetch;
+
+    try {
+      const html = '<link rel="stylesheet" href="theme.css" /><body>Hello</body>';
+      const cssWarnings: string[] = [];
+      await computeStyles(convert(parseHTML(html)), {
+        pageLocation: "https://example.com/page.html",
+        cssWarnings,
+      });
+
+      expect(cssWarnings).toEqual(["https://example.com/theme.css"]);
     } finally {
       globalThis.fetch = originalFetch;
     }

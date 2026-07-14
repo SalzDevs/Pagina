@@ -5,6 +5,7 @@ import { computeStyles } from "./style/style";
 import {
   createBrowserHistory,
   formatBreadcrumb,
+  formatBreadcrumbWithStatus,
   formatLoadingBreadcrumb,
   goBack,
   goForward,
@@ -60,7 +61,11 @@ async function main() {
     helpVisible = !helpVisible;
     help.setVisible(helpVisible);
     breadcrumb.update(
-      helpVisible ? "Help — press ? to close" : formatBreadcrumb(history, renderer.width),
+      helpVisible
+        ? "Help — press ? to close"
+        : formatBreadcrumbWithStatus(history, renderer.width, {
+            cssWarnings: loadedPage?.cssWarnings,
+          }),
     );
   };
 
@@ -106,7 +111,11 @@ async function main() {
     }
 
     breadcrumb.update(
-      helpVisible ? "Help — press ? to close" : formatBreadcrumb(history, renderer.width),
+      helpVisible
+        ? "Help — press ? to close"
+        : formatBreadcrumbWithStatus(history, renderer.width, {
+            cssWarnings: loadedPage.cssWarnings,
+          }),
     );
 
     const initialScrollY = clampScrollY(

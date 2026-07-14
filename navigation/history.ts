@@ -172,6 +172,44 @@ export function formatBreadcrumb(history: BrowserHistory, width: number): string
   return single.slice(0, Math.max(0, width - 3)) + "...";
 }
 
+function cssWarningLabel(url: string): string {
+  return historyLabel(url);
+}
+
+/** Append CSS load failure status to a breadcrumb when stylesheets failed. */
+export function formatCssWarningStatus(warnings: string[], width: number): string {
+  if (warnings.length === 0) return "";
+
+  const status =
+    warnings.length === 1
+      ? ` | ⚠ CSS failed: ${cssWarningLabel(warnings[0]!)}`
+      : ` | ⚠ ${warnings.length} CSS files failed`;
+
+  if (status.length <= width) return status;
+
+  return status.slice(0, Math.max(0, width - 3)) + "...";
+}
+
+/** Format the history trail and any CSS load warnings for the breadcrumb bar. */
+export function formatBreadcrumbWithStatus(
+  history: BrowserHistory,
+  width: number,
+  options: { cssWarnings?: string[] } = {},
+): string {
+  const warnings = options.cssWarnings ?? [];
+  const status = formatCssWarningStatus(warnings, width);
+
+  if (!status) return formatBreadcrumb(history, width);
+
+  const breadcrumbWidth = Math.max(0, width - status.length);
+  const breadcrumb = formatBreadcrumb(history, breadcrumbWidth);
+  const combined = breadcrumb + status;
+
+  if (combined.length <= width) return combined;
+
+  return status.slice(0, width);
+}
+
 /** Format a breadcrumb loading label while a page is being fetched. */
 export function formatLoadingBreadcrumb(location: string, width: number): string {
   const label = historyLabel(location);

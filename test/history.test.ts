@@ -7,6 +7,8 @@ import {
   createBrowserHistory,
   extractPageTitle,
   formatBreadcrumb,
+  formatBreadcrumbWithStatus,
+  formatCssWarningStatus,
   formatLoadingBreadcrumb,
   goBack,
   goForward,
@@ -98,6 +100,26 @@ describe("browser history", () => {
     expect(line.endsWith("...")).toBe(true);
     expect(line.length).toBeLessThanOrEqual(20);
     expect(line.startsWith("Loading ")).toBe(true);
+  });
+
+  test("appends CSS failure status to the breadcrumb", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "Home" });
+
+    expect(formatCssWarningStatus(["https://example.com/theme.css"], 40)).toBe(
+      " | ⚠ CSS failed: example.com/theme.css",
+    );
+    expect(
+      formatBreadcrumbWithStatus(history, 60, {
+        cssWarnings: ["https://example.com/theme.css"],
+      }),
+    ).toBe("[Home] | ⚠ CSS failed: example.com/theme.css");
+  });
+
+  test("summarizes multiple CSS failures in the breadcrumb", () => {
+    expect(formatCssWarningStatus(["https://a.test/one.css", "https://a.test/two.css"], 40)).toBe(
+      " | ⚠ 2 CSS files failed",
+    );
   });
 
   test("stores and restores scroll position on the active entry", () => {

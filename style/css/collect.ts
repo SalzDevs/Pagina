@@ -50,16 +50,21 @@ export function collectCssSources(root: Node): CssSource[] {
   return sources;
 }
 
+export interface CollectStylesheetRulesResult {
+  rules: CssRule[];
+  warnings: string[];
+}
+
 /** Collect CSS rules from inline and linked stylesheets. */
 export async function collectStylesheetRules(
   root: Node,
   pageLocation?: string,
   documentBase?: string,
   mediaContext?: MediaContext,
-): Promise<CssRule[]> {
+): Promise<CollectStylesheetRulesResult> {
   const sources = collectCssSources(root);
   const base = documentBase ?? pageLocation;
-  const fetchedCssByIndex = await fetchLinkedStylesheetCss(sources, base, pageLocation);
+  const { cssByIndex, failedUrls } = await fetchLinkedStylesheetCss(sources, base, pageLocation);
 
   const rules: CssRule[] = [];
 
@@ -71,22 +76,27 @@ export async function collectStylesheetRules(
       continue;
     }
 
-    const css = fetchedCssByIndex.get(index);
+    const css = cssByIndex.get(index);
     if (css) rules.push(...parseStylesheet(css, mediaContext));
   }
 
-  return rules;
+  return { rules, warnings: failedUrls };
 }
 
 async function fetchLinkedStylesheetCss(
   sources: CssSource[],
   base: string | undefined,
   pageLocation: string | undefined,
-): Promise<Map<number, string>> {
-  const fetchedCssByIndex = new Map<number, string>();
-  if (!base) return fetchedCssByIndex;
+): Promise<{ cssByIndex: Map<number, string>; failedUrls: string[] }> {
+  const cssByIndex = new Map<number, string>();
+  const failedUrls: string[] = [];
+  if (!base) return { cssByIndex, failedUrls };
 
-  const linkFetches: Array<{ index: number; promise: Promise<string | null> }> = [];
+  const linkFetches: Array<{
+    index: number;
+    resourceLocation: string;
+    promise: Promise<string>;
+  }> = [];
 
   for (let index = 0; index < sources.length; index++) {
     const source = sources[index]!;
@@ -101,22 +111,32 @@ async function fetchLinkedStylesheetCss(
 
     linkFetches.push({
       index,
-      promise: loadText(resourceLocation).catch(() => null),
+      resourceLocation,
+      promise: loadText(resourceLocation),
     });
   }
 
-  if (linkFetches.length === 0) return fetchedCssByIndex;
+  if (linkFetches.length === 0) return { cssByIndex, failedUrls };
 
-  const results = await Promise.all(
-    linkFetches.map(async ({ index, promise }) => ({
+  const results = await Promise.allSettled(
+    linkFetches.map(async ({ index, resourceLocation, promise }) => ({
       index,
+      resourceLocation,
       css: await promise,
     })),
   );
 
-  for (const { index, css } of results) {
-    if (css !== null) fetchedCssByIndex.set(index, css);
+  for (let fetchIndex = 0; fetchIndex < results.length; fetchIndex++) {
+    const result = results[fetchIndex]!;
+    const fetch = linkFetches[fetchIndex]!;
+
+    if (result.status === "fulfilled") {
+      cssByIndex.set(result.value.index, result.value.css);
+      continue;
+    }
+
+    failedUrls.push(fetch.resourceLocation);
   }
 
-  return fetchedCssByIndex;
+  return { cssByIndex, failedUrls };
 }

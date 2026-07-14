@@ -210,6 +210,7 @@ export interface ComputeStylesOptions {
   pageLocation?: string;
   documentBase?: string;
   viewportWidth?: number;
+  cssWarnings?: string[];
 }
 
 /** Apply user-agent defaults and author CSS to a DOM tree. */
@@ -219,9 +220,12 @@ export async function computeStyles(
 ): Promise<StyledNode> {
   const documentBase = options.documentBase ?? options.pageLocation;
   const viewportWidth = options.viewportWidth ?? DEFAULT_MEDIA_CONTEXT.viewportWidth;
-  const rules = await collectStylesheetRules(root, options.pageLocation, documentBase, {
+  const { rules, warnings } = await collectStylesheetRules(root, options.pageLocation, documentBase, {
     viewportWidth,
   });
+  if (options.cssWarnings) {
+    options.cssWarnings.push(...warnings);
+  }
   const ruleIndex = buildRuleIndex(rules);
   const ancestors: Node[] = [];
   const styled = styleNode(root, DEFAULT_STYLE, rules, ruleIndex, ancestors);

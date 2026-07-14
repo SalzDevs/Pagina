@@ -17,6 +17,7 @@ function stubPage(overrides: Partial<LoadedPageContent> = {}): LoadedPageContent
     },
     isErrorPage: false,
     stylesViewportWidth: 80,
+    cssWarnings: [],
     ...overrides,
   };
 }

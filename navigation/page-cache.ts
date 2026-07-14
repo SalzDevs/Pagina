@@ -9,6 +9,7 @@ export interface LoadedPageContent {
   pageTitle?: string;
   isErrorPage: boolean;
   stylesViewportWidth: number;
+  cssWarnings: string[];
 }
 
 export class PageCache {

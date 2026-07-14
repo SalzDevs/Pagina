@@ -50,7 +50,7 @@ describe("base href", () => {
       linksPagePath,
     );
 
-    const rules = await collectStylesheetRules(dom, catalogPath, documentBase);
+    const { rules } = await collectStylesheetRules(dom, catalogPath, documentBase);
     expect(rules.some((rule) => rule.declarations.color === "#cccccc")).toBe(true);
   });
 
@@ -81,7 +81,7 @@ describe("base href", () => {
 describe("stylesheet load errors", () => {
   test("skips missing linked stylesheets without crashing", async () => {
     const dom = convert(parseHTML('<link rel="stylesheet" href="missing.css" />'));
-    const rules = await collectStylesheetRules(dom, catalogPath, resolve("examples/nested"));
+    const { rules } = await collectStylesheetRules(dom, catalogPath, resolve("examples/nested"));
 
     expect(rules).toHaveLength(0);
   });
@@ -93,7 +93,7 @@ describe("stylesheet load errors", () => {
         <style>body { color: red; }</style>
       `),
     );
-    const rules = await collectStylesheetRules(dom, catalogPath, resolve("examples/nested"));
+    const { rules } = await collectStylesheetRules(dom, catalogPath, resolve("examples/nested"));
 
     expect(rules).toHaveLength(1);
     expect(rules[0]?.declarations.color).toBe("red");

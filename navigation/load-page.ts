@@ -35,10 +35,12 @@ export async function loadPageContent(
     isErrorPage = true;
   }
 
+  const cssWarnings: string[] = [];
   const styled = await computeStyles(dom, {
     pageLocation,
     documentBase,
     viewportWidth: options.viewportWidth,
+    cssWarnings,
   });
 
   return {
@@ -49,5 +51,6 @@ export async function loadPageContent(
     pageTitle,
     isErrorPage,
     stylesViewportWidth: options.viewportWidth ?? 80,
+    cssWarnings,
   };
 }
