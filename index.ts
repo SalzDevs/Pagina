@@ -34,6 +34,7 @@ import {
   formatOpenPromptBreadcrumb,
   type OpenPromptState,
 } from "./viewport/open-prompt";
+import { OpenPromptHistory } from "./viewport/open-prompt-history";
 
 const DEFAULT_PAGE = "examples/page.html";
 
@@ -62,6 +63,7 @@ async function main() {
   const loading = mountLoadingOverlay(renderer);
   let helpVisible = false;
   let openPrompt: OpenPromptState = createOpenPromptState();
+  const openPromptHistory = new OpenPromptHistory();
   let history: BrowserHistory = createBrowserHistory();
   const pageCache = new PageCache();
   let session: BrowserSession | null = null;
@@ -91,7 +93,9 @@ async function main() {
     }
 
     if (openPrompt.active) {
-      breadcrumb.update(formatOpenPromptBreadcrumb(openPrompt.value, renderer.width));
+      breadcrumb.update(
+        formatOpenPromptBreadcrumb(openPrompt.value, renderer.width, openPrompt.cursor),
+      );
       return;
     }
 
@@ -114,7 +118,7 @@ async function main() {
   };
 
   const handleOpenPromptKey = (key: KeyEvent): boolean => {
-    const result = applyOpenPromptKey(openPrompt, key);
+    const result = applyOpenPromptKey(openPrompt, key, { history: openPromptHistory });
 
     switch (result.kind) {
       case "none":
@@ -124,7 +128,7 @@ async function main() {
           helpVisible = false;
           help.setVisible(false);
         }
-        openPrompt = { active: true, value: "" };
+        openPrompt = result.state;
         updateBreadcrumb();
         return true;
       case "update":
@@ -136,6 +140,7 @@ async function main() {
         updateBreadcrumb();
         return true;
       case "submit":
+        openPromptHistory.add(result.location);
         openPrompt = createOpenPromptState();
         void loadPage(result.location, "push", result.fragment);
         return true;
@@ -424,6 +429,9 @@ async function main() {
     "push",
     initial.fragment,
   );
+  if (loadedPage) {
+    openPromptHistory.add(loadedPage.pageLocation);
+  }
 
   startRendererOnce();
 }
