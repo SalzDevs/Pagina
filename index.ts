@@ -52,6 +52,7 @@ async function main() {
   let session: BrowserSession | null = null;
   let loadedPage: LoadedPage | null = null;
   let fragmentNotFound: string | null = null;
+  let unsupportedLink: string | null = null;
   let rendererStarted = false;
   let loadGeneration = 0;
 
@@ -82,6 +83,7 @@ async function main() {
       formatBreadcrumbWithStatus(history, renderer.width, {
         cssWarnings: loadedPage?.cssWarnings,
         fragmentNotFound,
+        unsupportedLink,
       }),
     );
   };
@@ -206,6 +208,12 @@ async function main() {
       },
       onFragmentNotFound: (fragment) => {
         fragmentNotFound = fragment;
+        if (fragment) unsupportedLink = null;
+        updateBreadcrumb();
+      },
+      onUnsupportedLink: (href) => {
+        unsupportedLink = href;
+        if (href) fragmentNotFound = null;
         updateBreadcrumb();
       },
     });
@@ -262,6 +270,7 @@ async function main() {
     const generation = ++loadGeneration;
     const pageLocation = normalizePageLocation(location);
     fragmentNotFound = null;
+    unsupportedLink = null;
     breadcrumb.update(formatLoadingBreadcrumb(pageLocation, renderer.width));
 
     const keepCurrentPageVisible = session !== null;

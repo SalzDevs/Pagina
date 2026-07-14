@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 
-import { isRemoteUrl, resolveResource, resolveAgainstBase } from "./resolve";
+import { isRemoteUrl, resolveResource, resolveAgainstBase, isUnsupportedLinkScheme } from "./resolve";
 
 export interface LinkTarget {
   /** Resolved page location when a navigation fetch is needed. */
@@ -53,7 +53,9 @@ export function parseLinkTarget(
   pageLocation: string = documentBase,
 ): LinkTarget | null {
   const trimmed = href.trim();
-  if (!trimmed || trimmed.startsWith("javascript:")) return null;
+  if (!trimmed || trimmed.startsWith("javascript:") || isUnsupportedLinkScheme(trimmed)) {
+    return null;
+  }
 
   if (trimmed === "#") {
     return { location: null, fragment: null };

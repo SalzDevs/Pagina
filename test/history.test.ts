@@ -11,6 +11,7 @@ import {
   formatCssWarningStatus,
   formatFragmentNotFoundStatus,
   formatLoadingBreadcrumb,
+  formatUnsupportedLinkStatus,
   goBack,
   goForward,
   historyLabel,
@@ -115,6 +116,20 @@ describe("browser history", () => {
         fragmentNotFound: "does-not-exist",
       }),
     ).toBe("[Fragments] | ⚠ #does-not-exist not found");
+  });
+
+  test("formats unsupported link status for the breadcrumb", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "Contact" });
+
+    expect(formatUnsupportedLinkStatus("mailto:test@example.com", 40)).toBe(
+      " | ⚠ mailto: links not supported",
+    );
+    expect(
+      formatBreadcrumbWithStatus(history, 50, {
+        unsupportedLink: "mailto:test@example.com",
+      }),
+    ).toBe("[Contact] | ⚠ mailto: links not supported");
   });
 
   test("appends CSS failure status to the breadcrumb", () => {

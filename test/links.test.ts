@@ -107,6 +107,9 @@ describe("resolveHref", () => {
   test("returns null for unsupported href kinds", () => {
     expect(resolveHref("#section", linksPagePath)).toBeNull();
     expect(resolveHref("javascript:void(0)", linksPagePath)).toBeNull();
+    expect(resolveHref("mailto:test@example.com", linksPagePath)).toBeNull();
+    expect(resolveHref("tel:+1234", linksPagePath)).toBeNull();
+    expect(resolveHref("data:text/html,hi", linksPagePath)).toBeNull();
     expect(resolveHref("", linksPagePath)).toBeNull();
   });
 

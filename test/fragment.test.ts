@@ -127,6 +127,9 @@ describe("parseLinkTarget", () => {
 
   test("returns null for unsupported href kinds", () => {
     expect(parseLinkTarget("javascript:void(0)", linksPagePath)).toBeNull();
+    expect(parseLinkTarget("mailto:test@example.com", linksPagePath)).toBeNull();
+    expect(parseLinkTarget("tel:+1234", linksPagePath)).toBeNull();
+    expect(parseLinkTarget("data:text/html,hi", linksPagePath)).toBeNull();
     expect(parseLinkTarget("", linksPagePath)).toBeNull();
   });
 });

@@ -239,19 +239,53 @@ export function formatFragmentNotFoundStatus(fragment: string, width: number): s
   return truncateStatus(variants[variants.length - 1]!, width);
 }
 
+/** Append unsupported-link status to a breadcrumb when a link cannot be followed. */
+export function formatUnsupportedLinkStatus(href: string, width: number): string {
+  const scheme = href.trim().split(":")[0]?.toLowerCase() ?? "link";
+  const variants = [` | ⚠ ${scheme}: links not supported`, " | ⚠ Link not supported", " | ⚠"];
+
+  for (const status of variants) {
+    if (status.length <= width) return status;
+  }
+
+  return truncateStatus(variants[variants.length - 1]!, width);
+}
+
+function appendBreadcrumbStatus(
+  history: BrowserHistory,
+  width: number,
+  status: string,
+): string {
+  const breadcrumbWidth = width - status.length;
+  if (breadcrumbWidth >= 0) {
+    return formatBreadcrumb(history, breadcrumbWidth) + status;
+  }
+
+  return formatBreadcrumb(history, width);
+}
+
 /** Format the history trail and any CSS load warnings for the breadcrumb bar. */
 export function formatBreadcrumbWithStatus(
   history: BrowserHistory,
   width: number,
-  options: { cssWarnings?: string[]; fragmentNotFound?: string | null } = {},
+  options: {
+    cssWarnings?: string[];
+    fragmentNotFound?: string | null;
+    unsupportedLink?: string | null;
+  } = {},
 ): string {
   const fragment = options.fragmentNotFound ?? null;
   if (fragment) {
-    const status = formatFragmentNotFoundStatus(fragment, width);
-    const breadcrumbWidth = width - status.length;
-    if (breadcrumbWidth >= 0) {
-      return formatBreadcrumb(history, breadcrumbWidth) + status;
-    }
+    return appendBreadcrumbStatus(history, width, formatFragmentNotFoundStatus(fragment, width));
+  }
+
+  const unsupportedLink = options.unsupportedLink ?? null;
+  if (unsupportedLink) {
+    return appendBreadcrumbStatus(
+      history,
+      width,
+      formatUnsupportedLinkStatus(unsupportedLink, width),
+    );
   }
 
   const warnings = options.cssWarnings ?? [];

@@ -12,6 +12,7 @@ import {
 import { handleHistoryKey } from "../navigation/history-keys";
 import { isHelpToggleKey } from "./help-key";
 import { isSamePage, parseLinkTarget } from "../navigation/fragment";
+import { isUnsupportedLinkScheme } from "../navigation/resolve";
 import { scrollToFragment } from "../navigation/anchors";
 import type { DisplayList } from "../paint/display-list";
 import { mountDisplayList, type MountLayout, type MountedDisplayList } from "../render/render";
@@ -41,6 +42,7 @@ export interface BrowserSessionOptions {
   onHistoryBack?: () => void | Promise<void>;
   onHistoryForward?: () => void | Promise<void>;
   onFragmentNotFound?: (fragment: string | null) => void;
+  onUnsupportedLink?: (href: string | null) => void;
 }
 
 export interface BrowserSession {
@@ -135,7 +137,14 @@ export function createBrowserSession(
     if (!link) return;
 
     const target = parseLinkTarget(link.href, options.documentBase, options.pageLocation);
-    if (!target) return;
+    if (!target) {
+      if (isUnsupportedLinkScheme(link.href)) {
+        options.onUnsupportedLink?.(link.href);
+      }
+      return;
+    }
+
+    options.onUnsupportedLink?.(null);
 
     if (target.location === null) {
       applyFragmentScroll(target.fragment);

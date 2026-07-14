@@ -5,6 +5,13 @@ export function isRemoteUrl(value: string): boolean {
   return /^https?:\/\//i.test(value.trim());
 }
 
+const UNSUPPORTED_LINK_SCHEME = /^(mailto|tel|data):/i;
+
+/** True when a href uses a non-navigable scheme such as mailto or tel. */
+export function isUnsupportedLinkScheme(value: string): boolean {
+  return UNSUPPORTED_LINK_SCHEME.test(value.trim());
+}
+
 /** Resolve a href or resource URL against the current page location. */
 export function resolveResource(url: string, pageLocation: string): string | null {
   return resolveAgainstBase(url, pageLocation, pageLocation);
@@ -17,7 +24,14 @@ export function resolveAgainstBase(
   pageLocation: string = documentBase,
 ): string | null {
   const trimmed = url.trim();
-  if (!trimmed || trimmed.startsWith("javascript:") || trimmed.startsWith("#")) return null;
+  if (
+    !trimmed ||
+    trimmed.startsWith("javascript:") ||
+    trimmed.startsWith("#") ||
+    isUnsupportedLinkScheme(trimmed)
+  ) {
+    return null;
+  }
 
   if (isRemoteUrl(trimmed)) {
     return trimmed;
