@@ -79,6 +79,82 @@ describe("loadTextFromUrl", () => {
       "Failed to fetch https://example.com/missing: 404 Not Found",
     );
   });
+
+  test("follows redirects up to the configured limit", async () => {
+    globalThis.fetch = (async (input) => {
+      const url = String(input);
+      if (url === "https://example.com/start") {
+        return new Response(null, {
+          status: 302,
+          headers: { Location: "https://example.com/final" },
+        });
+      }
+      return new Response("done", { status: 200 });
+    }) as typeof fetch;
+
+    await expect(loadTextFromUrl("https://example.com/start")).resolves.toBe("done");
+  });
+
+  test("rejects responses that exceed the size limit", async () => {
+    globalThis.fetch = (async () =>
+      new Response("small", {
+        status: 200,
+        headers: { "Content-Length": "999999" },
+      })) as typeof fetch;
+
+    await expect(
+      loadTextFromUrl("https://example.com/huge", { maxBytes: 1024 }),
+    ).rejects.toThrow("exceeds size limit");
+  });
+
+  test("rejects oversized bodies without a Content-Length header", async () => {
+    globalThis.fetch = (async () =>
+      new Response(
+        new ReadableStream({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode("0123456789"));
+            controller.close();
+          },
+        }),
+        { status: 200 },
+      )) as typeof fetch;
+
+    await expect(
+      loadTextFromUrl("https://example.com/stream", { maxBytes: 5 }),
+    ).rejects.toThrow("exceeds size limit");
+  });
+
+  test("rejects redirect chains that exceed the limit", async () => {
+    globalThis.fetch = (async (input) => {
+      const url = String(input);
+      if (url.endsWith("/3")) {
+        return new Response("done", { status: 200 });
+      }
+
+      const step = Number(url.at(-1));
+      return new Response(null, {
+        status: 302,
+        headers: { Location: `https://example.com/${step + 1}` },
+      });
+    }) as typeof fetch;
+
+    await expect(
+      loadTextFromUrl("https://example.com/0", { maxRedirects: 2 }),
+    ).rejects.toThrow("Too many redirects");
+  });
+
+  test("times out slow remote responses", async () => {
+    globalThis.fetch = (async (_input, init) =>
+      new Promise((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => {
+          reject(new DOMException("The operation was aborted.", "AbortError"));
+        });
+      })) as typeof fetch;
+
+    await expect(
+      loadTextFromUrl("https://example.com/slow", { timeoutMs: 25 }),
+    ).rejects.toThrow();
+  });
 });
 
 describe("loadText", () => {
