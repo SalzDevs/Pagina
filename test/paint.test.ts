@@ -73,6 +73,38 @@ describe("paint", () => {
     expect(displayList.some((command) => isTextCommand(command))).toBe(true);
   });
 
+  test("paints list markers and item text", async () => {
+    const html = "<ul><li>One</li><li>Two</li></ul>";
+    const styled = await computeStyles(convert(parseHTML(html)));
+
+    const laidOut = layout(styled, { viewport });
+    const displayList = paint(styled, laidOut.output).displayList;
+    const text = displayList
+      .filter(isTextCommand)
+      .map((command) => command.text)
+      .join("");
+
+    expect(text).toContain("One");
+    expect(text).toContain("Two");
+    expect(text).toContain("- ");
+  });
+
+  test("paints list item text from examples/lists-page.html", async () => {
+    const html = await Bun.file("examples/lists-page.html").text();
+    const styled = await computeStyles(convert(parseHTML(html)));
+
+    const laidOut = layout(styled, { viewport: { width: 60, height: 30 } });
+    const displayList = paint(styled, laidOut.output).displayList;
+    const text = displayList
+      .filter(isTextCommand)
+      .map((command) => command.text)
+      .join("");
+
+    expect(text).toContain("First item");
+    expect(text).toContain("Step one");
+    expect(text).toContain("Inner A");
+  });
+
   test("places fill commands before text commands", async () => {
     const html = `
       <style>

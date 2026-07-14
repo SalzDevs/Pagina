@@ -145,7 +145,6 @@ function paintNode(
 
       if (layout.getFragments(node).length > 0) {
         paintTextNode(node, layout, output, ctx);
-        return;
       }
 
       if (node.dom.type === NodeType.Element && node.dom.tag === "a" && node.dom.attributes?.href) {
