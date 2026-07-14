@@ -17,6 +17,7 @@ import { imagePlaceholderText, isImgElement, layoutImgBlock } from "./img";
 import { isListContainer, layoutListContainer } from "./lists";
 import { LayoutOutput } from "./output";
 import { isPreElement, layoutNowrapBlock, layoutPreBlock, usesPreformattedLayout } from "./pre";
+import { isDefinitionList, layoutDefinitionList } from "./definitions";
 import { isTableElement, layoutTable } from "./tables";
 import type { LayoutBox, LayoutFragment } from "./types";
 import { isBlock } from "../style/display";
@@ -263,6 +264,14 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
       layoutListContainer(node, ctx, viewport, {
         addFragment: (target, fragment) => addTrackedFragment(ctx, target, fragment),
         layoutListItemContent,
+        blockGap: BLOCK_GAP,
+      });
+      return;
+    }
+
+    if (isDefinitionList(node)) {
+      layoutDefinitionList(node, ctx, viewport, {
+        layoutItemContent: layoutListItemContent,
         blockGap: BLOCK_GAP,
       });
       return;
