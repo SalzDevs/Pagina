@@ -67,8 +67,19 @@ describe("preformatted text", () => {
     expect(fragments[1]?.y).toBe(1);
   });
 
-  test("hard-wraps long pre lines at the viewport width", async () => {
+  test("does not wrap long pre lines by default", async () => {
     const html = `<pre>${"x".repeat(12)}</pre>`;
+    const styled = await computeStyles(convert(parseHTML(html)));
+
+    const laidOut = layout(styled, { viewport: { width: 5, height: 10 } });
+
+    const fragments = textFragments(findPre(styled), laidOut.output);
+    expect(fragments).toHaveLength(1);
+    expect(fragments[0]?.text).toHaveLength(12);
+  });
+
+  test("wraps long lines when white-space is pre-wrap", async () => {
+    const html = `<pre style="white-space: pre-wrap">${"x".repeat(12)}</pre>`;
     const styled = await computeStyles(convert(parseHTML(html)));
 
     const laidOut = layout(styled, { viewport: { width: 5, height: 10 } });

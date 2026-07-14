@@ -21,6 +21,7 @@ export interface CssDeclarations {
   fontSize?: number;
   textDecoration?: string;
   display?: string;
+  whiteSpace?: string;
   marginTop?: number;
   marginBottom?: number;
   marginLeft?: number;

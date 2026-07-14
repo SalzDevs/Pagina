@@ -3,6 +3,13 @@
   <body>
     <h1>Preformatted Demo</h1>
     <p>Normal paragraph text still wraps at the viewport edge.</p>
+    <style>
+      p.pre-wrap {
+        white-space: pre-wrap;
+      }
+    </style>
+    <p class="pre-wrap">  indented line
+second line</p>
     <pre>
 function greet(name) {
   return "hello " + name;

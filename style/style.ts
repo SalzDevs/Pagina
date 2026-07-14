@@ -9,6 +9,8 @@ import type { CssRule } from "./css/types";
 
 export type Display = "block" | "inline" | "none";
 
+export type WhiteSpace = "normal" | "pre" | "pre-wrap" | "nowrap";
+
 export interface ComputedStyle {
   display: Display;
   bold: boolean;
@@ -17,6 +19,7 @@ export interface ComputedStyle {
   fg?: string;
   bg?: string;
   fontSize?: number;
+  whiteSpace?: WhiteSpace;
   marginTop?: number;
   marginBottom?: number;
   marginLeft?: number;
@@ -110,6 +113,7 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
     fg: inherited.fg,
     bg: inherited.bg,
     fontSize: inherited.fontSize,
+    whiteSpace: inherited.whiteSpace,
   };
 
   switch (tag) {
@@ -137,6 +141,8 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
       };
     case "code":
       return { ...style, fg: "#ce9178" };
+    case "pre":
+      return { ...style, whiteSpace: "pre" };
     case "blockquote":
       return {
         ...style,

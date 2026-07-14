@@ -1,4 +1,4 @@
-import type { ComputedStyle, Display } from "../style";
+import type { ComputedStyle, Display, WhiteSpace } from "../style";
 import type { Node } from "../../dom/node";
 import { NodeType } from "../../dom/node";
 import { candidateRuleIndices, type CssRuleIndex } from "./index";
@@ -32,6 +32,20 @@ function parseDisplay(value?: string): Display | undefined {
   return undefined;
 }
 
+function parseWhiteSpace(value?: string): WhiteSpace | undefined {
+  if (!value) return undefined;
+  const normalized = value.toLowerCase();
+  if (
+    normalized === "normal" ||
+    normalized === "pre" ||
+    normalized === "pre-wrap" ||
+    normalized === "nowrap"
+  ) {
+    return normalized;
+  }
+  return undefined;
+}
+
 function mergeDeclarations(
   style: ComputedStyle,
   declarations: CssDeclarations,
@@ -53,6 +67,7 @@ function mergeDeclarations(
   set("italic", isItalic(declarations.fontStyle));
   set("underline", isUnderline(declarations.textDecoration));
   set("display", parseDisplay(declarations.display));
+  set("whiteSpace", parseWhiteSpace(declarations.whiteSpace));
   set("fontSize", declarations.fontSize);
 
   if (declarations.fontSize !== undefined && declarations.fontSize >= 1.2) {

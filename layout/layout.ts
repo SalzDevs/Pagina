@@ -16,7 +16,7 @@ import { isHrElement, layoutHr } from "./hr";
 import { imagePlaceholderText, isImgElement, layoutImgBlock } from "./img";
 import { isListContainer, layoutListContainer } from "./lists";
 import { LayoutOutput } from "./output";
-import { layoutPreBlock, isPreElement } from "./pre";
+import { isPreElement, layoutNowrapBlock, layoutPreBlock, usesPreformattedLayout } from "./pre";
 import type { LayoutBox, LayoutFragment } from "./types";
 import { isBlock } from "../style/display";
 import type { StyledNode } from "../style/style";
@@ -267,8 +267,18 @@ function layoutBlock(node: StyledNode, ctx: LayoutContext, viewport: Viewport): 
       return;
     }
 
-    if (isPreElement(node)) {
+    if (isPreElement(node) || usesPreformattedLayout(node.style.whiteSpace)) {
       layoutPreBlock(node, ctx, viewport, {
+        addFragment: (target, fragment) => addTrackedFragment(ctx, target, fragment),
+        nodeLineHeight,
+        blockGap: BLOCK_GAP,
+        wrapLines: node.style.whiteSpace === "pre-wrap",
+      });
+      return;
+    }
+
+    if (node.style.whiteSpace === "nowrap") {
+      layoutNowrapBlock(node, ctx, viewport, {
         addFragment: (target, fragment) => addTrackedFragment(ctx, target, fragment),
         nodeLineHeight,
         blockGap: BLOCK_GAP,

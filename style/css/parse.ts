@@ -147,6 +147,9 @@ function parseDeclarations(block: string): CssDeclarations {
       case "display":
         declarations.display = value;
         break;
+      case "white-space":
+        declarations.whiteSpace = value;
+        break;
       case "margin-top":
         declarations.marginTop = parseLength(value);
         break;
