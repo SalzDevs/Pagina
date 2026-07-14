@@ -126,7 +126,6 @@ function createTextRenderable(
       underline: command.underline,
     }),
     selectable: false,
-    focusable: false,
   });
 
   return renderable;

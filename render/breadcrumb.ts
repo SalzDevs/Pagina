@@ -34,7 +34,6 @@ export function mountBreadcrumb(renderer: CliRenderer): BreadcrumbBar {
     bg: "#1e1e1e",
     attributes: createTextAttributes({ bold: false }),
     selectable: false,
-    focusable: false,
   });
 
   bar.add(text);

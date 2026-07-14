@@ -28,6 +28,16 @@ function parseLength(value: string): number | undefined {
 
 type SpacingSide = "Top" | "Right" | "Bottom" | "Left";
 
+type SpacingDeclarationKey =
+  | "marginTop"
+  | "marginRight"
+  | "marginBottom"
+  | "marginLeft"
+  | "paddingTop"
+  | "paddingRight"
+  | "paddingBottom"
+  | "paddingLeft";
+
 function applySpacingShorthand(
   declarations: CssDeclarations,
   prefix: "margin" | "padding",
@@ -71,7 +81,7 @@ function applySpacingShorthand(
     const spacing = sides[side];
     if (spacing === undefined) continue;
 
-    const key = `${prefix}${side}` as keyof CssDeclarations;
+    const key = `${prefix}${side}` as SpacingDeclarationKey;
     declarations[key] = spacing;
   }
 }

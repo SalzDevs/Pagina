@@ -5,6 +5,9 @@ import { NodeType } from "../dom/node";
 
 type Parse5Node = DefaultTreeAdapterTypes.Node;
 type Parse5Element = DefaultTreeAdapterTypes.Element | DefaultTreeAdapterTypes.Template;
+type Parse5TextNode = DefaultTreeAdapterTypes.TextNode;
+type Parse5CommentNode = DefaultTreeAdapterTypes.CommentNode;
+type Parse5DocumentType = DefaultTreeAdapterTypes.DocumentType;
 
 function attributesFromElement(element: Parse5Element): Record<string, string> {
   return Object.fromEntries(element.attrs.map((attr) => [attr.name, attr.value]));
@@ -42,21 +45,21 @@ export function convert(node: Parse5Node, parent?: Node): Node {
       return {
         type: NodeType.Text,
         parent,
-        value: node.value,
+        value: (node as Parse5TextNode).value,
       };
 
     case "#comment":
       return {
         type: NodeType.Comment,
         parent,
-        value: node.data,
+        value: (node as Parse5CommentNode).data,
       };
 
     case "#documentType":
       return {
         type: NodeType.Doctype,
         parent,
-        value: node.name,
+        value: (node as Parse5DocumentType).name,
       };
 
     default: {

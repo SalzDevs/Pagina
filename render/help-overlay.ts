@@ -35,7 +35,6 @@ export function mountHelpOverlay(renderer: CliRenderer): HelpOverlay {
     bg: "#0c0c0c",
     attributes: createTextAttributes({ bold: false }),
     selectable: false,
-    focusable: false,
   });
 
   panel.add(text);
