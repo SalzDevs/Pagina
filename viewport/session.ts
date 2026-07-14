@@ -46,6 +46,8 @@ export interface BrowserSession {
   viewport: ScrollViewport;
   focusedLinkIndex: number | null;
   attach: () => void;
+  /** Detach input handlers while keeping the current page visible. */
+  suspend: () => void;
   destroy: () => void;
   relayout: (view: PageView, layout: MountLayout) => void;
   setFocusedLink: (focusedIndex: number | null) => void;
@@ -168,6 +170,22 @@ export function createBrowserSession(
   let mouseMoveHandler: NonNullable<typeof mounted.viewport.onMouseMove> | null = null;
   let mouseUpHandler: NonNullable<typeof mounted.viewport.onMouseUp> | null = null;
 
+  const detachInputHandlers = () => {
+    lastHoverCell = null;
+    if (keyHandler && keyboard) {
+      keyboard.offKeyPress(keyHandler);
+      keyHandler = null;
+      keyboard = null;
+    }
+
+    mounted.viewport.onMouseScroll = undefined;
+    mounted.viewport.onMouseMove = undefined;
+    mounted.viewport.onMouseUp = undefined;
+    mouseScrollHandler = null;
+    mouseMoveHandler = null;
+    mouseUpHandler = null;
+  };
+
   return {
     get viewport() {
       return viewport;
@@ -180,21 +198,11 @@ export function createBrowserSession(
     },
     scrollToFragment: scrollToFragmentId,
     relayout,
+    suspend() {
+      detachInputHandlers();
+    },
     destroy() {
-      lastHoverCell = null;
-      if (keyHandler && keyboard) {
-        keyboard.offKeyPress(keyHandler);
-        keyHandler = null;
-        keyboard = null;
-      }
-
-      mounted.viewport.onMouseScroll = undefined;
-      mounted.viewport.onMouseMove = undefined;
-      mounted.viewport.onMouseUp = undefined;
-      mouseScrollHandler = null;
-      mouseMoveHandler = null;
-      mouseUpHandler = null;
-
+      detachInputHandlers();
       mounted.destroy();
     },
     attach: () => {

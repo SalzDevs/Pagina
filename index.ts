@@ -23,7 +23,6 @@ import type { MountLayout } from "./render/render";
 import { buildPageView } from "./viewport/page-view";
 import { createBrowserSession, type BrowserSession } from "./viewport/session";
 import { clampScrollY } from "./viewport/scroll";
-import { isRemoteUrl } from "./navigation/resolve";
 import {
   applyOpenPromptKey,
   createOpenPromptState,
@@ -53,6 +52,7 @@ async function main() {
   let session: BrowserSession | null = null;
   let loadedPage: LoadedPage | null = null;
   let rendererStarted = false;
+  let loadGeneration = 0;
 
   const startRendererOnce = () => {
     if (rendererStarted) return;
@@ -137,7 +137,7 @@ async function main() {
   ) => {
     if (!loadedPage) return;
 
-    loading.setVisible(false);
+    loading.hide();
 
     const previousScrollY = viewState.preserveViewState
       ? (session?.viewport.scrollY ?? 0)
@@ -253,17 +253,16 @@ async function main() {
     fragment: string | null = null,
     restoreScrollY?: number,
   ) => {
+    const generation = ++loadGeneration;
     const pageLocation = normalizePageLocation(location);
     breadcrumb.update(formatLoadingBreadcrumb(pageLocation, renderer.width));
 
-    const showLoadingOverlay =
-      isRemoteUrl(pageLocation) &&
-      (historyMode === "push" || pageCache.get(pageLocation) === undefined);
-    if (showLoadingOverlay) {
-      loading.update(pageLocation);
-      loading.setVisible(true);
+    const keepCurrentPageVisible = session !== null;
+    if (keepCurrentPageVisible) {
+      session?.suspend();
+      loading.hide();
     } else {
-      loading.setVisible(false);
+      loading.show(pageLocation, { dimContent: true });
     }
 
     startRendererOnce();
@@ -278,9 +277,6 @@ async function main() {
       snapshotScrollIntoHistory();
     }
 
-    session?.destroy();
-    session = null;
-
     loadedPage = await resolveLoadedPage(
       pageLocation,
       pageCache,
@@ -289,7 +285,10 @@ async function main() {
         forceReload: historyMode === "push",
       },
     );
+    if (generation !== loadGeneration) return;
+
     loadedPage = await ensureStylesForViewport(loadedPage, contentLayout().width);
+    if (generation !== loadGeneration) return;
 
     mountCurrentPage(fragment, historyMode, { restoreScrollY });
   };

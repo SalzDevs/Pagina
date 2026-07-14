@@ -5,8 +5,9 @@ import { historyLabel } from "../navigation/history";
 import { BREADCRUMB_HEIGHT } from "./breadcrumb";
 
 export interface LoadingOverlay {
-  setVisible: (visible: boolean) => void;
-  update: (location: string) => void;
+  /** Show loading UI. Use dimContent when there is no page to keep visible yet. */
+  show: (location: string, options?: { dimContent?: boolean }) => void;
+  hide: () => void;
   resize: (width: number, height: number) => void;
   destroy: () => void;
 }
@@ -20,7 +21,7 @@ export function formatLoadingOverlayContent(location: string, width: number): st
   return ["Loading…", "", detail].join("\n");
 }
 
-/** Mount a dim loading placeholder in the content area below the breadcrumb. */
+/** Mount a loading indicator in the content area below the breadcrumb. */
 export function mountLoadingOverlay(renderer: CliRenderer): LoadingOverlay {
   const panel = new BoxRenderable(renderer, {
     id: "pagina-loading",
@@ -51,21 +52,38 @@ export function mountLoadingOverlay(renderer: CliRenderer): LoadingOverlay {
   renderer.root.add(panel);
 
   let location = "";
+  let dimContent = true;
+
+  const applyMode = () => {
+    panel.shouldFill = dimContent;
+    panel.backgroundColor = dimContent ? "#0a0a0a" : undefined;
+    text.bg = dimContent ? "#0a0a0a" : undefined;
+    text.top = dimContent ? 0 : Math.max(0, panel.height - 1);
+  };
 
   const refresh = (width: number) => {
     text.content = formatLoadingOverlayContent(location, Math.max(0, width - 2));
     text.width = Math.max(0, width - 2);
+    applyMode();
     renderer.requestRender();
   };
 
+  const raiseToFront = () => {
+    panel.remove();
+    renderer.root.add(panel);
+  };
+
   return {
-    setVisible(visible: boolean) {
-      panel.visible = visible;
-      renderer.requestRender();
-    },
-    update(nextLocation: string) {
+    show(nextLocation: string, options: { dimContent?: boolean } = {}) {
       location = nextLocation;
+      dimContent = options.dimContent ?? true;
+      panel.visible = true;
       refresh(renderer.width);
+      raiseToFront();
+    },
+    hide() {
+      panel.visible = false;
+      renderer.requestRender();
     },
     resize(width: number, height: number) {
       panel.width = width;
