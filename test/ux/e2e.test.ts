@@ -20,6 +20,11 @@ import {
   type UxTestContext,
 } from "./setup";
 import { breadcrumbClickPoint, emptyContentPoint, linkScreenPoint } from "./geometry";
+import {
+  findSpanStyles,
+  hasFocusedLinkBackground,
+  spanStylesDiffer,
+} from "./spans";
 
 const originalFetch = globalThis.fetch;
 const contexts: UxTestContext[] = [];
@@ -304,6 +309,39 @@ describe("UX E2E — open prompt history and bookmarks", () => {
     } finally {
       await rm(configDir, { recursive: true, force: true });
     }
+  });
+});
+
+describe("UX E2E — link focus styling", () => {
+  test("renders the auto-focused link with distinct styling", async () => {
+    const ctx = await boot();
+    const focused = findSpanStyles(ctx.captureSpans(), "other page");
+
+    expect(focused.length).toBeGreaterThan(0);
+    expect(hasFocusedLinkBackground(focused[0]!)).toBe(true);
+  });
+
+  test("updates rendered styling when bracket keys change link focus", async () => {
+    const ctx = await boot();
+    const initialOther = findSpanStyles(ctx.captureSpans(), "other page")[0]!;
+    expect(hasFocusedLinkBackground(initialOther)).toBe(true);
+
+    await press(ctx, "]");
+    await ctx.renderOnce();
+
+    const unfocusedOther = findSpanStyles(ctx.captureSpans(), "other page")[0]!;
+    const focusedStyled = findSpanStyles(ctx.captureSpans(), "styled page")[0]!;
+
+    expect(hasFocusedLinkBackground(unfocusedOther)).toBe(false);
+    expect(hasFocusedLinkBackground(focusedStyled)).toBe(true);
+    expect(spanStylesDiffer(initialOther, unfocusedOther)).toBe(true);
+
+    await press(ctx, "[");
+    await ctx.renderOnce();
+
+    const refocusedOther = findSpanStyles(ctx.captureSpans(), "other page")[0]!;
+    expect(hasFocusedLinkBackground(refocusedOther)).toBe(true);
+    expect(spanStylesDiffer(unfocusedOther, refocusedOther)).toBe(true);
   });
 });
 

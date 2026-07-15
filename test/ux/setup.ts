@@ -16,6 +16,7 @@ export interface UxTestContext {
   waitForFrame: Awaited<ReturnType<typeof createTestRenderer>>["waitForFrame"];
   renderOnce: Awaited<ReturnType<typeof createTestRenderer>>["renderOnce"];
   captureCharFrame: Awaited<ReturnType<typeof createTestRenderer>>["captureCharFrame"];
+  captureSpans: Awaited<ReturnType<typeof createTestRenderer>>["captureSpans"];
   cleanup: () => Promise<void>;
 }
 
@@ -65,6 +66,7 @@ export async function createUxTestApp(
     waitForFrame: harness.waitForFrame,
     renderOnce: harness.renderOnce,
     captureCharFrame: harness.captureCharFrame,
+    captureSpans: harness.captureSpans,
     async cleanup() {
       app.destroy();
       harness.renderer.destroy();
