@@ -1,151 +1,151 @@
 // Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
 exports[`display-list snapshots page at 80x24: page-80x24 1`] = `
-"text 0,0 "Hello!" bold
-text 0,5 "This is "
-text 8,5 "Pagina" bold
-text 14,5 " rendering a file from disk."
-text 0,7 "Pass another path: "
+"text 0,0 "Hello!" fg=#000000 bold
+text 0,5 "This is " fg=#000000
+text 8,5 "Pagina" fg=#000000 bold
+text 14,5 " rendering a file from disk." fg=#000000
+text 0,7 "Pass another path: " fg=#000000
 text 19,7 "bun start path/to/page.html" fg=#ce9178 bg=#2a2a2a"
 `;
 
 exports[`display-list snapshots page at 40x24: page-40x24 1`] = `
-"text 0,0 "Hello!" bold
-text 0,5 "This is "
-text 8,5 "Pagina" bold
-text 14,5 " rendering a file from "
-text 0,6 "disk."
-text 0,8 "Pass another path: "
+"text 0,0 "Hello!" fg=#000000 bold
+text 0,5 "This is " fg=#000000
+text 8,5 "Pagina" fg=#000000 bold
+text 14,5 " rendering a file from " fg=#000000
+text 0,6 "disk." fg=#000000
+text 0,8 "Pass another path: " fg=#000000
 text 19,8 "bun start " fg=#ce9178 bg=#2a2a2a
 text 0,9 "path/to/page.html" fg=#ce9178 bg=#2a2a2a"
 `;
 
 exports[`display-list snapshots lists-page at 80x24: lists-page-80x24 1`] = `
-"text 0,0 "Lists Demo" bold
-text 0,5 "Unordered list:"
-text 0,7 "- "
-text 0,7 "First item"
-text 0,9 "- "
-text 0,9 "Second item"
-text 0,11 "- "
-text 0,11 "Third item"
-text 0,14 "Ordered list:"
-text 0,16 "1. "
-text 0,16 "Step one"
-text 0,18 "2. "
-text 0,18 "Step two"
-text 0,20 "3. "
-text 0,20 "Step three"
-text 0,23 "Nested list:"
-text 0,25 "- "
-text 0,25 "Outer one"
-text 0,27 "- "
-text 0,27 "Outer two\\n        "
-text 2,28 "- "
-text 2,28 "Inner A"
-text 2,30 "- "
-text 2,30 "Inner B"
-text 0,34 "- "
-text 0,34 "Outer three""
+"text 0,0 "Lists Demo" fg=#000000 bold
+text 0,5 "Unordered list:" fg=#000000
+text 0,7 "- " fg=#000000
+text 0,7 "First item" fg=#000000
+text 0,9 "- " fg=#000000
+text 0,9 "Second item" fg=#000000
+text 0,11 "- " fg=#000000
+text 0,11 "Third item" fg=#000000
+text 0,14 "Ordered list:" fg=#000000
+text 0,16 "1. " fg=#000000
+text 0,16 "Step one" fg=#000000
+text 0,18 "2. " fg=#000000
+text 0,18 "Step two" fg=#000000
+text 0,20 "3. " fg=#000000
+text 0,20 "Step three" fg=#000000
+text 0,23 "Nested list:" fg=#000000
+text 0,25 "- " fg=#000000
+text 0,25 "Outer one" fg=#000000
+text 0,27 "- " fg=#000000
+text 0,27 "Outer two\\n        " fg=#000000
+text 2,28 "- " fg=#000000
+text 2,28 "Inner A" fg=#000000
+text 2,30 "- " fg=#000000
+text 2,30 "Inner B" fg=#000000
+text 0,34 "- " fg=#000000
+text 0,34 "Outer three" fg=#000000"
 `;
 
 exports[`display-list snapshots lists-page at 40x24: lists-page-40x24 1`] = `
-"text 0,0 "Lists Demo" bold
-text 0,5 "Unordered list:"
-text 0,7 "- "
-text 0,7 "First item"
-text 0,9 "- "
-text 0,9 "Second item"
-text 0,11 "- "
-text 0,11 "Third item"
-text 0,14 "Ordered list:"
-text 0,16 "1. "
-text 0,16 "Step one"
-text 0,18 "2. "
-text 0,18 "Step two"
-text 0,20 "3. "
-text 0,20 "Step three"
-text 0,23 "Nested list:"
-text 0,25 "- "
-text 0,25 "Outer one"
-text 0,27 "- "
-text 0,27 "Outer two\\n        "
-text 2,28 "- "
-text 2,28 "Inner A"
-text 2,30 "- "
-text 2,30 "Inner B"
-text 0,34 "- "
-text 0,34 "Outer three""
+"text 0,0 "Lists Demo" fg=#000000 bold
+text 0,5 "Unordered list:" fg=#000000
+text 0,7 "- " fg=#000000
+text 0,7 "First item" fg=#000000
+text 0,9 "- " fg=#000000
+text 0,9 "Second item" fg=#000000
+text 0,11 "- " fg=#000000
+text 0,11 "Third item" fg=#000000
+text 0,14 "Ordered list:" fg=#000000
+text 0,16 "1. " fg=#000000
+text 0,16 "Step one" fg=#000000
+text 0,18 "2. " fg=#000000
+text 0,18 "Step two" fg=#000000
+text 0,20 "3. " fg=#000000
+text 0,20 "Step three" fg=#000000
+text 0,23 "Nested list:" fg=#000000
+text 0,25 "- " fg=#000000
+text 0,25 "Outer one" fg=#000000
+text 0,27 "- " fg=#000000
+text 0,27 "Outer two\\n        " fg=#000000
+text 2,28 "- " fg=#000000
+text 2,28 "Inner A" fg=#000000
+text 2,30 "- " fg=#000000
+text 2,30 "Inner B" fg=#000000
+text 0,34 "- " fg=#000000
+text 0,34 "Outer three" fg=#000000"
 `;
 
 exports[`display-list snapshots links-page at 80x24: links-page-80x24 1`] = `
-"text 0,0 "Links Demo" bold
-text 0,5 "Use "
-text 4,5 "[" bold
-text 5,5 " and "
-text 10,5 "]" bold
-text 11,5 " to move between links,\\n      "
-text 41,5 "Enter" bold
-text 46,5 " or "
-text 50,5 "o" bold
-text 51,5 " to follow,\\n      or click a "
-text 0,6 "link with the mouse.\\n    "
-text 0,8 "Use "
-text 4,8 "u" bold
-text 5,8 " and "
-text 10,8 "U" bold
-text 11,8 " (or Option+arrow keys) for back and forward.\\n      The breadcrumb at "
-text 0,9 "the top shows your path.\\n    "
-text 0,11 "Go to the "
+"text 0,0 "Links Demo" fg=#000000 bold
+text 0,5 "Use " fg=#000000
+text 4,5 "[" fg=#000000 bold
+text 5,5 " and " fg=#000000
+text 10,5 "]" fg=#000000 bold
+text 11,5 " to move between links,\\n      " fg=#000000
+text 41,5 "Enter" fg=#000000 bold
+text 46,5 " or " fg=#000000
+text 50,5 "o" fg=#000000 bold
+text 51,5 " to follow,\\n      or click a " fg=#000000
+text 0,6 "link with the mouse.\\n    " fg=#000000
+text 0,8 "Use " fg=#000000
+text 4,8 "u" fg=#000000 bold
+text 5,8 " and " fg=#000000
+text 10,8 "U" fg=#000000 bold
+text 11,8 " (or Option+arrow keys) for back and forward.\\n      The breadcrumb at " fg=#000000
+text 0,9 "the top shows your path.\\n    " fg=#000000
+text 0,11 "Go to the " fg=#000000
 text 10,11 "other page" fg=#569cd6 underline link=0
-text 20,11 ".\\n    "
-text 0,13 "Or open the "
+text 20,11 ".\\n    " fg=#000000
+text 0,13 "Or open the " fg=#000000
 text 12,13 "styled page" fg=#569cd6 underline link=1
-text 23,13 ".\\n    "
-text 0,15 "Back to "
+text 23,13 ".\\n    " fg=#000000
+text 0,15 "Back to " fg=#000000
 text 8,15 "home" fg=#569cd6 underline link=2
-text 12,15 ".\\n    ""
+text 12,15 ".\\n    " fg=#000000"
 `;
 
 exports[`display-list snapshots links-page at 40x24: links-page-40x24 1`] = `
-"text 0,0 "Links Demo" bold
-text 0,5 "Use "
-text 4,5 "[" bold
-text 5,5 " and "
-text 10,5 "]" bold
-text 11,5 " to move between links,\\n      "
-text 0,6 "Enter" bold
-text 5,6 " or "
-text 9,6 "o" bold
-text 10,6 " to follow,\\n      or click a "
-text 0,7 "link with the mouse.\\n    "
-text 0,9 "Use "
-text 4,9 "u" bold
-text 5,9 " and "
-text 10,9 "U" bold
-text 11,9 " (or Option+arrow keys) for "
-text 0,10 "back and forward.\\n      The breadcrumb "
-text 0,11 "at the top shows your path.\\n    "
-text 0,13 "Go to the "
+"text 0,0 "Links Demo" fg=#000000 bold
+text 0,5 "Use " fg=#000000
+text 4,5 "[" fg=#000000 bold
+text 5,5 " and " fg=#000000
+text 10,5 "]" fg=#000000 bold
+text 11,5 " to move between links,\\n      " fg=#000000
+text 0,6 "Enter" fg=#000000 bold
+text 5,6 " or " fg=#000000
+text 9,6 "o" fg=#000000 bold
+text 10,6 " to follow,\\n      or click a " fg=#000000
+text 0,7 "link with the mouse.\\n    " fg=#000000
+text 0,9 "Use " fg=#000000
+text 4,9 "u" fg=#000000 bold
+text 5,9 " and " fg=#000000
+text 10,9 "U" fg=#000000 bold
+text 11,9 " (or Option+arrow keys) for " fg=#000000
+text 0,10 "back and forward.\\n      The breadcrumb " fg=#000000
+text 0,11 "at the top shows your path.\\n    " fg=#000000
+text 0,13 "Go to the " fg=#000000
 text 10,13 "other page" fg=#569cd6 underline link=0
-text 20,13 ".\\n    "
-text 0,15 "Or open the "
+text 20,13 ".\\n    " fg=#000000
+text 0,15 "Or open the " fg=#000000
 text 12,15 "styled page" fg=#569cd6 underline link=1
-text 23,15 ".\\n    "
-text 0,17 "Back to "
+text 23,15 ".\\n    " fg=#000000
+text 0,17 "Back to " fg=#000000
 text 8,17 "home" fg=#569cd6 underline link=2
-text 12,17 ".\\n    ""
+text 12,17 ".\\n    " fg=#000000"
 `;
 
 exports[`display-list snapshots other-page at 80x24: other-page-80x24 1`] = `
-"text 0,0 "Other Page" bold
-text 0,5 "You followed a link to get here."
+"text 0,0 "Other Page" fg=#000000 bold
+text 0,5 "You followed a link to get here." fg=#000000
 text 0,7 "Back to links demo" fg=#569cd6 underline link=0"
 `;
 
 exports[`display-list snapshots other-page at 40x24: other-page-40x24 1`] = `
-"text 0,0 "Other Page" bold
-text 0,5 "You followed a link to get here."
+"text 0,0 "Other Page" fg=#000000 bold
+text 0,5 "You followed a link to get here." fg=#000000
 text 0,7 "Back to links demo" fg=#569cd6 underline link=0"
 `;
 
@@ -234,1695 +234,1695 @@ text 0,15 "Default body colors apply here." fg=#cccccc"
 `;
 
 exports[`display-list snapshots long-page at 80x24: long-page-80x24 1`] = `
-"text 0,0 "Pagina Scroll Test" bold
-text 0,5 "This page is intentionally long so you can try scrolling in the terminal.\\n      "
-text 0,6 "Use arrow keys, "
-text 16,6 "j" bold
-text 17,6 "/"
-text 18,6 "k" bold
-text 19,6 ", Page Up/Down, Home/End,\\n      or "
-text 54,6 "g" bold
-text 55,6 "/"
-text 56,6 "G" bold
-text 57,6 ".\\n    "
-text 0,8 "Chapter 1: Getting started" bold
-text 0,12 "Paragraph 01 — The quick brown fox jumps over the lazy dog."
-text 0,14 "Paragraph 02 — The quick brown fox jumps over the lazy dog."
-text 0,16 "Paragraph 03 — The quick brown fox jumps over the lazy dog."
-text 0,18 "Paragraph 04 — The quick brown fox jumps over the lazy dog."
-text 0,20 "Paragraph 05 — The quick brown fox jumps over the lazy dog."
-text 0,22 "Paragraph 06 — The quick brown fox jumps over the lazy dog."
-text 0,24 "Paragraph 07 — The quick brown fox jumps over the lazy dog."
-text 0,26 "Paragraph 08 — The quick brown fox jumps over the lazy dog."
-text 0,28 "Paragraph 09 — The quick brown fox jumps over the lazy dog."
-text 0,30 "Paragraph 10 — The quick brown fox jumps over the lazy dog."
-text 0,32 "Chapter 2: Inline formatting" bold
-text 0,36 "Normal text, "
-text 13,36 "bold text" bold
-text 22,36 ", "
-text 24,36 "italic text" italic
-text 35,36 ", and a "
+"text 0,0 "Pagina Scroll Test" fg=#000000 bold
+text 0,5 "This page is intentionally long so you can try scrolling in the terminal.\\n      " fg=#000000
+text 0,6 "Use arrow keys, " fg=#000000
+text 16,6 "j" fg=#000000 bold
+text 17,6 "/" fg=#000000
+text 18,6 "k" fg=#000000 bold
+text 19,6 ", Page Up/Down, Home/End,\\n      or " fg=#000000
+text 54,6 "g" fg=#000000 bold
+text 55,6 "/" fg=#000000
+text 56,6 "G" fg=#000000 bold
+text 57,6 ".\\n    " fg=#000000
+text 0,8 "Chapter 1: Getting started" fg=#000000 bold
+text 0,12 "Paragraph 01 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,14 "Paragraph 02 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,16 "Paragraph 03 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,18 "Paragraph 04 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,20 "Paragraph 05 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,22 "Paragraph 06 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,24 "Paragraph 07 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,26 "Paragraph 08 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,28 "Paragraph 09 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,30 "Paragraph 10 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,32 "Chapter 2: Inline formatting" fg=#000000 bold
+text 0,36 "Normal text, " fg=#000000
+text 13,36 "bold text" fg=#000000 bold
+text 22,36 ", " fg=#000000
+text 24,36 "italic text" fg=#000000 italic
+text 35,36 ", and a " fg=#000000
 text 43,36 "link" fg=#569cd6 underline link=0
-text 47,36 "."
-text 0,38 "Paragraph 11 — Pack my box with five dozen liquor jugs."
-text 0,40 "Paragraph 12 — Pack my box with five dozen liquor jugs."
-text 0,42 "Paragraph 13 — Pack my box with five dozen liquor jugs."
-text 0,44 "Paragraph 14 — Pack my box with five dozen liquor jugs."
-text 0,46 "Paragraph 15 — Pack my box with five dozen liquor jugs."
-text 0,48 "Paragraph 16 — Pack my box with five dozen liquor jugs."
-text 0,50 "Paragraph 17 — Pack my box with five dozen liquor jugs."
-text 0,52 "Paragraph 18 — Pack my box with five dozen liquor jugs."
-text 0,54 "Paragraph 19 — Pack my box with five dozen liquor jugs."
-text 0,56 "Paragraph 20 — Pack my box with five dozen liquor jugs."
-text 0,58 "Chapter 3: Keep scrolling" bold
-text 0,62 "Paragraph 21 — Sphinx of black quartz, judge my vow."
-text 0,64 "Paragraph 22 — Sphinx of black quartz, judge my vow."
-text 0,66 "Paragraph 23 — Sphinx of black quartz, judge my vow."
-text 0,68 "Paragraph 24 — Sphinx of black quartz, judge my vow."
-text 0,70 "Paragraph 25 — Sphinx of black quartz, judge my vow."
-text 0,72 "Paragraph 26 — Sphinx of black quartz, judge my vow."
-text 0,74 "Paragraph 27 — Sphinx of black quartz, judge my vow."
-text 0,76 "Paragraph 28 — Sphinx of black quartz, judge my vow."
-text 0,78 "Paragraph 29 — Sphinx of black quartz, judge my vow."
-text 0,80 "Paragraph 30 — Sphinx of black quartz, judge my vow."
-text 0,82 "Chapter 4: Wrapping text" bold
-text 0,86 "This paragraph is deliberately wide. Pagina should wrap it across multiple "
-text 0,87 "terminal\\n      columns when your window is narrow, which also increases the "
-text 0,88 "total page height and\\n      makes scrolling more obvious during manual testing "
-text 0,89 "in the terminal.\\n    "
-text 0,91 "Paragraph 31 — How vexingly quick daft zebras jump."
-text 0,93 "Paragraph 32 — How vexingly quick daft zebras jump."
-text 0,95 "Paragraph 33 — How vexingly quick daft zebras jump."
-text 0,97 "Paragraph 34 — How vexingly quick daft zebras jump."
-text 0,99 "Paragraph 35 — How vexingly quick daft zebras jump."
-text 0,101 "Paragraph 36 — How vexingly quick daft zebras jump."
-text 0,103 "Paragraph 37 — How vexingly quick daft zebras jump."
-text 0,105 "Paragraph 38 — How vexingly quick daft zebras jump."
-text 0,107 "Paragraph 39 — How vexingly quick daft zebras jump."
-text 0,109 "Paragraph 40 — How vexingly quick daft zebras jump."
-text 0,111 "Chapter 5: Almost there" bold
-text 0,115 "Paragraph 41 — Waltz, bad nymph, for quick jigs vex."
-text 0,117 "Paragraph 42 — Waltz, bad nymph, for quick jigs vex."
-text 0,119 "Paragraph 43 — Waltz, bad nymph, for quick jigs vex."
-text 0,121 "Paragraph 44 — Waltz, bad nymph, for quick jigs vex."
-text 0,123 "Paragraph 45 — Waltz, bad nymph, for quick jigs vex."
-text 0,125 "Paragraph 46 — Waltz, bad nymph, for quick jigs vex."
-text 0,127 "Paragraph 47 — Waltz, bad nymph, for quick jigs vex."
-text 0,129 "Paragraph 48 — Waltz, bad nymph, for quick jigs vex."
-text 0,131 "Paragraph 49 — Waltz, bad nymph, for quick jigs vex."
-text 0,133 "Paragraph 50 — Waltz, bad nymph, for quick jigs vex."
-text 0,135 "Chapter 6: Final stretch" bold
-text 0,139 "Paragraph 51 — Glib jocks quiz nymph to vex dwarf."
-text 0,141 "Paragraph 52 — Glib jocks quiz nymph to vex dwarf."
-text 0,143 "Paragraph 53 — Glib jocks quiz nymph to vex dwarf."
-text 0,145 "Paragraph 54 — Glib jocks quiz nymph to vex dwarf."
-text 0,147 "Paragraph 55 — Glib jocks quiz nymph to vex dwarf."
-text 0,149 "Paragraph 56 — Glib jocks quiz nymph to vex dwarf."
-text 0,151 "Paragraph 57 — Glib jocks quiz nymph to vex dwarf."
-text 0,153 "Paragraph 58 — Glib jocks quiz nymph to vex dwarf."
-text 0,155 "Paragraph 59 — Glib jocks quiz nymph to vex dwarf."
-text 0,157 "Paragraph 60 — Glib jocks quiz nymph to vex dwarf."
-text 0,159 "End of page" bold
-text 0,163 "You reached the bottom." bold
-text 23,163 " Press "
-text 30,163 "g" bold
-text 31,163 " or Home to jump back to the top.""
+text 47,36 "." fg=#000000
+text 0,38 "Paragraph 11 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,40 "Paragraph 12 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,42 "Paragraph 13 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,44 "Paragraph 14 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,46 "Paragraph 15 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,48 "Paragraph 16 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,50 "Paragraph 17 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,52 "Paragraph 18 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,54 "Paragraph 19 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,56 "Paragraph 20 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,58 "Chapter 3: Keep scrolling" fg=#000000 bold
+text 0,62 "Paragraph 21 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,64 "Paragraph 22 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,66 "Paragraph 23 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,68 "Paragraph 24 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,70 "Paragraph 25 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,72 "Paragraph 26 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,74 "Paragraph 27 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,76 "Paragraph 28 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,78 "Paragraph 29 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,80 "Paragraph 30 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,82 "Chapter 4: Wrapping text" fg=#000000 bold
+text 0,86 "This paragraph is deliberately wide. Pagina should wrap it across multiple " fg=#000000
+text 0,87 "terminal\\n      columns when your window is narrow, which also increases the " fg=#000000
+text 0,88 "total page height and\\n      makes scrolling more obvious during manual testing " fg=#000000
+text 0,89 "in the terminal.\\n    " fg=#000000
+text 0,91 "Paragraph 31 — How vexingly quick daft zebras jump." fg=#000000
+text 0,93 "Paragraph 32 — How vexingly quick daft zebras jump." fg=#000000
+text 0,95 "Paragraph 33 — How vexingly quick daft zebras jump." fg=#000000
+text 0,97 "Paragraph 34 — How vexingly quick daft zebras jump." fg=#000000
+text 0,99 "Paragraph 35 — How vexingly quick daft zebras jump." fg=#000000
+text 0,101 "Paragraph 36 — How vexingly quick daft zebras jump." fg=#000000
+text 0,103 "Paragraph 37 — How vexingly quick daft zebras jump." fg=#000000
+text 0,105 "Paragraph 38 — How vexingly quick daft zebras jump." fg=#000000
+text 0,107 "Paragraph 39 — How vexingly quick daft zebras jump." fg=#000000
+text 0,109 "Paragraph 40 — How vexingly quick daft zebras jump." fg=#000000
+text 0,111 "Chapter 5: Almost there" fg=#000000 bold
+text 0,115 "Paragraph 41 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,117 "Paragraph 42 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,119 "Paragraph 43 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,121 "Paragraph 44 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,123 "Paragraph 45 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,125 "Paragraph 46 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,127 "Paragraph 47 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,129 "Paragraph 48 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,131 "Paragraph 49 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,133 "Paragraph 50 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,135 "Chapter 6: Final stretch" fg=#000000 bold
+text 0,139 "Paragraph 51 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,141 "Paragraph 52 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,143 "Paragraph 53 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,145 "Paragraph 54 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,147 "Paragraph 55 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,149 "Paragraph 56 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,151 "Paragraph 57 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,153 "Paragraph 58 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,155 "Paragraph 59 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,157 "Paragraph 60 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,159 "End of page" fg=#000000 bold
+text 0,163 "You reached the bottom." fg=#000000 bold
+text 23,163 " Press " fg=#000000
+text 30,163 "g" fg=#000000 bold
+text 31,163 " or Home to jump back to the top." fg=#000000"
 `;
 
 exports[`display-list snapshots long-page at 40x24: long-page-40x24 1`] = `
-"text 0,0 "Pagina Scroll " bold
-text 0,4 "Test" bold
-text 0,9 "This page is intentionally long so you "
-text 0,10 "can try scrolling in the terminal.\\n      "
-text 0,11 "Use arrow keys, "
-text 16,11 "j" bold
-text 17,11 "/"
-text 18,11 "k" bold
-text 19,11 ", Page Up/Down, "
-text 0,12 "Home/End,\\n      or "
-text 19,12 "g" bold
-text 20,12 "/"
-text 21,12 "G" bold
-text 22,12 ".\\n    "
-text 0,14 "Chapter 1: Getting " bold
-text 0,17 "started" bold
-text 0,21 "Paragraph 01 — The quick brown fox jumps "
-text 0,22 "over the lazy dog."
-text 0,24 "Paragraph 02 — The quick brown fox jumps "
-text 0,25 "over the lazy dog."
-text 0,27 "Paragraph 03 — The quick brown fox jumps "
-text 0,28 "over the lazy dog."
-text 0,30 "Paragraph 04 — The quick brown fox jumps "
-text 0,31 "over the lazy dog."
-text 0,33 "Paragraph 05 — The quick brown fox jumps "
-text 0,34 "over the lazy dog."
-text 0,36 "Paragraph 06 — The quick brown fox jumps "
-text 0,37 "over the lazy dog."
-text 0,39 "Paragraph 07 — The quick brown fox jumps "
-text 0,40 "over the lazy dog."
-text 0,42 "Paragraph 08 — The quick brown fox jumps "
-text 0,43 "over the lazy dog."
-text 0,45 "Paragraph 09 — The quick brown fox jumps "
-text 0,46 "over the lazy dog."
-text 0,48 "Paragraph 10 — The quick brown fox jumps "
-text 0,49 "over the lazy dog."
-text 0,51 "Chapter 2: Inline " bold
-text 0,54 "formatting" bold
-text 0,58 "Normal text, "
-text 13,58 "bold text" bold
-text 22,58 ", "
-text 24,58 "italic text" italic
-text 35,58 ", and "
-text 0,59 "a "
+"text 0,0 "Pagina Scroll " fg=#000000 bold
+text 0,4 "Test" fg=#000000 bold
+text 0,9 "This page is intentionally long so you " fg=#000000
+text 0,10 "can try scrolling in the terminal.\\n      " fg=#000000
+text 0,11 "Use arrow keys, " fg=#000000
+text 16,11 "j" fg=#000000 bold
+text 17,11 "/" fg=#000000
+text 18,11 "k" fg=#000000 bold
+text 19,11 ", Page Up/Down, " fg=#000000
+text 0,12 "Home/End,\\n      or " fg=#000000
+text 19,12 "g" fg=#000000 bold
+text 20,12 "/" fg=#000000
+text 21,12 "G" fg=#000000 bold
+text 22,12 ".\\n    " fg=#000000
+text 0,14 "Chapter 1: Getting " fg=#000000 bold
+text 0,17 "started" fg=#000000 bold
+text 0,21 "Paragraph 01 — The quick brown fox jumps " fg=#000000
+text 0,22 "over the lazy dog." fg=#000000
+text 0,24 "Paragraph 02 — The quick brown fox jumps " fg=#000000
+text 0,25 "over the lazy dog." fg=#000000
+text 0,27 "Paragraph 03 — The quick brown fox jumps " fg=#000000
+text 0,28 "over the lazy dog." fg=#000000
+text 0,30 "Paragraph 04 — The quick brown fox jumps " fg=#000000
+text 0,31 "over the lazy dog." fg=#000000
+text 0,33 "Paragraph 05 — The quick brown fox jumps " fg=#000000
+text 0,34 "over the lazy dog." fg=#000000
+text 0,36 "Paragraph 06 — The quick brown fox jumps " fg=#000000
+text 0,37 "over the lazy dog." fg=#000000
+text 0,39 "Paragraph 07 — The quick brown fox jumps " fg=#000000
+text 0,40 "over the lazy dog." fg=#000000
+text 0,42 "Paragraph 08 — The quick brown fox jumps " fg=#000000
+text 0,43 "over the lazy dog." fg=#000000
+text 0,45 "Paragraph 09 — The quick brown fox jumps " fg=#000000
+text 0,46 "over the lazy dog." fg=#000000
+text 0,48 "Paragraph 10 — The quick brown fox jumps " fg=#000000
+text 0,49 "over the lazy dog." fg=#000000
+text 0,51 "Chapter 2: Inline " fg=#000000 bold
+text 0,54 "formatting" fg=#000000 bold
+text 0,58 "Normal text, " fg=#000000
+text 13,58 "bold text" fg=#000000 bold
+text 22,58 ", " fg=#000000
+text 24,58 "italic text" fg=#000000 italic
+text 35,58 ", and " fg=#000000
+text 0,59 "a " fg=#000000
 text 2,59 "link" fg=#569cd6 underline link=0
-text 6,59 "."
-text 0,61 "Paragraph 11 — Pack my box with five "
-text 0,62 "dozen liquor jugs."
-text 0,64 "Paragraph 12 — Pack my box with five "
-text 0,65 "dozen liquor jugs."
-text 0,67 "Paragraph 13 — Pack my box with five "
-text 0,68 "dozen liquor jugs."
-text 0,70 "Paragraph 14 — Pack my box with five "
-text 0,71 "dozen liquor jugs."
-text 0,73 "Paragraph 15 — Pack my box with five "
-text 0,74 "dozen liquor jugs."
-text 0,76 "Paragraph 16 — Pack my box with five "
-text 0,77 "dozen liquor jugs."
-text 0,79 "Paragraph 17 — Pack my box with five "
-text 0,80 "dozen liquor jugs."
-text 0,82 "Paragraph 18 — Pack my box with five "
-text 0,83 "dozen liquor jugs."
-text 0,85 "Paragraph 19 — Pack my box with five "
-text 0,86 "dozen liquor jugs."
-text 0,88 "Paragraph 20 — Pack my box with five "
-text 0,89 "dozen liquor jugs."
-text 0,91 "Chapter 3: Keep " bold
-text 0,94 "scrolling" bold
-text 0,98 "Paragraph 21 — Sphinx of black quartz, "
-text 0,99 "judge my vow."
-text 0,101 "Paragraph 22 — Sphinx of black quartz, "
-text 0,102 "judge my vow."
-text 0,104 "Paragraph 23 — Sphinx of black quartz, "
-text 0,105 "judge my vow."
-text 0,107 "Paragraph 24 — Sphinx of black quartz, "
-text 0,108 "judge my vow."
-text 0,110 "Paragraph 25 — Sphinx of black quartz, "
-text 0,111 "judge my vow."
-text 0,113 "Paragraph 26 — Sphinx of black quartz, "
-text 0,114 "judge my vow."
-text 0,116 "Paragraph 27 — Sphinx of black quartz, "
-text 0,117 "judge my vow."
-text 0,119 "Paragraph 28 — Sphinx of black quartz, "
-text 0,120 "judge my vow."
-text 0,122 "Paragraph 29 — Sphinx of black quartz, "
-text 0,123 "judge my vow."
-text 0,125 "Paragraph 30 — Sphinx of black quartz, "
-text 0,126 "judge my vow."
-text 0,128 "Chapter 4: Wrapping " bold
-text 0,131 "text" bold
-text 0,135 "This paragraph is deliberately wide. "
-text 0,136 "Pagina should wrap it across multiple "
-text 0,137 "terminal\\n      columns when your window "
-text 0,138 "is narrow, which also increases the "
-text 0,139 "total page height and\\n      makes "
-text 0,140 "scrolling more obvious during manual "
-text 0,141 "testing in the terminal.\\n    "
-text 0,143 "Paragraph 31 — How vexingly quick daft "
-text 0,144 "zebras jump."
-text 0,146 "Paragraph 32 — How vexingly quick daft "
-text 0,147 "zebras jump."
-text 0,149 "Paragraph 33 — How vexingly quick daft "
-text 0,150 "zebras jump."
-text 0,152 "Paragraph 34 — How vexingly quick daft "
-text 0,153 "zebras jump."
-text 0,155 "Paragraph 35 — How vexingly quick daft "
-text 0,156 "zebras jump."
-text 0,158 "Paragraph 36 — How vexingly quick daft "
-text 0,159 "zebras jump."
-text 0,161 "Paragraph 37 — How vexingly quick daft "
-text 0,162 "zebras jump."
-text 0,164 "Paragraph 38 — How vexingly quick daft "
-text 0,165 "zebras jump."
-text 0,167 "Paragraph 39 — How vexingly quick daft "
-text 0,168 "zebras jump."
-text 0,170 "Paragraph 40 — How vexingly quick daft "
-text 0,171 "zebras jump."
-text 0,173 "Chapter 5: Almost " bold
-text 0,176 "there" bold
-text 0,180 "Paragraph 41 — Waltz, bad nymph, for "
-text 0,181 "quick jigs vex."
-text 0,183 "Paragraph 42 — Waltz, bad nymph, for "
-text 0,184 "quick jigs vex."
-text 0,186 "Paragraph 43 — Waltz, bad nymph, for "
-text 0,187 "quick jigs vex."
-text 0,189 "Paragraph 44 — Waltz, bad nymph, for "
-text 0,190 "quick jigs vex."
-text 0,192 "Paragraph 45 — Waltz, bad nymph, for "
-text 0,193 "quick jigs vex."
-text 0,195 "Paragraph 46 — Waltz, bad nymph, for "
-text 0,196 "quick jigs vex."
-text 0,198 "Paragraph 47 — Waltz, bad nymph, for "
-text 0,199 "quick jigs vex."
-text 0,201 "Paragraph 48 — Waltz, bad nymph, for "
-text 0,202 "quick jigs vex."
-text 0,204 "Paragraph 49 — Waltz, bad nymph, for "
-text 0,205 "quick jigs vex."
-text 0,207 "Paragraph 50 — Waltz, bad nymph, for "
-text 0,208 "quick jigs vex."
-text 0,210 "Chapter 6: Final " bold
-text 0,213 "stretch" bold
-text 0,217 "Paragraph 51 — Glib jocks quiz nymph to "
-text 0,218 "vex dwarf."
-text 0,220 "Paragraph 52 — Glib jocks quiz nymph to "
-text 0,221 "vex dwarf."
-text 0,223 "Paragraph 53 — Glib jocks quiz nymph to "
-text 0,224 "vex dwarf."
-text 0,226 "Paragraph 54 — Glib jocks quiz nymph to "
-text 0,227 "vex dwarf."
-text 0,229 "Paragraph 55 — Glib jocks quiz nymph to "
-text 0,230 "vex dwarf."
-text 0,232 "Paragraph 56 — Glib jocks quiz nymph to "
-text 0,233 "vex dwarf."
-text 0,235 "Paragraph 57 — Glib jocks quiz nymph to "
-text 0,236 "vex dwarf."
-text 0,238 "Paragraph 58 — Glib jocks quiz nymph to "
-text 0,239 "vex dwarf."
-text 0,241 "Paragraph 59 — Glib jocks quiz nymph to "
-text 0,242 "vex dwarf."
-text 0,244 "Paragraph 60 — Glib jocks quiz nymph to "
-text 0,245 "vex dwarf."
-text 0,247 "End of page" bold
-text 0,251 "You reached the bottom." bold
-text 23,251 " Press "
-text 30,251 "g" bold
-text 31,251 " or Home "
-text 0,252 "to jump back to the top.""
+text 6,59 "." fg=#000000
+text 0,61 "Paragraph 11 — Pack my box with five " fg=#000000
+text 0,62 "dozen liquor jugs." fg=#000000
+text 0,64 "Paragraph 12 — Pack my box with five " fg=#000000
+text 0,65 "dozen liquor jugs." fg=#000000
+text 0,67 "Paragraph 13 — Pack my box with five " fg=#000000
+text 0,68 "dozen liquor jugs." fg=#000000
+text 0,70 "Paragraph 14 — Pack my box with five " fg=#000000
+text 0,71 "dozen liquor jugs." fg=#000000
+text 0,73 "Paragraph 15 — Pack my box with five " fg=#000000
+text 0,74 "dozen liquor jugs." fg=#000000
+text 0,76 "Paragraph 16 — Pack my box with five " fg=#000000
+text 0,77 "dozen liquor jugs." fg=#000000
+text 0,79 "Paragraph 17 — Pack my box with five " fg=#000000
+text 0,80 "dozen liquor jugs." fg=#000000
+text 0,82 "Paragraph 18 — Pack my box with five " fg=#000000
+text 0,83 "dozen liquor jugs." fg=#000000
+text 0,85 "Paragraph 19 — Pack my box with five " fg=#000000
+text 0,86 "dozen liquor jugs." fg=#000000
+text 0,88 "Paragraph 20 — Pack my box with five " fg=#000000
+text 0,89 "dozen liquor jugs." fg=#000000
+text 0,91 "Chapter 3: Keep " fg=#000000 bold
+text 0,94 "scrolling" fg=#000000 bold
+text 0,98 "Paragraph 21 — Sphinx of black quartz, " fg=#000000
+text 0,99 "judge my vow." fg=#000000
+text 0,101 "Paragraph 22 — Sphinx of black quartz, " fg=#000000
+text 0,102 "judge my vow." fg=#000000
+text 0,104 "Paragraph 23 — Sphinx of black quartz, " fg=#000000
+text 0,105 "judge my vow." fg=#000000
+text 0,107 "Paragraph 24 — Sphinx of black quartz, " fg=#000000
+text 0,108 "judge my vow." fg=#000000
+text 0,110 "Paragraph 25 — Sphinx of black quartz, " fg=#000000
+text 0,111 "judge my vow." fg=#000000
+text 0,113 "Paragraph 26 — Sphinx of black quartz, " fg=#000000
+text 0,114 "judge my vow." fg=#000000
+text 0,116 "Paragraph 27 — Sphinx of black quartz, " fg=#000000
+text 0,117 "judge my vow." fg=#000000
+text 0,119 "Paragraph 28 — Sphinx of black quartz, " fg=#000000
+text 0,120 "judge my vow." fg=#000000
+text 0,122 "Paragraph 29 — Sphinx of black quartz, " fg=#000000
+text 0,123 "judge my vow." fg=#000000
+text 0,125 "Paragraph 30 — Sphinx of black quartz, " fg=#000000
+text 0,126 "judge my vow." fg=#000000
+text 0,128 "Chapter 4: Wrapping " fg=#000000 bold
+text 0,131 "text" fg=#000000 bold
+text 0,135 "This paragraph is deliberately wide. " fg=#000000
+text 0,136 "Pagina should wrap it across multiple " fg=#000000
+text 0,137 "terminal\\n      columns when your window " fg=#000000
+text 0,138 "is narrow, which also increases the " fg=#000000
+text 0,139 "total page height and\\n      makes " fg=#000000
+text 0,140 "scrolling more obvious during manual " fg=#000000
+text 0,141 "testing in the terminal.\\n    " fg=#000000
+text 0,143 "Paragraph 31 — How vexingly quick daft " fg=#000000
+text 0,144 "zebras jump." fg=#000000
+text 0,146 "Paragraph 32 — How vexingly quick daft " fg=#000000
+text 0,147 "zebras jump." fg=#000000
+text 0,149 "Paragraph 33 — How vexingly quick daft " fg=#000000
+text 0,150 "zebras jump." fg=#000000
+text 0,152 "Paragraph 34 — How vexingly quick daft " fg=#000000
+text 0,153 "zebras jump." fg=#000000
+text 0,155 "Paragraph 35 — How vexingly quick daft " fg=#000000
+text 0,156 "zebras jump." fg=#000000
+text 0,158 "Paragraph 36 — How vexingly quick daft " fg=#000000
+text 0,159 "zebras jump." fg=#000000
+text 0,161 "Paragraph 37 — How vexingly quick daft " fg=#000000
+text 0,162 "zebras jump." fg=#000000
+text 0,164 "Paragraph 38 — How vexingly quick daft " fg=#000000
+text 0,165 "zebras jump." fg=#000000
+text 0,167 "Paragraph 39 — How vexingly quick daft " fg=#000000
+text 0,168 "zebras jump." fg=#000000
+text 0,170 "Paragraph 40 — How vexingly quick daft " fg=#000000
+text 0,171 "zebras jump." fg=#000000
+text 0,173 "Chapter 5: Almost " fg=#000000 bold
+text 0,176 "there" fg=#000000 bold
+text 0,180 "Paragraph 41 — Waltz, bad nymph, for " fg=#000000
+text 0,181 "quick jigs vex." fg=#000000
+text 0,183 "Paragraph 42 — Waltz, bad nymph, for " fg=#000000
+text 0,184 "quick jigs vex." fg=#000000
+text 0,186 "Paragraph 43 — Waltz, bad nymph, for " fg=#000000
+text 0,187 "quick jigs vex." fg=#000000
+text 0,189 "Paragraph 44 — Waltz, bad nymph, for " fg=#000000
+text 0,190 "quick jigs vex." fg=#000000
+text 0,192 "Paragraph 45 — Waltz, bad nymph, for " fg=#000000
+text 0,193 "quick jigs vex." fg=#000000
+text 0,195 "Paragraph 46 — Waltz, bad nymph, for " fg=#000000
+text 0,196 "quick jigs vex." fg=#000000
+text 0,198 "Paragraph 47 — Waltz, bad nymph, for " fg=#000000
+text 0,199 "quick jigs vex." fg=#000000
+text 0,201 "Paragraph 48 — Waltz, bad nymph, for " fg=#000000
+text 0,202 "quick jigs vex." fg=#000000
+text 0,204 "Paragraph 49 — Waltz, bad nymph, for " fg=#000000
+text 0,205 "quick jigs vex." fg=#000000
+text 0,207 "Paragraph 50 — Waltz, bad nymph, for " fg=#000000
+text 0,208 "quick jigs vex." fg=#000000
+text 0,210 "Chapter 6: Final " fg=#000000 bold
+text 0,213 "stretch" fg=#000000 bold
+text 0,217 "Paragraph 51 — Glib jocks quiz nymph to " fg=#000000
+text 0,218 "vex dwarf." fg=#000000
+text 0,220 "Paragraph 52 — Glib jocks quiz nymph to " fg=#000000
+text 0,221 "vex dwarf." fg=#000000
+text 0,223 "Paragraph 53 — Glib jocks quiz nymph to " fg=#000000
+text 0,224 "vex dwarf." fg=#000000
+text 0,226 "Paragraph 54 — Glib jocks quiz nymph to " fg=#000000
+text 0,227 "vex dwarf." fg=#000000
+text 0,229 "Paragraph 55 — Glib jocks quiz nymph to " fg=#000000
+text 0,230 "vex dwarf." fg=#000000
+text 0,232 "Paragraph 56 — Glib jocks quiz nymph to " fg=#000000
+text 0,233 "vex dwarf." fg=#000000
+text 0,235 "Paragraph 57 — Glib jocks quiz nymph to " fg=#000000
+text 0,236 "vex dwarf." fg=#000000
+text 0,238 "Paragraph 58 — Glib jocks quiz nymph to " fg=#000000
+text 0,239 "vex dwarf." fg=#000000
+text 0,241 "Paragraph 59 — Glib jocks quiz nymph to " fg=#000000
+text 0,242 "vex dwarf." fg=#000000
+text 0,244 "Paragraph 60 — Glib jocks quiz nymph to " fg=#000000
+text 0,245 "vex dwarf." fg=#000000
+text 0,247 "End of page" fg=#000000 bold
+text 0,251 "You reached the bottom." fg=#000000 bold
+text 23,251 " Press " fg=#000000
+text 30,251 "g" fg=#000000 bold
+text 31,251 " or Home " fg=#000000
+text 0,252 "to jump back to the top." fg=#000000"
 `;
 
 exports[`display-list snapshots fragments-page at 80x24: fragments-page-80x24 1`] = `
-"text 0,0 "Fragment Navigation Stress Test" bold
-text 0,5 "This page is intentionally long with many in-page anchors.\\n      Use "
-text 69,5 "[" bold
-text 70,5 "/"
-text 71,5 "]" bold
-text 72,5 " and "
-text 0,6 "Enter" bold
-text 5,6 ", or click with the mouse.\\n    "
-text 0,8 "Table of contents" bold
+"text 0,0 "Fragment Navigation Stress Test" fg=#000000 bold
+text 0,5 "This page is intentionally long with many in-page anchors.\\n      Use " fg=#000000
+text 69,5 "[" fg=#000000 bold
+text 70,5 "/" fg=#000000
+text 71,5 "]" fg=#000000 bold
+text 72,5 " and " fg=#000000
+text 0,6 "Enter" fg=#000000 bold
+text 5,6 ", or click with the mouse.\\n    " fg=#000000
+text 0,8 "Table of contents" fg=#000000 bold
 text 0,12 "Introduction" fg=#569cd6 underline link=0
-text 12,12 " ·\\n      "
+text 12,12 " ·\\n      " fg=#000000
 text 21,12 "Chapter 1" fg=#569cd6 underline link=1
-text 30,12 " ·\\n      "
+text 30,12 " ·\\n      " fg=#000000
 text 39,12 "Chapter 2" fg=#569cd6 underline link=2
-text 48,12 " ·\\n      "
+text 48,12 " ·\\n      " fg=#000000
 text 57,12 "Chapter 3" fg=#569cd6 underline link=3
-text 66,12 " ·\\n      "
+text 66,12 " ·\\n      " fg=#000000
 text 0,13 "Chapter 4" fg=#569cd6 underline link=4
-text 9,13 " ·\\n      "
+text 9,13 " ·\\n      " fg=#000000
 text 18,13 "Chapter 5" fg=#569cd6 underline link=5
-text 27,13 " ·\\n      "
+text 27,13 " ·\\n      " fg=#000000
 text 36,13 "Chapter 6" fg=#569cd6 underline link=6
-text 45,13 " ·\\n      "
+text 45,13 " ·\\n      " fg=#000000
 text 54,13 "Chapter 7" fg=#569cd6 underline link=7
-text 63,13 " ·\\n      "
+text 63,13 " ·\\n      " fg=#000000
 text 72,13 "Chapter " fg=#569cd6 underline link=8
 text 0,14 "8" fg=#569cd6 underline link=8
-text 1,14 " ·\\n      "
+text 1,14 " ·\\n      " fg=#000000
 text 10,14 "Chapter 9" fg=#569cd6 underline link=9
-text 19,14 " ·\\n      "
+text 19,14 " ·\\n      " fg=#000000
 text 28,14 "Chapter 10" fg=#569cd6 underline link=10
-text 38,14 " ·\\n      "
+text 38,14 " ·\\n      " fg=#000000
 text 47,14 "Chapter 11" fg=#569cd6 underline link=11
-text 57,14 " ·\\n      "
+text 57,14 " ·\\n      " fg=#000000
 text 66,14 "Chapter 12" fg=#569cd6 underline link=12
-text 76,14 " ·\\n      "
+text 76,14 " ·\\n      " fg=#000000
 text 0,15 "Chapter 13" fg=#569cd6 underline link=13
-text 10,15 " ·\\n      "
+text 10,15 " ·\\n      " fg=#000000
 text 19,15 "Chapter 14" fg=#569cd6 underline link=14
-text 29,15 " ·\\n      "
+text 29,15 " ·\\n      " fg=#000000
 text 38,15 "Chapter 15" fg=#569cd6 underline link=15
-text 48,15 " ·\\n      "
+text 48,15 " ·\\n      " fg=#000000
 text 57,15 "Chapter 16" fg=#569cd6 underline link=16
-text 67,15 " ·\\n      "
+text 67,15 " ·\\n      " fg=#000000
 text 0,16 "Chapter 17" fg=#569cd6 underline link=17
-text 10,16 " ·\\n      "
+text 10,16 " ·\\n      " fg=#000000
 text 19,16 "Chapter 18" fg=#569cd6 underline link=18
-text 29,16 " ·\\n      "
+text 29,16 " ·\\n      " fg=#000000
 text 38,16 "Chapter 19" fg=#569cd6 underline link=19
-text 48,16 " ·\\n      "
+text 48,16 " ·\\n      " fg=#000000
 text 57,16 "Chapter 20" fg=#569cd6 underline link=20
-text 67,16 " ·\\n      "
+text 67,16 " ·\\n      " fg=#000000
 text 0,17 "Appendix" fg=#569cd6 underline link=21
-text 8,17 " ·\\n      "
+text 8,17 " ·\\n      " fg=#000000
 text 17,17 "Footer" fg=#569cd6 underline link=22
-text 23,17 " ·\\n    "
-text 0,19 "Introduction" bold
-text 0,23 "Paragraph 01 — The quick brown fox jumps over the lazy dog."
-text 0,25 "Paragraph 02 — The quick brown fox jumps over the lazy dog."
-text 0,27 "Paragraph 03 — The quick brown fox jumps over the lazy dog."
-text 0,29 "Paragraph 04 — The quick brown fox jumps over the lazy dog."
-text 0,31 "Paragraph 05 — The quick brown fox jumps over the lazy dog."
-text 0,33 "Paragraph 06 — The quick brown fox jumps over the lazy dog."
-text 0,35 "Paragraph 07 — The quick brown fox jumps over the lazy dog."
-text 0,37 "Paragraph 08 — The quick brown fox jumps over the lazy dog."
-text 0,39 "Paragraph 09 — The quick brown fox jumps over the lazy dog."
-text 0,41 "Paragraph 10 — The quick brown fox jumps over the lazy dog."
-text 0,43 "Paragraph 11 — The quick brown fox jumps over the lazy dog."
-text 0,45 "Paragraph 12 — The quick brown fox jumps over the lazy dog."
-text 0,47 "Paragraph 13 — The quick brown fox jumps over the lazy dog."
-text 0,49 "Paragraph 14 — The quick brown fox jumps over the lazy dog."
-text 0,51 "Paragraph 15 — The quick brown fox jumps over the lazy dog."
-text 0,53 "Jump to "
+text 23,17 " ·\\n    " fg=#000000
+text 0,19 "Introduction" fg=#000000 bold
+text 0,23 "Paragraph 01 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,25 "Paragraph 02 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,27 "Paragraph 03 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,29 "Paragraph 04 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,31 "Paragraph 05 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,33 "Paragraph 06 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,35 "Paragraph 07 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,37 "Paragraph 08 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,39 "Paragraph 09 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,41 "Paragraph 10 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,43 "Paragraph 11 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,45 "Paragraph 12 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,47 "Paragraph 13 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,49 "Paragraph 14 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,51 "Paragraph 15 — The quick brown fox jumps over the lazy dog." fg=#000000
+text 0,53 "Jump to " fg=#000000
 text 8,53 "footer" fg=#569cd6 underline link=23
-text 14,53 " or "
+text 14,53 " or " fg=#000000
 text 18,53 "intro" fg=#569cd6 underline link=24
-text 23,53 "."
-text 0,55 "Chapter 1" bold
-text 0,59 "Paragraph 01 — Pack my box with five dozen liquor jugs."
-text 0,61 "Paragraph 02 — Pack my box with five dozen liquor jugs."
-text 0,63 "Paragraph 03 — Pack my box with five dozen liquor jugs."
-text 0,65 "Paragraph 04 — Pack my box with five dozen liquor jugs."
-text 0,67 "Paragraph 05 — Pack my box with five dozen liquor jugs."
-text 0,69 "Paragraph 06 — Pack my box with five dozen liquor jugs."
-text 0,71 "Paragraph 07 — Pack my box with five dozen liquor jugs."
-text 0,73 "Paragraph 08 — Pack my box with five dozen liquor jugs."
-text 0,75 "Paragraph 09 — Pack my box with five dozen liquor jugs."
-text 0,77 "Paragraph 10 — Pack my box with five dozen liquor jugs."
-text 0,79 "Paragraph 11 — Pack my box with five dozen liquor jugs."
-text 0,81 "Paragraph 12 — Pack my box with five dozen liquor jugs."
-text 0,83 "Paragraph 13 — Pack my box with five dozen liquor jugs."
-text 0,85 "Paragraph 14 — Pack my box with five dozen liquor jugs."
-text 0,87 "Paragraph 15 — Pack my box with five dozen liquor jugs."
-text 0,89 "Jump to "
+text 23,53 "." fg=#000000
+text 0,55 "Chapter 1" fg=#000000 bold
+text 0,59 "Paragraph 01 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,61 "Paragraph 02 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,63 "Paragraph 03 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,65 "Paragraph 04 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,67 "Paragraph 05 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,69 "Paragraph 06 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,71 "Paragraph 07 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,73 "Paragraph 08 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,75 "Paragraph 09 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,77 "Paragraph 10 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,79 "Paragraph 11 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,81 "Paragraph 12 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,83 "Paragraph 13 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,85 "Paragraph 14 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,87 "Paragraph 15 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,89 "Jump to " fg=#000000
 text 8,89 "footer" fg=#569cd6 underline link=25
-text 14,89 " or "
+text 14,89 " or " fg=#000000
 text 18,89 "intro" fg=#569cd6 underline link=26
-text 23,89 "."
-text 0,91 "Chapter 2" bold
-text 0,95 "Paragraph 01 — Sphinx of black quartz, judge my vow."
-text 0,97 "Paragraph 02 — Sphinx of black quartz, judge my vow."
-text 0,99 "Paragraph 03 — Sphinx of black quartz, judge my vow."
-text 0,101 "Paragraph 04 — Sphinx of black quartz, judge my vow."
-text 0,103 "Paragraph 05 — Sphinx of black quartz, judge my vow."
-text 0,105 "Paragraph 06 — Sphinx of black quartz, judge my vow."
-text 0,107 "Paragraph 07 — Sphinx of black quartz, judge my vow."
-text 0,109 "Paragraph 08 — Sphinx of black quartz, judge my vow."
-text 0,111 "Paragraph 09 — Sphinx of black quartz, judge my vow."
-text 0,113 "Paragraph 10 — Sphinx of black quartz, judge my vow."
-text 0,115 "Paragraph 11 — Sphinx of black quartz, judge my vow."
-text 0,117 "Paragraph 12 — Sphinx of black quartz, judge my vow."
-text 0,119 "Paragraph 13 — Sphinx of black quartz, judge my vow."
-text 0,121 "Paragraph 14 — Sphinx of black quartz, judge my vow."
-text 0,123 "Paragraph 15 — Sphinx of black quartz, judge my vow."
-text 0,125 "Jump to "
+text 23,89 "." fg=#000000
+text 0,91 "Chapter 2" fg=#000000 bold
+text 0,95 "Paragraph 01 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,97 "Paragraph 02 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,99 "Paragraph 03 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,101 "Paragraph 04 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,103 "Paragraph 05 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,105 "Paragraph 06 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,107 "Paragraph 07 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,109 "Paragraph 08 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,111 "Paragraph 09 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,113 "Paragraph 10 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,115 "Paragraph 11 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,117 "Paragraph 12 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,119 "Paragraph 13 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,121 "Paragraph 14 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,123 "Paragraph 15 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,125 "Jump to " fg=#000000
 text 8,125 "footer" fg=#569cd6 underline link=27
-text 14,125 " or "
+text 14,125 " or " fg=#000000
 text 18,125 "intro" fg=#569cd6 underline link=28
-text 23,125 "."
-text 0,127 "Chapter 3" bold
-text 0,131 "Paragraph 01 — How vexingly quick daft zebras jump."
-text 0,133 "Paragraph 02 — How vexingly quick daft zebras jump."
-text 0,135 "Paragraph 03 — How vexingly quick daft zebras jump."
-text 0,137 "Paragraph 04 — How vexingly quick daft zebras jump."
-text 0,139 "Paragraph 05 — How vexingly quick daft zebras jump."
-text 0,141 "Paragraph 06 — How vexingly quick daft zebras jump."
-text 0,143 "Paragraph 07 — How vexingly quick daft zebras jump."
-text 0,145 "Paragraph 08 — How vexingly quick daft zebras jump."
-text 0,147 "Paragraph 09 — How vexingly quick daft zebras jump."
-text 0,149 "Paragraph 10 — How vexingly quick daft zebras jump."
-text 0,151 "Paragraph 11 — How vexingly quick daft zebras jump."
-text 0,153 "Paragraph 12 — How vexingly quick daft zebras jump."
-text 0,155 "Paragraph 13 — How vexingly quick daft zebras jump."
-text 0,157 "Paragraph 14 — How vexingly quick daft zebras jump."
-text 0,159 "Paragraph 15 — How vexingly quick daft zebras jump."
-text 0,161 "Jump to "
+text 23,125 "." fg=#000000
+text 0,127 "Chapter 3" fg=#000000 bold
+text 0,131 "Paragraph 01 — How vexingly quick daft zebras jump." fg=#000000
+text 0,133 "Paragraph 02 — How vexingly quick daft zebras jump." fg=#000000
+text 0,135 "Paragraph 03 — How vexingly quick daft zebras jump." fg=#000000
+text 0,137 "Paragraph 04 — How vexingly quick daft zebras jump." fg=#000000
+text 0,139 "Paragraph 05 — How vexingly quick daft zebras jump." fg=#000000
+text 0,141 "Paragraph 06 — How vexingly quick daft zebras jump." fg=#000000
+text 0,143 "Paragraph 07 — How vexingly quick daft zebras jump." fg=#000000
+text 0,145 "Paragraph 08 — How vexingly quick daft zebras jump." fg=#000000
+text 0,147 "Paragraph 09 — How vexingly quick daft zebras jump." fg=#000000
+text 0,149 "Paragraph 10 — How vexingly quick daft zebras jump." fg=#000000
+text 0,151 "Paragraph 11 — How vexingly quick daft zebras jump." fg=#000000
+text 0,153 "Paragraph 12 — How vexingly quick daft zebras jump." fg=#000000
+text 0,155 "Paragraph 13 — How vexingly quick daft zebras jump." fg=#000000
+text 0,157 "Paragraph 14 — How vexingly quick daft zebras jump." fg=#000000
+text 0,159 "Paragraph 15 — How vexingly quick daft zebras jump." fg=#000000
+text 0,161 "Jump to " fg=#000000
 text 8,161 "footer" fg=#569cd6 underline link=29
-text 14,161 " or "
+text 14,161 " or " fg=#000000
 text 18,161 "intro" fg=#569cd6 underline link=30
-text 23,161 "."
-text 0,163 "Chapter 4" bold
-text 0,167 "Paragraph 01 — Waltz, bad nymph, for quick jigs vex."
-text 0,169 "Paragraph 02 — Waltz, bad nymph, for quick jigs vex."
-text 0,171 "Paragraph 03 — Waltz, bad nymph, for quick jigs vex."
-text 0,173 "Paragraph 04 — Waltz, bad nymph, for quick jigs vex."
-text 0,175 "Paragraph 05 — Waltz, bad nymph, for quick jigs vex."
-text 0,177 "Paragraph 06 — Waltz, bad nymph, for quick jigs vex."
-text 0,179 "Paragraph 07 — Waltz, bad nymph, for quick jigs vex."
-text 0,181 "Paragraph 08 — Waltz, bad nymph, for quick jigs vex."
-text 0,183 "Paragraph 09 — Waltz, bad nymph, for quick jigs vex."
-text 0,185 "Paragraph 10 — Waltz, bad nymph, for quick jigs vex."
-text 0,187 "Paragraph 11 — Waltz, bad nymph, for quick jigs vex."
-text 0,189 "Paragraph 12 — Waltz, bad nymph, for quick jigs vex."
-text 0,191 "Paragraph 13 — Waltz, bad nymph, for quick jigs vex."
-text 0,193 "Paragraph 14 — Waltz, bad nymph, for quick jigs vex."
-text 0,195 "Paragraph 15 — Waltz, bad nymph, for quick jigs vex."
-text 0,197 "Jump to "
+text 23,161 "." fg=#000000
+text 0,163 "Chapter 4" fg=#000000 bold
+text 0,167 "Paragraph 01 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,169 "Paragraph 02 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,171 "Paragraph 03 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,173 "Paragraph 04 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,175 "Paragraph 05 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,177 "Paragraph 06 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,179 "Paragraph 07 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,181 "Paragraph 08 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,183 "Paragraph 09 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,185 "Paragraph 10 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,187 "Paragraph 11 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,189 "Paragraph 12 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,191 "Paragraph 13 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,193 "Paragraph 14 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,195 "Paragraph 15 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,197 "Jump to " fg=#000000
 text 8,197 "footer" fg=#569cd6 underline link=31
-text 14,197 " or "
+text 14,197 " or " fg=#000000
 text 18,197 "intro" fg=#569cd6 underline link=32
-text 23,197 "."
-text 0,199 "Chapter 5" bold
-text 0,203 "Paragraph 01 — Glib jocks quiz nymph to vex dwarf."
-text 0,205 "Paragraph 02 — Glib jocks quiz nymph to vex dwarf."
-text 0,207 "Paragraph 03 — Glib jocks quiz nymph to vex dwarf."
-text 0,209 "Paragraph 04 — Glib jocks quiz nymph to vex dwarf."
-text 0,211 "Paragraph 05 — Glib jocks quiz nymph to vex dwarf."
-text 0,213 "Paragraph 06 — Glib jocks quiz nymph to vex dwarf."
-text 0,215 "Paragraph 07 — Glib jocks quiz nymph to vex dwarf."
-text 0,217 "Paragraph 08 — Glib jocks quiz nymph to vex dwarf."
-text 0,219 "Paragraph 09 — Glib jocks quiz nymph to vex dwarf."
-text 0,221 "Paragraph 10 — Glib jocks quiz nymph to vex dwarf."
-text 0,223 "Paragraph 11 — Glib jocks quiz nymph to vex dwarf."
-text 0,225 "Paragraph 12 — Glib jocks quiz nymph to vex dwarf."
-text 0,227 "Paragraph 13 — Glib jocks quiz nymph to vex dwarf."
-text 0,229 "Paragraph 14 — Glib jocks quiz nymph to vex dwarf."
-text 0,231 "Paragraph 15 — Glib jocks quiz nymph to vex dwarf."
-text 0,233 "Jump to "
+text 23,197 "." fg=#000000
+text 0,199 "Chapter 5" fg=#000000 bold
+text 0,203 "Paragraph 01 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,205 "Paragraph 02 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,207 "Paragraph 03 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,209 "Paragraph 04 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,211 "Paragraph 05 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,213 "Paragraph 06 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,215 "Paragraph 07 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,217 "Paragraph 08 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,219 "Paragraph 09 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,221 "Paragraph 10 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,223 "Paragraph 11 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,225 "Paragraph 12 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,227 "Paragraph 13 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,229 "Paragraph 14 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,231 "Paragraph 15 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,233 "Jump to " fg=#000000
 text 8,233 "footer" fg=#569cd6 underline link=33
-text 14,233 " or "
+text 14,233 " or " fg=#000000
 text 18,233 "intro" fg=#569cd6 underline link=34
-text 23,233 "."
-text 0,235 "Chapter 6" bold
-text 0,239 "Paragraph 01 — Pack my box with five dozen liquor jugs."
-text 0,241 "Paragraph 02 — Pack my box with five dozen liquor jugs."
-text 0,243 "Paragraph 03 — Pack my box with five dozen liquor jugs."
-text 0,245 "Paragraph 04 — Pack my box with five dozen liquor jugs."
-text 0,247 "Paragraph 05 — Pack my box with five dozen liquor jugs."
-text 0,249 "Paragraph 06 — Pack my box with five dozen liquor jugs."
-text 0,251 "Paragraph 07 — Pack my box with five dozen liquor jugs."
-text 0,253 "Paragraph 08 — Pack my box with five dozen liquor jugs."
-text 0,255 "Paragraph 09 — Pack my box with five dozen liquor jugs."
-text 0,257 "Paragraph 10 — Pack my box with five dozen liquor jugs."
-text 0,259 "Paragraph 11 — Pack my box with five dozen liquor jugs."
-text 0,261 "Paragraph 12 — Pack my box with five dozen liquor jugs."
-text 0,263 "Paragraph 13 — Pack my box with five dozen liquor jugs."
-text 0,265 "Paragraph 14 — Pack my box with five dozen liquor jugs."
-text 0,267 "Paragraph 15 — Pack my box with five dozen liquor jugs."
-text 0,269 "Jump to "
+text 23,233 "." fg=#000000
+text 0,235 "Chapter 6" fg=#000000 bold
+text 0,239 "Paragraph 01 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,241 "Paragraph 02 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,243 "Paragraph 03 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,245 "Paragraph 04 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,247 "Paragraph 05 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,249 "Paragraph 06 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,251 "Paragraph 07 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,253 "Paragraph 08 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,255 "Paragraph 09 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,257 "Paragraph 10 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,259 "Paragraph 11 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,261 "Paragraph 12 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,263 "Paragraph 13 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,265 "Paragraph 14 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,267 "Paragraph 15 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,269 "Jump to " fg=#000000
 text 8,269 "footer" fg=#569cd6 underline link=35
-text 14,269 " or "
+text 14,269 " or " fg=#000000
 text 18,269 "intro" fg=#569cd6 underline link=36
-text 23,269 "."
-text 0,271 "Chapter 7" bold
-text 0,275 "Paragraph 01 — Sphinx of black quartz, judge my vow."
-text 0,277 "Paragraph 02 — Sphinx of black quartz, judge my vow."
-text 0,279 "Paragraph 03 — Sphinx of black quartz, judge my vow."
-text 0,281 "Paragraph 04 — Sphinx of black quartz, judge my vow."
-text 0,283 "Paragraph 05 — Sphinx of black quartz, judge my vow."
-text 0,285 "Paragraph 06 — Sphinx of black quartz, judge my vow."
-text 0,287 "Paragraph 07 — Sphinx of black quartz, judge my vow."
-text 0,289 "Paragraph 08 — Sphinx of black quartz, judge my vow."
-text 0,291 "Paragraph 09 — Sphinx of black quartz, judge my vow."
-text 0,293 "Paragraph 10 — Sphinx of black quartz, judge my vow."
-text 0,295 "Paragraph 11 — Sphinx of black quartz, judge my vow."
-text 0,297 "Paragraph 12 — Sphinx of black quartz, judge my vow."
-text 0,299 "Paragraph 13 — Sphinx of black quartz, judge my vow."
-text 0,301 "Paragraph 14 — Sphinx of black quartz, judge my vow."
-text 0,303 "Paragraph 15 — Sphinx of black quartz, judge my vow."
-text 0,305 "Jump to "
+text 23,269 "." fg=#000000
+text 0,271 "Chapter 7" fg=#000000 bold
+text 0,275 "Paragraph 01 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,277 "Paragraph 02 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,279 "Paragraph 03 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,281 "Paragraph 04 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,283 "Paragraph 05 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,285 "Paragraph 06 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,287 "Paragraph 07 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,289 "Paragraph 08 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,291 "Paragraph 09 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,293 "Paragraph 10 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,295 "Paragraph 11 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,297 "Paragraph 12 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,299 "Paragraph 13 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,301 "Paragraph 14 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,303 "Paragraph 15 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,305 "Jump to " fg=#000000
 text 8,305 "footer" fg=#569cd6 underline link=37
-text 14,305 " or "
+text 14,305 " or " fg=#000000
 text 18,305 "intro" fg=#569cd6 underline link=38
-text 23,305 "."
-text 0,307 "Chapter 8" bold
-text 0,311 "Paragraph 01 — How vexingly quick daft zebras jump."
-text 0,313 "Paragraph 02 — How vexingly quick daft zebras jump."
-text 0,315 "Paragraph 03 — How vexingly quick daft zebras jump."
-text 0,317 "Paragraph 04 — How vexingly quick daft zebras jump."
-text 0,319 "Paragraph 05 — How vexingly quick daft zebras jump."
-text 0,321 "Paragraph 06 — How vexingly quick daft zebras jump."
-text 0,323 "Paragraph 07 — How vexingly quick daft zebras jump."
-text 0,325 "Paragraph 08 — How vexingly quick daft zebras jump."
-text 0,327 "Paragraph 09 — How vexingly quick daft zebras jump."
-text 0,329 "Paragraph 10 — How vexingly quick daft zebras jump."
-text 0,331 "Paragraph 11 — How vexingly quick daft zebras jump."
-text 0,333 "Paragraph 12 — How vexingly quick daft zebras jump."
-text 0,335 "Paragraph 13 — How vexingly quick daft zebras jump."
-text 0,337 "Paragraph 14 — How vexingly quick daft zebras jump."
-text 0,339 "Paragraph 15 — How vexingly quick daft zebras jump."
-text 0,341 "Jump to "
+text 23,305 "." fg=#000000
+text 0,307 "Chapter 8" fg=#000000 bold
+text 0,311 "Paragraph 01 — How vexingly quick daft zebras jump." fg=#000000
+text 0,313 "Paragraph 02 — How vexingly quick daft zebras jump." fg=#000000
+text 0,315 "Paragraph 03 — How vexingly quick daft zebras jump." fg=#000000
+text 0,317 "Paragraph 04 — How vexingly quick daft zebras jump." fg=#000000
+text 0,319 "Paragraph 05 — How vexingly quick daft zebras jump." fg=#000000
+text 0,321 "Paragraph 06 — How vexingly quick daft zebras jump." fg=#000000
+text 0,323 "Paragraph 07 — How vexingly quick daft zebras jump." fg=#000000
+text 0,325 "Paragraph 08 — How vexingly quick daft zebras jump." fg=#000000
+text 0,327 "Paragraph 09 — How vexingly quick daft zebras jump." fg=#000000
+text 0,329 "Paragraph 10 — How vexingly quick daft zebras jump." fg=#000000
+text 0,331 "Paragraph 11 — How vexingly quick daft zebras jump." fg=#000000
+text 0,333 "Paragraph 12 — How vexingly quick daft zebras jump." fg=#000000
+text 0,335 "Paragraph 13 — How vexingly quick daft zebras jump." fg=#000000
+text 0,337 "Paragraph 14 — How vexingly quick daft zebras jump." fg=#000000
+text 0,339 "Paragraph 15 — How vexingly quick daft zebras jump." fg=#000000
+text 0,341 "Jump to " fg=#000000
 text 8,341 "footer" fg=#569cd6 underline link=39
-text 14,341 " or "
+text 14,341 " or " fg=#000000
 text 18,341 "intro" fg=#569cd6 underline link=40
-text 23,341 "."
-text 0,343 "Chapter 9" bold
-text 0,347 "Paragraph 01 — Waltz, bad nymph, for quick jigs vex."
-text 0,349 "Paragraph 02 — Waltz, bad nymph, for quick jigs vex."
-text 0,351 "Paragraph 03 — Waltz, bad nymph, for quick jigs vex."
-text 0,353 "Paragraph 04 — Waltz, bad nymph, for quick jigs vex."
-text 0,355 "Paragraph 05 — Waltz, bad nymph, for quick jigs vex."
-text 0,357 "Paragraph 06 — Waltz, bad nymph, for quick jigs vex."
-text 0,359 "Paragraph 07 — Waltz, bad nymph, for quick jigs vex."
-text 0,361 "Paragraph 08 — Waltz, bad nymph, for quick jigs vex."
-text 0,363 "Paragraph 09 — Waltz, bad nymph, for quick jigs vex."
-text 0,365 "Paragraph 10 — Waltz, bad nymph, for quick jigs vex."
-text 0,367 "Paragraph 11 — Waltz, bad nymph, for quick jigs vex."
-text 0,369 "Paragraph 12 — Waltz, bad nymph, for quick jigs vex."
-text 0,371 "Paragraph 13 — Waltz, bad nymph, for quick jigs vex."
-text 0,373 "Paragraph 14 — Waltz, bad nymph, for quick jigs vex."
-text 0,375 "Paragraph 15 — Waltz, bad nymph, for quick jigs vex."
-text 0,377 "Jump to "
+text 23,341 "." fg=#000000
+text 0,343 "Chapter 9" fg=#000000 bold
+text 0,347 "Paragraph 01 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,349 "Paragraph 02 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,351 "Paragraph 03 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,353 "Paragraph 04 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,355 "Paragraph 05 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,357 "Paragraph 06 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,359 "Paragraph 07 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,361 "Paragraph 08 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,363 "Paragraph 09 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,365 "Paragraph 10 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,367 "Paragraph 11 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,369 "Paragraph 12 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,371 "Paragraph 13 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,373 "Paragraph 14 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,375 "Paragraph 15 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,377 "Jump to " fg=#000000
 text 8,377 "footer" fg=#569cd6 underline link=41
-text 14,377 " or "
+text 14,377 " or " fg=#000000
 text 18,377 "intro" fg=#569cd6 underline link=42
-text 23,377 "."
-text 0,379 "Chapter 10" bold
-text 0,383 "Paragraph 01 — Glib jocks quiz nymph to vex dwarf."
-text 0,385 "Paragraph 02 — Glib jocks quiz nymph to vex dwarf."
-text 0,387 "Paragraph 03 — Glib jocks quiz nymph to vex dwarf."
-text 0,389 "Paragraph 04 — Glib jocks quiz nymph to vex dwarf."
-text 0,391 "Paragraph 05 — Glib jocks quiz nymph to vex dwarf."
-text 0,393 "Paragraph 06 — Glib jocks quiz nymph to vex dwarf."
-text 0,395 "Paragraph 07 — Glib jocks quiz nymph to vex dwarf."
-text 0,397 "Paragraph 08 — Glib jocks quiz nymph to vex dwarf."
-text 0,399 "Paragraph 09 — Glib jocks quiz nymph to vex dwarf."
-text 0,401 "Paragraph 10 — Glib jocks quiz nymph to vex dwarf."
-text 0,403 "Paragraph 11 — Glib jocks quiz nymph to vex dwarf."
-text 0,405 "Paragraph 12 — Glib jocks quiz nymph to vex dwarf."
-text 0,407 "Paragraph 13 — Glib jocks quiz nymph to vex dwarf."
-text 0,409 "Paragraph 14 — Glib jocks quiz nymph to vex dwarf."
-text 0,411 "Paragraph 15 — Glib jocks quiz nymph to vex dwarf."
-text 0,413 "Jump to "
+text 23,377 "." fg=#000000
+text 0,379 "Chapter 10" fg=#000000 bold
+text 0,383 "Paragraph 01 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,385 "Paragraph 02 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,387 "Paragraph 03 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,389 "Paragraph 04 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,391 "Paragraph 05 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,393 "Paragraph 06 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,395 "Paragraph 07 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,397 "Paragraph 08 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,399 "Paragraph 09 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,401 "Paragraph 10 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,403 "Paragraph 11 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,405 "Paragraph 12 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,407 "Paragraph 13 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,409 "Paragraph 14 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,411 "Paragraph 15 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,413 "Jump to " fg=#000000
 text 8,413 "footer" fg=#569cd6 underline link=43
-text 14,413 " or "
+text 14,413 " or " fg=#000000
 text 18,413 "intro" fg=#569cd6 underline link=44
-text 23,413 "."
-text 0,415 "Chapter 11" bold
-text 0,419 "Paragraph 01 — Pack my box with five dozen liquor jugs."
-text 0,421 "Paragraph 02 — Pack my box with five dozen liquor jugs."
-text 0,423 "Paragraph 03 — Pack my box with five dozen liquor jugs."
-text 0,425 "Paragraph 04 — Pack my box with five dozen liquor jugs."
-text 0,427 "Paragraph 05 — Pack my box with five dozen liquor jugs."
-text 0,429 "Paragraph 06 — Pack my box with five dozen liquor jugs."
-text 0,431 "Paragraph 07 — Pack my box with five dozen liquor jugs."
-text 0,433 "Paragraph 08 — Pack my box with five dozen liquor jugs."
-text 0,435 "Paragraph 09 — Pack my box with five dozen liquor jugs."
-text 0,437 "Paragraph 10 — Pack my box with five dozen liquor jugs."
-text 0,439 "Paragraph 11 — Pack my box with five dozen liquor jugs."
-text 0,441 "Paragraph 12 — Pack my box with five dozen liquor jugs."
-text 0,443 "Paragraph 13 — Pack my box with five dozen liquor jugs."
-text 0,445 "Paragraph 14 — Pack my box with five dozen liquor jugs."
-text 0,447 "Paragraph 15 — Pack my box with five dozen liquor jugs."
-text 0,449 "Jump to "
+text 23,413 "." fg=#000000
+text 0,415 "Chapter 11" fg=#000000 bold
+text 0,419 "Paragraph 01 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,421 "Paragraph 02 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,423 "Paragraph 03 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,425 "Paragraph 04 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,427 "Paragraph 05 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,429 "Paragraph 06 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,431 "Paragraph 07 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,433 "Paragraph 08 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,435 "Paragraph 09 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,437 "Paragraph 10 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,439 "Paragraph 11 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,441 "Paragraph 12 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,443 "Paragraph 13 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,445 "Paragraph 14 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,447 "Paragraph 15 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,449 "Jump to " fg=#000000
 text 8,449 "footer" fg=#569cd6 underline link=45
-text 14,449 " or "
+text 14,449 " or " fg=#000000
 text 18,449 "intro" fg=#569cd6 underline link=46
-text 23,449 "."
-text 0,451 "Chapter 12" bold
-text 0,455 "Paragraph 01 — Sphinx of black quartz, judge my vow."
-text 0,457 "Paragraph 02 — Sphinx of black quartz, judge my vow."
-text 0,459 "Paragraph 03 — Sphinx of black quartz, judge my vow."
-text 0,461 "Paragraph 04 — Sphinx of black quartz, judge my vow."
-text 0,463 "Paragraph 05 — Sphinx of black quartz, judge my vow."
-text 0,465 "Paragraph 06 — Sphinx of black quartz, judge my vow."
-text 0,467 "Paragraph 07 — Sphinx of black quartz, judge my vow."
-text 0,469 "Paragraph 08 — Sphinx of black quartz, judge my vow."
-text 0,471 "Paragraph 09 — Sphinx of black quartz, judge my vow."
-text 0,473 "Paragraph 10 — Sphinx of black quartz, judge my vow."
-text 0,475 "Paragraph 11 — Sphinx of black quartz, judge my vow."
-text 0,477 "Paragraph 12 — Sphinx of black quartz, judge my vow."
-text 0,479 "Paragraph 13 — Sphinx of black quartz, judge my vow."
-text 0,481 "Paragraph 14 — Sphinx of black quartz, judge my vow."
-text 0,483 "Paragraph 15 — Sphinx of black quartz, judge my vow."
-text 0,485 "Jump to "
+text 23,449 "." fg=#000000
+text 0,451 "Chapter 12" fg=#000000 bold
+text 0,455 "Paragraph 01 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,457 "Paragraph 02 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,459 "Paragraph 03 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,461 "Paragraph 04 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,463 "Paragraph 05 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,465 "Paragraph 06 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,467 "Paragraph 07 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,469 "Paragraph 08 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,471 "Paragraph 09 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,473 "Paragraph 10 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,475 "Paragraph 11 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,477 "Paragraph 12 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,479 "Paragraph 13 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,481 "Paragraph 14 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,483 "Paragraph 15 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,485 "Jump to " fg=#000000
 text 8,485 "footer" fg=#569cd6 underline link=47
-text 14,485 " or "
+text 14,485 " or " fg=#000000
 text 18,485 "intro" fg=#569cd6 underline link=48
-text 23,485 "."
-text 0,487 "Chapter 13" bold
-text 0,491 "Paragraph 01 — How vexingly quick daft zebras jump."
-text 0,493 "Paragraph 02 — How vexingly quick daft zebras jump."
-text 0,495 "Paragraph 03 — How vexingly quick daft zebras jump."
-text 0,497 "Paragraph 04 — How vexingly quick daft zebras jump."
-text 0,499 "Paragraph 05 — How vexingly quick daft zebras jump."
-text 0,501 "Paragraph 06 — How vexingly quick daft zebras jump."
-text 0,503 "Paragraph 07 — How vexingly quick daft zebras jump."
-text 0,505 "Paragraph 08 — How vexingly quick daft zebras jump."
-text 0,507 "Paragraph 09 — How vexingly quick daft zebras jump."
-text 0,509 "Paragraph 10 — How vexingly quick daft zebras jump."
-text 0,511 "Paragraph 11 — How vexingly quick daft zebras jump."
-text 0,513 "Paragraph 12 — How vexingly quick daft zebras jump."
-text 0,515 "Paragraph 13 — How vexingly quick daft zebras jump."
-text 0,517 "Paragraph 14 — How vexingly quick daft zebras jump."
-text 0,519 "Paragraph 15 — How vexingly quick daft zebras jump."
-text 0,521 "Jump to "
+text 23,485 "." fg=#000000
+text 0,487 "Chapter 13" fg=#000000 bold
+text 0,491 "Paragraph 01 — How vexingly quick daft zebras jump." fg=#000000
+text 0,493 "Paragraph 02 — How vexingly quick daft zebras jump." fg=#000000
+text 0,495 "Paragraph 03 — How vexingly quick daft zebras jump." fg=#000000
+text 0,497 "Paragraph 04 — How vexingly quick daft zebras jump." fg=#000000
+text 0,499 "Paragraph 05 — How vexingly quick daft zebras jump." fg=#000000
+text 0,501 "Paragraph 06 — How vexingly quick daft zebras jump." fg=#000000
+text 0,503 "Paragraph 07 — How vexingly quick daft zebras jump." fg=#000000
+text 0,505 "Paragraph 08 — How vexingly quick daft zebras jump." fg=#000000
+text 0,507 "Paragraph 09 — How vexingly quick daft zebras jump." fg=#000000
+text 0,509 "Paragraph 10 — How vexingly quick daft zebras jump." fg=#000000
+text 0,511 "Paragraph 11 — How vexingly quick daft zebras jump." fg=#000000
+text 0,513 "Paragraph 12 — How vexingly quick daft zebras jump." fg=#000000
+text 0,515 "Paragraph 13 — How vexingly quick daft zebras jump." fg=#000000
+text 0,517 "Paragraph 14 — How vexingly quick daft zebras jump." fg=#000000
+text 0,519 "Paragraph 15 — How vexingly quick daft zebras jump." fg=#000000
+text 0,521 "Jump to " fg=#000000
 text 8,521 "footer" fg=#569cd6 underline link=49
-text 14,521 " or "
+text 14,521 " or " fg=#000000
 text 18,521 "intro" fg=#569cd6 underline link=50
-text 23,521 "."
-text 0,523 "Chapter 14" bold
-text 0,527 "Paragraph 01 — Waltz, bad nymph, for quick jigs vex."
-text 0,529 "Paragraph 02 — Waltz, bad nymph, for quick jigs vex."
-text 0,531 "Paragraph 03 — Waltz, bad nymph, for quick jigs vex."
-text 0,533 "Paragraph 04 — Waltz, bad nymph, for quick jigs vex."
-text 0,535 "Paragraph 05 — Waltz, bad nymph, for quick jigs vex."
-text 0,537 "Paragraph 06 — Waltz, bad nymph, for quick jigs vex."
-text 0,539 "Paragraph 07 — Waltz, bad nymph, for quick jigs vex."
-text 0,541 "Paragraph 08 — Waltz, bad nymph, for quick jigs vex."
-text 0,543 "Paragraph 09 — Waltz, bad nymph, for quick jigs vex."
-text 0,545 "Paragraph 10 — Waltz, bad nymph, for quick jigs vex."
-text 0,547 "Paragraph 11 — Waltz, bad nymph, for quick jigs vex."
-text 0,549 "Paragraph 12 — Waltz, bad nymph, for quick jigs vex."
-text 0,551 "Paragraph 13 — Waltz, bad nymph, for quick jigs vex."
-text 0,553 "Paragraph 14 — Waltz, bad nymph, for quick jigs vex."
-text 0,555 "Paragraph 15 — Waltz, bad nymph, for quick jigs vex."
-text 0,557 "Jump to "
+text 23,521 "." fg=#000000
+text 0,523 "Chapter 14" fg=#000000 bold
+text 0,527 "Paragraph 01 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,529 "Paragraph 02 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,531 "Paragraph 03 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,533 "Paragraph 04 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,535 "Paragraph 05 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,537 "Paragraph 06 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,539 "Paragraph 07 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,541 "Paragraph 08 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,543 "Paragraph 09 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,545 "Paragraph 10 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,547 "Paragraph 11 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,549 "Paragraph 12 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,551 "Paragraph 13 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,553 "Paragraph 14 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,555 "Paragraph 15 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,557 "Jump to " fg=#000000
 text 8,557 "footer" fg=#569cd6 underline link=51
-text 14,557 " or "
+text 14,557 " or " fg=#000000
 text 18,557 "intro" fg=#569cd6 underline link=52
-text 23,557 "."
-text 0,559 "Chapter 15" bold
-text 0,563 "Paragraph 01 — Glib jocks quiz nymph to vex dwarf."
-text 0,565 "Paragraph 02 — Glib jocks quiz nymph to vex dwarf."
-text 0,567 "Paragraph 03 — Glib jocks quiz nymph to vex dwarf."
-text 0,569 "Paragraph 04 — Glib jocks quiz nymph to vex dwarf."
-text 0,571 "Paragraph 05 — Glib jocks quiz nymph to vex dwarf."
-text 0,573 "Paragraph 06 — Glib jocks quiz nymph to vex dwarf."
-text 0,575 "Paragraph 07 — Glib jocks quiz nymph to vex dwarf."
-text 0,577 "Paragraph 08 — Glib jocks quiz nymph to vex dwarf."
-text 0,579 "Paragraph 09 — Glib jocks quiz nymph to vex dwarf."
-text 0,581 "Paragraph 10 — Glib jocks quiz nymph to vex dwarf."
-text 0,583 "Paragraph 11 — Glib jocks quiz nymph to vex dwarf."
-text 0,585 "Paragraph 12 — Glib jocks quiz nymph to vex dwarf."
-text 0,587 "Paragraph 13 — Glib jocks quiz nymph to vex dwarf."
-text 0,589 "Paragraph 14 — Glib jocks quiz nymph to vex dwarf."
-text 0,591 "Paragraph 15 — Glib jocks quiz nymph to vex dwarf."
-text 0,593 "Jump to "
+text 23,557 "." fg=#000000
+text 0,559 "Chapter 15" fg=#000000 bold
+text 0,563 "Paragraph 01 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,565 "Paragraph 02 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,567 "Paragraph 03 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,569 "Paragraph 04 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,571 "Paragraph 05 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,573 "Paragraph 06 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,575 "Paragraph 07 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,577 "Paragraph 08 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,579 "Paragraph 09 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,581 "Paragraph 10 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,583 "Paragraph 11 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,585 "Paragraph 12 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,587 "Paragraph 13 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,589 "Paragraph 14 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,591 "Paragraph 15 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,593 "Jump to " fg=#000000
 text 8,593 "footer" fg=#569cd6 underline link=53
-text 14,593 " or "
+text 14,593 " or " fg=#000000
 text 18,593 "intro" fg=#569cd6 underline link=54
-text 23,593 "."
-text 0,595 "Chapter 16" bold
-text 0,599 "Paragraph 01 — Pack my box with five dozen liquor jugs."
-text 0,601 "Paragraph 02 — Pack my box with five dozen liquor jugs."
-text 0,603 "Paragraph 03 — Pack my box with five dozen liquor jugs."
-text 0,605 "Paragraph 04 — Pack my box with five dozen liquor jugs."
-text 0,607 "Paragraph 05 — Pack my box with five dozen liquor jugs."
-text 0,609 "Paragraph 06 — Pack my box with five dozen liquor jugs."
-text 0,611 "Paragraph 07 — Pack my box with five dozen liquor jugs."
-text 0,613 "Paragraph 08 — Pack my box with five dozen liquor jugs."
-text 0,615 "Paragraph 09 — Pack my box with five dozen liquor jugs."
-text 0,617 "Paragraph 10 — Pack my box with five dozen liquor jugs."
-text 0,619 "Paragraph 11 — Pack my box with five dozen liquor jugs."
-text 0,621 "Paragraph 12 — Pack my box with five dozen liquor jugs."
-text 0,623 "Paragraph 13 — Pack my box with five dozen liquor jugs."
-text 0,625 "Paragraph 14 — Pack my box with five dozen liquor jugs."
-text 0,627 "Paragraph 15 — Pack my box with five dozen liquor jugs."
-text 0,629 "Jump to "
+text 23,593 "." fg=#000000
+text 0,595 "Chapter 16" fg=#000000 bold
+text 0,599 "Paragraph 01 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,601 "Paragraph 02 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,603 "Paragraph 03 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,605 "Paragraph 04 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,607 "Paragraph 05 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,609 "Paragraph 06 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,611 "Paragraph 07 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,613 "Paragraph 08 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,615 "Paragraph 09 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,617 "Paragraph 10 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,619 "Paragraph 11 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,621 "Paragraph 12 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,623 "Paragraph 13 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,625 "Paragraph 14 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,627 "Paragraph 15 — Pack my box with five dozen liquor jugs." fg=#000000
+text 0,629 "Jump to " fg=#000000
 text 8,629 "footer" fg=#569cd6 underline link=55
-text 14,629 " or "
+text 14,629 " or " fg=#000000
 text 18,629 "intro" fg=#569cd6 underline link=56
-text 23,629 "."
-text 0,631 "Chapter 17" bold
-text 0,635 "Paragraph 01 — Sphinx of black quartz, judge my vow."
-text 0,637 "Paragraph 02 — Sphinx of black quartz, judge my vow."
-text 0,639 "Paragraph 03 — Sphinx of black quartz, judge my vow."
-text 0,641 "Paragraph 04 — Sphinx of black quartz, judge my vow."
-text 0,643 "Paragraph 05 — Sphinx of black quartz, judge my vow."
-text 0,645 "Paragraph 06 — Sphinx of black quartz, judge my vow."
-text 0,647 "Paragraph 07 — Sphinx of black quartz, judge my vow."
-text 0,649 "Paragraph 08 — Sphinx of black quartz, judge my vow."
-text 0,651 "Paragraph 09 — Sphinx of black quartz, judge my vow."
-text 0,653 "Paragraph 10 — Sphinx of black quartz, judge my vow."
-text 0,655 "Paragraph 11 — Sphinx of black quartz, judge my vow."
-text 0,657 "Paragraph 12 — Sphinx of black quartz, judge my vow."
-text 0,659 "Paragraph 13 — Sphinx of black quartz, judge my vow."
-text 0,661 "Paragraph 14 — Sphinx of black quartz, judge my vow."
-text 0,663 "Paragraph 15 — Sphinx of black quartz, judge my vow."
-text 0,665 "Jump to "
+text 23,629 "." fg=#000000
+text 0,631 "Chapter 17" fg=#000000 bold
+text 0,635 "Paragraph 01 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,637 "Paragraph 02 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,639 "Paragraph 03 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,641 "Paragraph 04 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,643 "Paragraph 05 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,645 "Paragraph 06 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,647 "Paragraph 07 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,649 "Paragraph 08 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,651 "Paragraph 09 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,653 "Paragraph 10 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,655 "Paragraph 11 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,657 "Paragraph 12 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,659 "Paragraph 13 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,661 "Paragraph 14 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,663 "Paragraph 15 — Sphinx of black quartz, judge my vow." fg=#000000
+text 0,665 "Jump to " fg=#000000
 text 8,665 "footer" fg=#569cd6 underline link=57
-text 14,665 " or "
+text 14,665 " or " fg=#000000
 text 18,665 "intro" fg=#569cd6 underline link=58
-text 23,665 "."
-text 0,667 "Chapter 18" bold
-text 0,671 "Paragraph 01 — How vexingly quick daft zebras jump."
-text 0,673 "Paragraph 02 — How vexingly quick daft zebras jump."
-text 0,675 "Paragraph 03 — How vexingly quick daft zebras jump."
-text 0,677 "Paragraph 04 — How vexingly quick daft zebras jump."
-text 0,679 "Paragraph 05 — How vexingly quick daft zebras jump."
-text 0,681 "Paragraph 06 — How vexingly quick daft zebras jump."
-text 0,683 "Paragraph 07 — How vexingly quick daft zebras jump."
-text 0,685 "Paragraph 08 — How vexingly quick daft zebras jump."
-text 0,687 "Paragraph 09 — How vexingly quick daft zebras jump."
-text 0,689 "Paragraph 10 — How vexingly quick daft zebras jump."
-text 0,691 "Paragraph 11 — How vexingly quick daft zebras jump."
-text 0,693 "Paragraph 12 — How vexingly quick daft zebras jump."
-text 0,695 "Paragraph 13 — How vexingly quick daft zebras jump."
-text 0,697 "Paragraph 14 — How vexingly quick daft zebras jump."
-text 0,699 "Paragraph 15 — How vexingly quick daft zebras jump."
-text 0,701 "Jump to "
+text 23,665 "." fg=#000000
+text 0,667 "Chapter 18" fg=#000000 bold
+text 0,671 "Paragraph 01 — How vexingly quick daft zebras jump." fg=#000000
+text 0,673 "Paragraph 02 — How vexingly quick daft zebras jump." fg=#000000
+text 0,675 "Paragraph 03 — How vexingly quick daft zebras jump." fg=#000000
+text 0,677 "Paragraph 04 — How vexingly quick daft zebras jump." fg=#000000
+text 0,679 "Paragraph 05 — How vexingly quick daft zebras jump." fg=#000000
+text 0,681 "Paragraph 06 — How vexingly quick daft zebras jump." fg=#000000
+text 0,683 "Paragraph 07 — How vexingly quick daft zebras jump." fg=#000000
+text 0,685 "Paragraph 08 — How vexingly quick daft zebras jump." fg=#000000
+text 0,687 "Paragraph 09 — How vexingly quick daft zebras jump." fg=#000000
+text 0,689 "Paragraph 10 — How vexingly quick daft zebras jump." fg=#000000
+text 0,691 "Paragraph 11 — How vexingly quick daft zebras jump." fg=#000000
+text 0,693 "Paragraph 12 — How vexingly quick daft zebras jump." fg=#000000
+text 0,695 "Paragraph 13 — How vexingly quick daft zebras jump." fg=#000000
+text 0,697 "Paragraph 14 — How vexingly quick daft zebras jump." fg=#000000
+text 0,699 "Paragraph 15 — How vexingly quick daft zebras jump." fg=#000000
+text 0,701 "Jump to " fg=#000000
 text 8,701 "footer" fg=#569cd6 underline link=59
-text 14,701 " or "
+text 14,701 " or " fg=#000000
 text 18,701 "intro" fg=#569cd6 underline link=60
-text 23,701 "."
-text 0,703 "Chapter 19" bold
-text 0,707 "Paragraph 01 — Waltz, bad nymph, for quick jigs vex."
-text 0,709 "Paragraph 02 — Waltz, bad nymph, for quick jigs vex."
-text 0,711 "Paragraph 03 — Waltz, bad nymph, for quick jigs vex."
-text 0,713 "Paragraph 04 — Waltz, bad nymph, for quick jigs vex."
-text 0,715 "Paragraph 05 — Waltz, bad nymph, for quick jigs vex."
-text 0,717 "Paragraph 06 — Waltz, bad nymph, for quick jigs vex."
-text 0,719 "Paragraph 07 — Waltz, bad nymph, for quick jigs vex."
-text 0,721 "Paragraph 08 — Waltz, bad nymph, for quick jigs vex."
-text 0,723 "Paragraph 09 — Waltz, bad nymph, for quick jigs vex."
-text 0,725 "Paragraph 10 — Waltz, bad nymph, for quick jigs vex."
-text 0,727 "Paragraph 11 — Waltz, bad nymph, for quick jigs vex."
-text 0,729 "Paragraph 12 — Waltz, bad nymph, for quick jigs vex."
-text 0,731 "Paragraph 13 — Waltz, bad nymph, for quick jigs vex."
-text 0,733 "Paragraph 14 — Waltz, bad nymph, for quick jigs vex."
-text 0,735 "Paragraph 15 — Waltz, bad nymph, for quick jigs vex."
-text 0,737 "Jump to "
+text 23,701 "." fg=#000000
+text 0,703 "Chapter 19" fg=#000000 bold
+text 0,707 "Paragraph 01 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,709 "Paragraph 02 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,711 "Paragraph 03 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,713 "Paragraph 04 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,715 "Paragraph 05 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,717 "Paragraph 06 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,719 "Paragraph 07 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,721 "Paragraph 08 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,723 "Paragraph 09 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,725 "Paragraph 10 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,727 "Paragraph 11 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,729 "Paragraph 12 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,731 "Paragraph 13 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,733 "Paragraph 14 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,735 "Paragraph 15 — Waltz, bad nymph, for quick jigs vex." fg=#000000
+text 0,737 "Jump to " fg=#000000
 text 8,737 "footer" fg=#569cd6 underline link=61
-text 14,737 " or "
+text 14,737 " or " fg=#000000
 text 18,737 "intro" fg=#569cd6 underline link=62
-text 23,737 "."
-text 0,739 "Chapter 20" bold
-text 0,743 "Paragraph 01 — Glib jocks quiz nymph to vex dwarf."
-text 0,745 "Paragraph 02 — Glib jocks quiz nymph to vex dwarf."
-text 0,747 "Paragraph 03 — Glib jocks quiz nymph to vex dwarf."
-text 0,749 "Paragraph 04 — Glib jocks quiz nymph to vex dwarf."
-text 0,751 "Paragraph 05 — Glib jocks quiz nymph to vex dwarf."
-text 0,753 "Paragraph 06 — Glib jocks quiz nymph to vex dwarf."
-text 0,755 "Paragraph 07 — Glib jocks quiz nymph to vex dwarf."
-text 0,757 "Paragraph 08 — Glib jocks quiz nymph to vex dwarf."
-text 0,759 "Paragraph 09 — Glib jocks quiz nymph to vex dwarf."
-text 0,761 "Paragraph 10 — Glib jocks quiz nymph to vex dwarf."
-text 0,763 "Paragraph 11 — Glib jocks quiz nymph to vex dwarf."
-text 0,765 "Paragraph 12 — Glib jocks quiz nymph to vex dwarf."
-text 0,767 "Paragraph 13 — Glib jocks quiz nymph to vex dwarf."
-text 0,769 "Paragraph 14 — Glib jocks quiz nymph to vex dwarf."
-text 0,771 "Paragraph 15 — Glib jocks quiz nymph to vex dwarf."
-text 0,773 "Jump to "
+text 23,737 "." fg=#000000
+text 0,739 "Chapter 20" fg=#000000 bold
+text 0,743 "Paragraph 01 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,745 "Paragraph 02 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,747 "Paragraph 03 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,749 "Paragraph 04 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,751 "Paragraph 05 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,753 "Paragraph 06 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,755 "Paragraph 07 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,757 "Paragraph 08 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,759 "Paragraph 09 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,761 "Paragraph 10 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,763 "Paragraph 11 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,765 "Paragraph 12 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,767 "Paragraph 13 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,769 "Paragraph 14 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,771 "Paragraph 15 — Glib jocks quiz nymph to vex dwarf." fg=#000000
+text 0,773 "Jump to " fg=#000000
 text 8,773 "footer" fg=#569cd6 underline link=63
-text 14,773 " or "
+text 14,773 " or " fg=#000000
 text 18,773 "intro" fg=#569cd6 underline link=64
-text 23,773 "."
-text 0,775 "Appendix" bold
-text 0,779 "Paragraph 01 — Five quacking zephyrs jolt my wax bed."
-text 0,781 "Paragraph 02 — Five quacking zephyrs jolt my wax bed."
-text 0,783 "Paragraph 03 — Five quacking zephyrs jolt my wax bed."
-text 0,785 "Paragraph 04 — Five quacking zephyrs jolt my wax bed."
-text 0,787 "Paragraph 05 — Five quacking zephyrs jolt my wax bed."
-text 0,789 "Paragraph 06 — Five quacking zephyrs jolt my wax bed."
-text 0,791 "Paragraph 07 — Five quacking zephyrs jolt my wax bed."
-text 0,793 "Paragraph 08 — Five quacking zephyrs jolt my wax bed."
-text 0,795 "Paragraph 09 — Five quacking zephyrs jolt my wax bed."
-text 0,797 "Paragraph 10 — Five quacking zephyrs jolt my wax bed."
-text 0,799 "Paragraph 11 — Five quacking zephyrs jolt my wax bed."
-text 0,801 "Paragraph 12 — Five quacking zephyrs jolt my wax bed."
-text 0,803 "Paragraph 13 — Five quacking zephyrs jolt my wax bed."
-text 0,805 "Paragraph 14 — Five quacking zephyrs jolt my wax bed."
-text 0,807 "Paragraph 15 — Five quacking zephyrs jolt my wax bed."
-text 0,809 "Jump to "
+text 23,773 "." fg=#000000
+text 0,775 "Appendix" fg=#000000 bold
+text 0,779 "Paragraph 01 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,781 "Paragraph 02 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,783 "Paragraph 03 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,785 "Paragraph 04 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,787 "Paragraph 05 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,789 "Paragraph 06 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,791 "Paragraph 07 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,793 "Paragraph 08 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,795 "Paragraph 09 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,797 "Paragraph 10 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,799 "Paragraph 11 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,801 "Paragraph 12 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,803 "Paragraph 13 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,805 "Paragraph 14 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,807 "Paragraph 15 — Five quacking zephyrs jolt my wax bed." fg=#000000
+text 0,809 "Jump to " fg=#000000
 text 8,809 "footer" fg=#569cd6 underline link=65
-text 14,809 " or "
+text 14,809 " or " fg=#000000
 text 18,809 "intro" fg=#569cd6 underline link=66
-text 23,809 "."
-text 0,811 "Footer" bold
-text 0,815 "Paragraph 01 — You reached the bottom of the fragment test page."
-text 0,817 "Paragraph 02 — You reached the bottom of the fragment test page."
-text 0,819 "Paragraph 03 — You reached the bottom of the fragment test page."
-text 0,821 "Paragraph 04 — You reached the bottom of the fragment test page."
-text 0,823 "Paragraph 05 — You reached the bottom of the fragment test page."
-text 0,825 "Paragraph 06 — You reached the bottom of the fragment test page."
-text 0,827 "Paragraph 07 — You reached the bottom of the fragment test page."
-text 0,829 "Paragraph 08 — You reached the bottom of the fragment test page."
-text 0,831 "Paragraph 09 — You reached the bottom of the fragment test page."
-text 0,833 "Paragraph 10 — You reached the bottom of the fragment test page."
-text 0,835 "Paragraph 11 — You reached the bottom of the fragment test page."
-text 0,837 "Paragraph 12 — You reached the bottom of the fragment test page."
-text 0,839 "Paragraph 13 — You reached the bottom of the fragment test page."
-text 0,841 "Paragraph 14 — You reached the bottom of the fragment test page."
-text 0,843 "Paragraph 15 — You reached the bottom of the fragment test page."
+text 23,809 "." fg=#000000
+text 0,811 "Footer" fg=#000000 bold
+text 0,815 "Paragraph 01 — You reached the bottom of the fragment test page." fg=#000000
+text 0,817 "Paragraph 02 — You reached the bottom of the fragment test page." fg=#000000
+text 0,819 "Paragraph 03 — You reached the bottom of the fragment test page." fg=#000000
+text 0,821 "Paragraph 04 — You reached the bottom of the fragment test page." fg=#000000
+text 0,823 "Paragraph 05 — You reached the bottom of the fragment test page." fg=#000000
+text 0,825 "Paragraph 06 — You reached the bottom of the fragment test page." fg=#000000
+text 0,827 "Paragraph 07 — You reached the bottom of the fragment test page." fg=#000000
+text 0,829 "Paragraph 08 — You reached the bottom of the fragment test page." fg=#000000
+text 0,831 "Paragraph 09 — You reached the bottom of the fragment test page." fg=#000000
+text 0,833 "Paragraph 10 — You reached the bottom of the fragment test page." fg=#000000
+text 0,835 "Paragraph 11 — You reached the bottom of the fragment test page." fg=#000000
+text 0,837 "Paragraph 12 — You reached the bottom of the fragment test page." fg=#000000
+text 0,839 "Paragraph 13 — You reached the bottom of the fragment test page." fg=#000000
+text 0,841 "Paragraph 14 — You reached the bottom of the fragment test page." fg=#000000
+text 0,843 "Paragraph 15 — You reached the bottom of the fragment test page." fg=#000000
 text 0,845 "Back to intro" fg=#569cd6 underline link=67
-text 13,845 " · "
+text 13,845 " · " fg=#000000
 text 16,845 "Middle chapter" fg=#569cd6 underline link=68"
 `;
 
 exports[`display-list snapshots fragments-page at 40x24: fragments-page-40x24 1`] = `
-"text 0,0 "Fragment " bold
-text 0,4 "Navigation " bold
-text 0,8 "Stress Test" bold
-text 0,13 "This page is intentionally long with "
-text 0,14 "many in-page anchors.\\n      Use "
-text 32,14 "[" bold
-text 33,14 "/"
-text 34,14 "]" bold
-text 35,14 " and "
-text 0,15 "Enter" bold
-text 5,15 ", or click with the mouse.\\n    "
-text 0,17 "Table of contents" bold
+"text 0,0 "Fragment " fg=#000000 bold
+text 0,4 "Navigation " fg=#000000 bold
+text 0,8 "Stress Test" fg=#000000 bold
+text 0,13 "This page is intentionally long with " fg=#000000
+text 0,14 "many in-page anchors.\\n      Use " fg=#000000
+text 32,14 "[" fg=#000000 bold
+text 33,14 "/" fg=#000000
+text 34,14 "]" fg=#000000 bold
+text 35,14 " and " fg=#000000
+text 0,15 "Enter" fg=#000000 bold
+text 5,15 ", or click with the mouse.\\n    " fg=#000000
+text 0,17 "Table of contents" fg=#000000 bold
 text 0,21 "Introduction" fg=#569cd6 underline link=0
-text 12,21 " ·\\n      "
+text 12,21 " ·\\n      " fg=#000000
 text 21,21 "Chapter 1" fg=#569cd6 underline link=1
-text 30,21 " ·\\n      "
+text 30,21 " ·\\n      " fg=#000000
 text 0,22 "Chapter 2" fg=#569cd6 underline link=2
-text 9,22 " ·\\n      "
+text 9,22 " ·\\n      " fg=#000000
 text 18,22 "Chapter 3" fg=#569cd6 underline link=3
-text 27,22 " ·\\n      "
+text 27,22 " ·\\n      " fg=#000000
 text 0,23 "Chapter 4" fg=#569cd6 underline link=4
-text 9,23 " ·\\n      "
+text 9,23 " ·\\n      " fg=#000000
 text 18,23 "Chapter 5" fg=#569cd6 underline link=5
-text 27,23 " ·\\n      "
+text 27,23 " ·\\n      " fg=#000000
 text 0,24 "Chapter 6" fg=#569cd6 underline link=6
-text 9,24 " ·\\n      "
+text 9,24 " ·\\n      " fg=#000000
 text 18,24 "Chapter 7" fg=#569cd6 underline link=7
-text 27,24 " ·\\n      "
+text 27,24 " ·\\n      " fg=#000000
 text 0,25 "Chapter 8" fg=#569cd6 underline link=8
-text 9,25 " ·\\n      "
+text 9,25 " ·\\n      " fg=#000000
 text 18,25 "Chapter 9" fg=#569cd6 underline link=9
-text 27,25 " ·\\n      "
+text 27,25 " ·\\n      " fg=#000000
 text 0,26 "Chapter 10" fg=#569cd6 underline link=10
-text 10,26 " ·\\n      "
+text 10,26 " ·\\n      " fg=#000000
 text 19,26 "Chapter 11" fg=#569cd6 underline link=11
-text 29,26 " ·\\n      "
+text 29,26 " ·\\n      " fg=#000000
 text 0,27 "Chapter 12" fg=#569cd6 underline link=12
-text 10,27 " ·\\n      "
+text 10,27 " ·\\n      " fg=#000000
 text 19,27 "Chapter 13" fg=#569cd6 underline link=13
-text 29,27 " ·\\n      "
+text 29,27 " ·\\n      " fg=#000000
 text 0,28 "Chapter 14" fg=#569cd6 underline link=14
-text 10,28 " ·\\n      "
+text 10,28 " ·\\n      " fg=#000000
 text 19,28 "Chapter 15" fg=#569cd6 underline link=15
-text 29,28 " ·\\n      "
+text 29,28 " ·\\n      " fg=#000000
 text 0,29 "Chapter 16" fg=#569cd6 underline link=16
-text 10,29 " ·\\n      "
+text 10,29 " ·\\n      " fg=#000000
 text 19,29 "Chapter 17" fg=#569cd6 underline link=17
-text 29,29 " ·\\n      "
+text 29,29 " ·\\n      " fg=#000000
 text 0,30 "Chapter 18" fg=#569cd6 underline link=18
-text 10,30 " ·\\n      "
+text 10,30 " ·\\n      " fg=#000000
 text 19,30 "Chapter 19" fg=#569cd6 underline link=19
-text 29,30 " ·\\n      "
+text 29,30 " ·\\n      " fg=#000000
 text 0,31 "Chapter 20" fg=#569cd6 underline link=20
-text 10,31 " ·\\n      "
+text 10,31 " ·\\n      " fg=#000000
 text 19,31 "Appendix" fg=#569cd6 underline link=21
-text 27,31 " ·\\n      "
+text 27,31 " ·\\n      " fg=#000000
 text 0,32 "Footer" fg=#569cd6 underline link=22
-text 6,32 " ·\\n    "
-text 0,34 "Introduction" bold
-text 0,38 "Paragraph 01 — The quick brown fox jumps "
-text 0,39 "over the lazy dog."
-text 0,41 "Paragraph 02 — The quick brown fox jumps "
-text 0,42 "over the lazy dog."
-text 0,44 "Paragraph 03 — The quick brown fox jumps "
-text 0,45 "over the lazy dog."
-text 0,47 "Paragraph 04 — The quick brown fox jumps "
-text 0,48 "over the lazy dog."
-text 0,50 "Paragraph 05 — The quick brown fox jumps "
-text 0,51 "over the lazy dog."
-text 0,53 "Paragraph 06 — The quick brown fox jumps "
-text 0,54 "over the lazy dog."
-text 0,56 "Paragraph 07 — The quick brown fox jumps "
-text 0,57 "over the lazy dog."
-text 0,59 "Paragraph 08 — The quick brown fox jumps "
-text 0,60 "over the lazy dog."
-text 0,62 "Paragraph 09 — The quick brown fox jumps "
-text 0,63 "over the lazy dog."
-text 0,65 "Paragraph 10 — The quick brown fox jumps "
-text 0,66 "over the lazy dog."
-text 0,68 "Paragraph 11 — The quick brown fox jumps "
-text 0,69 "over the lazy dog."
-text 0,71 "Paragraph 12 — The quick brown fox jumps "
-text 0,72 "over the lazy dog."
-text 0,74 "Paragraph 13 — The quick brown fox jumps "
-text 0,75 "over the lazy dog."
-text 0,77 "Paragraph 14 — The quick brown fox jumps "
-text 0,78 "over the lazy dog."
-text 0,80 "Paragraph 15 — The quick brown fox jumps "
-text 0,81 "over the lazy dog."
-text 0,83 "Jump to "
+text 6,32 " ·\\n    " fg=#000000
+text 0,34 "Introduction" fg=#000000 bold
+text 0,38 "Paragraph 01 — The quick brown fox jumps " fg=#000000
+text 0,39 "over the lazy dog." fg=#000000
+text 0,41 "Paragraph 02 — The quick brown fox jumps " fg=#000000
+text 0,42 "over the lazy dog." fg=#000000
+text 0,44 "Paragraph 03 — The quick brown fox jumps " fg=#000000
+text 0,45 "over the lazy dog." fg=#000000
+text 0,47 "Paragraph 04 — The quick brown fox jumps " fg=#000000
+text 0,48 "over the lazy dog." fg=#000000
+text 0,50 "Paragraph 05 — The quick brown fox jumps " fg=#000000
+text 0,51 "over the lazy dog." fg=#000000
+text 0,53 "Paragraph 06 — The quick brown fox jumps " fg=#000000
+text 0,54 "over the lazy dog." fg=#000000
+text 0,56 "Paragraph 07 — The quick brown fox jumps " fg=#000000
+text 0,57 "over the lazy dog." fg=#000000
+text 0,59 "Paragraph 08 — The quick brown fox jumps " fg=#000000
+text 0,60 "over the lazy dog." fg=#000000
+text 0,62 "Paragraph 09 — The quick brown fox jumps " fg=#000000
+text 0,63 "over the lazy dog." fg=#000000
+text 0,65 "Paragraph 10 — The quick brown fox jumps " fg=#000000
+text 0,66 "over the lazy dog." fg=#000000
+text 0,68 "Paragraph 11 — The quick brown fox jumps " fg=#000000
+text 0,69 "over the lazy dog." fg=#000000
+text 0,71 "Paragraph 12 — The quick brown fox jumps " fg=#000000
+text 0,72 "over the lazy dog." fg=#000000
+text 0,74 "Paragraph 13 — The quick brown fox jumps " fg=#000000
+text 0,75 "over the lazy dog." fg=#000000
+text 0,77 "Paragraph 14 — The quick brown fox jumps " fg=#000000
+text 0,78 "over the lazy dog." fg=#000000
+text 0,80 "Paragraph 15 — The quick brown fox jumps " fg=#000000
+text 0,81 "over the lazy dog." fg=#000000
+text 0,83 "Jump to " fg=#000000
 text 8,83 "footer" fg=#569cd6 underline link=23
-text 14,83 " or "
+text 14,83 " or " fg=#000000
 text 18,83 "intro" fg=#569cd6 underline link=24
-text 23,83 "."
-text 0,85 "Chapter 1" bold
-text 0,89 "Paragraph 01 — Pack my box with five "
-text 0,90 "dozen liquor jugs."
-text 0,92 "Paragraph 02 — Pack my box with five "
-text 0,93 "dozen liquor jugs."
-text 0,95 "Paragraph 03 — Pack my box with five "
-text 0,96 "dozen liquor jugs."
-text 0,98 "Paragraph 04 — Pack my box with five "
-text 0,99 "dozen liquor jugs."
-text 0,101 "Paragraph 05 — Pack my box with five "
-text 0,102 "dozen liquor jugs."
-text 0,104 "Paragraph 06 — Pack my box with five "
-text 0,105 "dozen liquor jugs."
-text 0,107 "Paragraph 07 — Pack my box with five "
-text 0,108 "dozen liquor jugs."
-text 0,110 "Paragraph 08 — Pack my box with five "
-text 0,111 "dozen liquor jugs."
-text 0,113 "Paragraph 09 — Pack my box with five "
-text 0,114 "dozen liquor jugs."
-text 0,116 "Paragraph 10 — Pack my box with five "
-text 0,117 "dozen liquor jugs."
-text 0,119 "Paragraph 11 — Pack my box with five "
-text 0,120 "dozen liquor jugs."
-text 0,122 "Paragraph 12 — Pack my box with five "
-text 0,123 "dozen liquor jugs."
-text 0,125 "Paragraph 13 — Pack my box with five "
-text 0,126 "dozen liquor jugs."
-text 0,128 "Paragraph 14 — Pack my box with five "
-text 0,129 "dozen liquor jugs."
-text 0,131 "Paragraph 15 — Pack my box with five "
-text 0,132 "dozen liquor jugs."
-text 0,134 "Jump to "
+text 23,83 "." fg=#000000
+text 0,85 "Chapter 1" fg=#000000 bold
+text 0,89 "Paragraph 01 — Pack my box with five " fg=#000000
+text 0,90 "dozen liquor jugs." fg=#000000
+text 0,92 "Paragraph 02 — Pack my box with five " fg=#000000
+text 0,93 "dozen liquor jugs." fg=#000000
+text 0,95 "Paragraph 03 — Pack my box with five " fg=#000000
+text 0,96 "dozen liquor jugs." fg=#000000
+text 0,98 "Paragraph 04 — Pack my box with five " fg=#000000
+text 0,99 "dozen liquor jugs." fg=#000000
+text 0,101 "Paragraph 05 — Pack my box with five " fg=#000000
+text 0,102 "dozen liquor jugs." fg=#000000
+text 0,104 "Paragraph 06 — Pack my box with five " fg=#000000
+text 0,105 "dozen liquor jugs." fg=#000000
+text 0,107 "Paragraph 07 — Pack my box with five " fg=#000000
+text 0,108 "dozen liquor jugs." fg=#000000
+text 0,110 "Paragraph 08 — Pack my box with five " fg=#000000
+text 0,111 "dozen liquor jugs." fg=#000000
+text 0,113 "Paragraph 09 — Pack my box with five " fg=#000000
+text 0,114 "dozen liquor jugs." fg=#000000
+text 0,116 "Paragraph 10 — Pack my box with five " fg=#000000
+text 0,117 "dozen liquor jugs." fg=#000000
+text 0,119 "Paragraph 11 — Pack my box with five " fg=#000000
+text 0,120 "dozen liquor jugs." fg=#000000
+text 0,122 "Paragraph 12 — Pack my box with five " fg=#000000
+text 0,123 "dozen liquor jugs." fg=#000000
+text 0,125 "Paragraph 13 — Pack my box with five " fg=#000000
+text 0,126 "dozen liquor jugs." fg=#000000
+text 0,128 "Paragraph 14 — Pack my box with five " fg=#000000
+text 0,129 "dozen liquor jugs." fg=#000000
+text 0,131 "Paragraph 15 — Pack my box with five " fg=#000000
+text 0,132 "dozen liquor jugs." fg=#000000
+text 0,134 "Jump to " fg=#000000
 text 8,134 "footer" fg=#569cd6 underline link=25
-text 14,134 " or "
+text 14,134 " or " fg=#000000
 text 18,134 "intro" fg=#569cd6 underline link=26
-text 23,134 "."
-text 0,136 "Chapter 2" bold
-text 0,140 "Paragraph 01 — Sphinx of black quartz, "
-text 0,141 "judge my vow."
-text 0,143 "Paragraph 02 — Sphinx of black quartz, "
-text 0,144 "judge my vow."
-text 0,146 "Paragraph 03 — Sphinx of black quartz, "
-text 0,147 "judge my vow."
-text 0,149 "Paragraph 04 — Sphinx of black quartz, "
-text 0,150 "judge my vow."
-text 0,152 "Paragraph 05 — Sphinx of black quartz, "
-text 0,153 "judge my vow."
-text 0,155 "Paragraph 06 — Sphinx of black quartz, "
-text 0,156 "judge my vow."
-text 0,158 "Paragraph 07 — Sphinx of black quartz, "
-text 0,159 "judge my vow."
-text 0,161 "Paragraph 08 — Sphinx of black quartz, "
-text 0,162 "judge my vow."
-text 0,164 "Paragraph 09 — Sphinx of black quartz, "
-text 0,165 "judge my vow."
-text 0,167 "Paragraph 10 — Sphinx of black quartz, "
-text 0,168 "judge my vow."
-text 0,170 "Paragraph 11 — Sphinx of black quartz, "
-text 0,171 "judge my vow."
-text 0,173 "Paragraph 12 — Sphinx of black quartz, "
-text 0,174 "judge my vow."
-text 0,176 "Paragraph 13 — Sphinx of black quartz, "
-text 0,177 "judge my vow."
-text 0,179 "Paragraph 14 — Sphinx of black quartz, "
-text 0,180 "judge my vow."
-text 0,182 "Paragraph 15 — Sphinx of black quartz, "
-text 0,183 "judge my vow."
-text 0,185 "Jump to "
+text 23,134 "." fg=#000000
+text 0,136 "Chapter 2" fg=#000000 bold
+text 0,140 "Paragraph 01 — Sphinx of black quartz, " fg=#000000
+text 0,141 "judge my vow." fg=#000000
+text 0,143 "Paragraph 02 — Sphinx of black quartz, " fg=#000000
+text 0,144 "judge my vow." fg=#000000
+text 0,146 "Paragraph 03 — Sphinx of black quartz, " fg=#000000
+text 0,147 "judge my vow." fg=#000000
+text 0,149 "Paragraph 04 — Sphinx of black quartz, " fg=#000000
+text 0,150 "judge my vow." fg=#000000
+text 0,152 "Paragraph 05 — Sphinx of black quartz, " fg=#000000
+text 0,153 "judge my vow." fg=#000000
+text 0,155 "Paragraph 06 — Sphinx of black quartz, " fg=#000000
+text 0,156 "judge my vow." fg=#000000
+text 0,158 "Paragraph 07 — Sphinx of black quartz, " fg=#000000
+text 0,159 "judge my vow." fg=#000000
+text 0,161 "Paragraph 08 — Sphinx of black quartz, " fg=#000000
+text 0,162 "judge my vow." fg=#000000
+text 0,164 "Paragraph 09 — Sphinx of black quartz, " fg=#000000
+text 0,165 "judge my vow." fg=#000000
+text 0,167 "Paragraph 10 — Sphinx of black quartz, " fg=#000000
+text 0,168 "judge my vow." fg=#000000
+text 0,170 "Paragraph 11 — Sphinx of black quartz, " fg=#000000
+text 0,171 "judge my vow." fg=#000000
+text 0,173 "Paragraph 12 — Sphinx of black quartz, " fg=#000000
+text 0,174 "judge my vow." fg=#000000
+text 0,176 "Paragraph 13 — Sphinx of black quartz, " fg=#000000
+text 0,177 "judge my vow." fg=#000000
+text 0,179 "Paragraph 14 — Sphinx of black quartz, " fg=#000000
+text 0,180 "judge my vow." fg=#000000
+text 0,182 "Paragraph 15 — Sphinx of black quartz, " fg=#000000
+text 0,183 "judge my vow." fg=#000000
+text 0,185 "Jump to " fg=#000000
 text 8,185 "footer" fg=#569cd6 underline link=27
-text 14,185 " or "
+text 14,185 " or " fg=#000000
 text 18,185 "intro" fg=#569cd6 underline link=28
-text 23,185 "."
-text 0,187 "Chapter 3" bold
-text 0,191 "Paragraph 01 — How vexingly quick daft "
-text 0,192 "zebras jump."
-text 0,194 "Paragraph 02 — How vexingly quick daft "
-text 0,195 "zebras jump."
-text 0,197 "Paragraph 03 — How vexingly quick daft "
-text 0,198 "zebras jump."
-text 0,200 "Paragraph 04 — How vexingly quick daft "
-text 0,201 "zebras jump."
-text 0,203 "Paragraph 05 — How vexingly quick daft "
-text 0,204 "zebras jump."
-text 0,206 "Paragraph 06 — How vexingly quick daft "
-text 0,207 "zebras jump."
-text 0,209 "Paragraph 07 — How vexingly quick daft "
-text 0,210 "zebras jump."
-text 0,212 "Paragraph 08 — How vexingly quick daft "
-text 0,213 "zebras jump."
-text 0,215 "Paragraph 09 — How vexingly quick daft "
-text 0,216 "zebras jump."
-text 0,218 "Paragraph 10 — How vexingly quick daft "
-text 0,219 "zebras jump."
-text 0,221 "Paragraph 11 — How vexingly quick daft "
-text 0,222 "zebras jump."
-text 0,224 "Paragraph 12 — How vexingly quick daft "
-text 0,225 "zebras jump."
-text 0,227 "Paragraph 13 — How vexingly quick daft "
-text 0,228 "zebras jump."
-text 0,230 "Paragraph 14 — How vexingly quick daft "
-text 0,231 "zebras jump."
-text 0,233 "Paragraph 15 — How vexingly quick daft "
-text 0,234 "zebras jump."
-text 0,236 "Jump to "
+text 23,185 "." fg=#000000
+text 0,187 "Chapter 3" fg=#000000 bold
+text 0,191 "Paragraph 01 — How vexingly quick daft " fg=#000000
+text 0,192 "zebras jump." fg=#000000
+text 0,194 "Paragraph 02 — How vexingly quick daft " fg=#000000
+text 0,195 "zebras jump." fg=#000000
+text 0,197 "Paragraph 03 — How vexingly quick daft " fg=#000000
+text 0,198 "zebras jump." fg=#000000
+text 0,200 "Paragraph 04 — How vexingly quick daft " fg=#000000
+text 0,201 "zebras jump." fg=#000000
+text 0,203 "Paragraph 05 — How vexingly quick daft " fg=#000000
+text 0,204 "zebras jump." fg=#000000
+text 0,206 "Paragraph 06 — How vexingly quick daft " fg=#000000
+text 0,207 "zebras jump." fg=#000000
+text 0,209 "Paragraph 07 — How vexingly quick daft " fg=#000000
+text 0,210 "zebras jump." fg=#000000
+text 0,212 "Paragraph 08 — How vexingly quick daft " fg=#000000
+text 0,213 "zebras jump." fg=#000000
+text 0,215 "Paragraph 09 — How vexingly quick daft " fg=#000000
+text 0,216 "zebras jump." fg=#000000
+text 0,218 "Paragraph 10 — How vexingly quick daft " fg=#000000
+text 0,219 "zebras jump." fg=#000000
+text 0,221 "Paragraph 11 — How vexingly quick daft " fg=#000000
+text 0,222 "zebras jump." fg=#000000
+text 0,224 "Paragraph 12 — How vexingly quick daft " fg=#000000
+text 0,225 "zebras jump." fg=#000000
+text 0,227 "Paragraph 13 — How vexingly quick daft " fg=#000000
+text 0,228 "zebras jump." fg=#000000
+text 0,230 "Paragraph 14 — How vexingly quick daft " fg=#000000
+text 0,231 "zebras jump." fg=#000000
+text 0,233 "Paragraph 15 — How vexingly quick daft " fg=#000000
+text 0,234 "zebras jump." fg=#000000
+text 0,236 "Jump to " fg=#000000
 text 8,236 "footer" fg=#569cd6 underline link=29
-text 14,236 " or "
+text 14,236 " or " fg=#000000
 text 18,236 "intro" fg=#569cd6 underline link=30
-text 23,236 "."
-text 0,238 "Chapter 4" bold
-text 0,242 "Paragraph 01 — Waltz, bad nymph, for "
-text 0,243 "quick jigs vex."
-text 0,245 "Paragraph 02 — Waltz, bad nymph, for "
-text 0,246 "quick jigs vex."
-text 0,248 "Paragraph 03 — Waltz, bad nymph, for "
-text 0,249 "quick jigs vex."
-text 0,251 "Paragraph 04 — Waltz, bad nymph, for "
-text 0,252 "quick jigs vex."
-text 0,254 "Paragraph 05 — Waltz, bad nymph, for "
-text 0,255 "quick jigs vex."
-text 0,257 "Paragraph 06 — Waltz, bad nymph, for "
-text 0,258 "quick jigs vex."
-text 0,260 "Paragraph 07 — Waltz, bad nymph, for "
-text 0,261 "quick jigs vex."
-text 0,263 "Paragraph 08 — Waltz, bad nymph, for "
-text 0,264 "quick jigs vex."
-text 0,266 "Paragraph 09 — Waltz, bad nymph, for "
-text 0,267 "quick jigs vex."
-text 0,269 "Paragraph 10 — Waltz, bad nymph, for "
-text 0,270 "quick jigs vex."
-text 0,272 "Paragraph 11 — Waltz, bad nymph, for "
-text 0,273 "quick jigs vex."
-text 0,275 "Paragraph 12 — Waltz, bad nymph, for "
-text 0,276 "quick jigs vex."
-text 0,278 "Paragraph 13 — Waltz, bad nymph, for "
-text 0,279 "quick jigs vex."
-text 0,281 "Paragraph 14 — Waltz, bad nymph, for "
-text 0,282 "quick jigs vex."
-text 0,284 "Paragraph 15 — Waltz, bad nymph, for "
-text 0,285 "quick jigs vex."
-text 0,287 "Jump to "
+text 23,236 "." fg=#000000
+text 0,238 "Chapter 4" fg=#000000 bold
+text 0,242 "Paragraph 01 — Waltz, bad nymph, for " fg=#000000
+text 0,243 "quick jigs vex." fg=#000000
+text 0,245 "Paragraph 02 — Waltz, bad nymph, for " fg=#000000
+text 0,246 "quick jigs vex." fg=#000000
+text 0,248 "Paragraph 03 — Waltz, bad nymph, for " fg=#000000
+text 0,249 "quick jigs vex." fg=#000000
+text 0,251 "Paragraph 04 — Waltz, bad nymph, for " fg=#000000
+text 0,252 "quick jigs vex." fg=#000000
+text 0,254 "Paragraph 05 — Waltz, bad nymph, for " fg=#000000
+text 0,255 "quick jigs vex." fg=#000000
+text 0,257 "Paragraph 06 — Waltz, bad nymph, for " fg=#000000
+text 0,258 "quick jigs vex." fg=#000000
+text 0,260 "Paragraph 07 — Waltz, bad nymph, for " fg=#000000
+text 0,261 "quick jigs vex." fg=#000000
+text 0,263 "Paragraph 08 — Waltz, bad nymph, for " fg=#000000
+text 0,264 "quick jigs vex." fg=#000000
+text 0,266 "Paragraph 09 — Waltz, bad nymph, for " fg=#000000
+text 0,267 "quick jigs vex." fg=#000000
+text 0,269 "Paragraph 10 — Waltz, bad nymph, for " fg=#000000
+text 0,270 "quick jigs vex." fg=#000000
+text 0,272 "Paragraph 11 — Waltz, bad nymph, for " fg=#000000
+text 0,273 "quick jigs vex." fg=#000000
+text 0,275 "Paragraph 12 — Waltz, bad nymph, for " fg=#000000
+text 0,276 "quick jigs vex." fg=#000000
+text 0,278 "Paragraph 13 — Waltz, bad nymph, for " fg=#000000
+text 0,279 "quick jigs vex." fg=#000000
+text 0,281 "Paragraph 14 — Waltz, bad nymph, for " fg=#000000
+text 0,282 "quick jigs vex." fg=#000000
+text 0,284 "Paragraph 15 — Waltz, bad nymph, for " fg=#000000
+text 0,285 "quick jigs vex." fg=#000000
+text 0,287 "Jump to " fg=#000000
 text 8,287 "footer" fg=#569cd6 underline link=31
-text 14,287 " or "
+text 14,287 " or " fg=#000000
 text 18,287 "intro" fg=#569cd6 underline link=32
-text 23,287 "."
-text 0,289 "Chapter 5" bold
-text 0,293 "Paragraph 01 — Glib jocks quiz nymph to "
-text 0,294 "vex dwarf."
-text 0,296 "Paragraph 02 — Glib jocks quiz nymph to "
-text 0,297 "vex dwarf."
-text 0,299 "Paragraph 03 — Glib jocks quiz nymph to "
-text 0,300 "vex dwarf."
-text 0,302 "Paragraph 04 — Glib jocks quiz nymph to "
-text 0,303 "vex dwarf."
-text 0,305 "Paragraph 05 — Glib jocks quiz nymph to "
-text 0,306 "vex dwarf."
-text 0,308 "Paragraph 06 — Glib jocks quiz nymph to "
-text 0,309 "vex dwarf."
-text 0,311 "Paragraph 07 — Glib jocks quiz nymph to "
-text 0,312 "vex dwarf."
-text 0,314 "Paragraph 08 — Glib jocks quiz nymph to "
-text 0,315 "vex dwarf."
-text 0,317 "Paragraph 09 — Glib jocks quiz nymph to "
-text 0,318 "vex dwarf."
-text 0,320 "Paragraph 10 — Glib jocks quiz nymph to "
-text 0,321 "vex dwarf."
-text 0,323 "Paragraph 11 — Glib jocks quiz nymph to "
-text 0,324 "vex dwarf."
-text 0,326 "Paragraph 12 — Glib jocks quiz nymph to "
-text 0,327 "vex dwarf."
-text 0,329 "Paragraph 13 — Glib jocks quiz nymph to "
-text 0,330 "vex dwarf."
-text 0,332 "Paragraph 14 — Glib jocks quiz nymph to "
-text 0,333 "vex dwarf."
-text 0,335 "Paragraph 15 — Glib jocks quiz nymph to "
-text 0,336 "vex dwarf."
-text 0,338 "Jump to "
+text 23,287 "." fg=#000000
+text 0,289 "Chapter 5" fg=#000000 bold
+text 0,293 "Paragraph 01 — Glib jocks quiz nymph to " fg=#000000
+text 0,294 "vex dwarf." fg=#000000
+text 0,296 "Paragraph 02 — Glib jocks quiz nymph to " fg=#000000
+text 0,297 "vex dwarf." fg=#000000
+text 0,299 "Paragraph 03 — Glib jocks quiz nymph to " fg=#000000
+text 0,300 "vex dwarf." fg=#000000
+text 0,302 "Paragraph 04 — Glib jocks quiz nymph to " fg=#000000
+text 0,303 "vex dwarf." fg=#000000
+text 0,305 "Paragraph 05 — Glib jocks quiz nymph to " fg=#000000
+text 0,306 "vex dwarf." fg=#000000
+text 0,308 "Paragraph 06 — Glib jocks quiz nymph to " fg=#000000
+text 0,309 "vex dwarf." fg=#000000
+text 0,311 "Paragraph 07 — Glib jocks quiz nymph to " fg=#000000
+text 0,312 "vex dwarf." fg=#000000
+text 0,314 "Paragraph 08 — Glib jocks quiz nymph to " fg=#000000
+text 0,315 "vex dwarf." fg=#000000
+text 0,317 "Paragraph 09 — Glib jocks quiz nymph to " fg=#000000
+text 0,318 "vex dwarf." fg=#000000
+text 0,320 "Paragraph 10 — Glib jocks quiz nymph to " fg=#000000
+text 0,321 "vex dwarf." fg=#000000
+text 0,323 "Paragraph 11 — Glib jocks quiz nymph to " fg=#000000
+text 0,324 "vex dwarf." fg=#000000
+text 0,326 "Paragraph 12 — Glib jocks quiz nymph to " fg=#000000
+text 0,327 "vex dwarf." fg=#000000
+text 0,329 "Paragraph 13 — Glib jocks quiz nymph to " fg=#000000
+text 0,330 "vex dwarf." fg=#000000
+text 0,332 "Paragraph 14 — Glib jocks quiz nymph to " fg=#000000
+text 0,333 "vex dwarf." fg=#000000
+text 0,335 "Paragraph 15 — Glib jocks quiz nymph to " fg=#000000
+text 0,336 "vex dwarf." fg=#000000
+text 0,338 "Jump to " fg=#000000
 text 8,338 "footer" fg=#569cd6 underline link=33
-text 14,338 " or "
+text 14,338 " or " fg=#000000
 text 18,338 "intro" fg=#569cd6 underline link=34
-text 23,338 "."
-text 0,340 "Chapter 6" bold
-text 0,344 "Paragraph 01 — Pack my box with five "
-text 0,345 "dozen liquor jugs."
-text 0,347 "Paragraph 02 — Pack my box with five "
-text 0,348 "dozen liquor jugs."
-text 0,350 "Paragraph 03 — Pack my box with five "
-text 0,351 "dozen liquor jugs."
-text 0,353 "Paragraph 04 — Pack my box with five "
-text 0,354 "dozen liquor jugs."
-text 0,356 "Paragraph 05 — Pack my box with five "
-text 0,357 "dozen liquor jugs."
-text 0,359 "Paragraph 06 — Pack my box with five "
-text 0,360 "dozen liquor jugs."
-text 0,362 "Paragraph 07 — Pack my box with five "
-text 0,363 "dozen liquor jugs."
-text 0,365 "Paragraph 08 — Pack my box with five "
-text 0,366 "dozen liquor jugs."
-text 0,368 "Paragraph 09 — Pack my box with five "
-text 0,369 "dozen liquor jugs."
-text 0,371 "Paragraph 10 — Pack my box with five "
-text 0,372 "dozen liquor jugs."
-text 0,374 "Paragraph 11 — Pack my box with five "
-text 0,375 "dozen liquor jugs."
-text 0,377 "Paragraph 12 — Pack my box with five "
-text 0,378 "dozen liquor jugs."
-text 0,380 "Paragraph 13 — Pack my box with five "
-text 0,381 "dozen liquor jugs."
-text 0,383 "Paragraph 14 — Pack my box with five "
-text 0,384 "dozen liquor jugs."
-text 0,386 "Paragraph 15 — Pack my box with five "
-text 0,387 "dozen liquor jugs."
-text 0,389 "Jump to "
+text 23,338 "." fg=#000000
+text 0,340 "Chapter 6" fg=#000000 bold
+text 0,344 "Paragraph 01 — Pack my box with five " fg=#000000
+text 0,345 "dozen liquor jugs." fg=#000000
+text 0,347 "Paragraph 02 — Pack my box with five " fg=#000000
+text 0,348 "dozen liquor jugs." fg=#000000
+text 0,350 "Paragraph 03 — Pack my box with five " fg=#000000
+text 0,351 "dozen liquor jugs." fg=#000000
+text 0,353 "Paragraph 04 — Pack my box with five " fg=#000000
+text 0,354 "dozen liquor jugs." fg=#000000
+text 0,356 "Paragraph 05 — Pack my box with five " fg=#000000
+text 0,357 "dozen liquor jugs." fg=#000000
+text 0,359 "Paragraph 06 — Pack my box with five " fg=#000000
+text 0,360 "dozen liquor jugs." fg=#000000
+text 0,362 "Paragraph 07 — Pack my box with five " fg=#000000
+text 0,363 "dozen liquor jugs." fg=#000000
+text 0,365 "Paragraph 08 — Pack my box with five " fg=#000000
+text 0,366 "dozen liquor jugs." fg=#000000
+text 0,368 "Paragraph 09 — Pack my box with five " fg=#000000
+text 0,369 "dozen liquor jugs." fg=#000000
+text 0,371 "Paragraph 10 — Pack my box with five " fg=#000000
+text 0,372 "dozen liquor jugs." fg=#000000
+text 0,374 "Paragraph 11 — Pack my box with five " fg=#000000
+text 0,375 "dozen liquor jugs." fg=#000000
+text 0,377 "Paragraph 12 — Pack my box with five " fg=#000000
+text 0,378 "dozen liquor jugs." fg=#000000
+text 0,380 "Paragraph 13 — Pack my box with five " fg=#000000
+text 0,381 "dozen liquor jugs." fg=#000000
+text 0,383 "Paragraph 14 — Pack my box with five " fg=#000000
+text 0,384 "dozen liquor jugs." fg=#000000
+text 0,386 "Paragraph 15 — Pack my box with five " fg=#000000
+text 0,387 "dozen liquor jugs." fg=#000000
+text 0,389 "Jump to " fg=#000000
 text 8,389 "footer" fg=#569cd6 underline link=35
-text 14,389 " or "
+text 14,389 " or " fg=#000000
 text 18,389 "intro" fg=#569cd6 underline link=36
-text 23,389 "."
-text 0,391 "Chapter 7" bold
-text 0,395 "Paragraph 01 — Sphinx of black quartz, "
-text 0,396 "judge my vow."
-text 0,398 "Paragraph 02 — Sphinx of black quartz, "
-text 0,399 "judge my vow."
-text 0,401 "Paragraph 03 — Sphinx of black quartz, "
-text 0,402 "judge my vow."
-text 0,404 "Paragraph 04 — Sphinx of black quartz, "
-text 0,405 "judge my vow."
-text 0,407 "Paragraph 05 — Sphinx of black quartz, "
-text 0,408 "judge my vow."
-text 0,410 "Paragraph 06 — Sphinx of black quartz, "
-text 0,411 "judge my vow."
-text 0,413 "Paragraph 07 — Sphinx of black quartz, "
-text 0,414 "judge my vow."
-text 0,416 "Paragraph 08 — Sphinx of black quartz, "
-text 0,417 "judge my vow."
-text 0,419 "Paragraph 09 — Sphinx of black quartz, "
-text 0,420 "judge my vow."
-text 0,422 "Paragraph 10 — Sphinx of black quartz, "
-text 0,423 "judge my vow."
-text 0,425 "Paragraph 11 — Sphinx of black quartz, "
-text 0,426 "judge my vow."
-text 0,428 "Paragraph 12 — Sphinx of black quartz, "
-text 0,429 "judge my vow."
-text 0,431 "Paragraph 13 — Sphinx of black quartz, "
-text 0,432 "judge my vow."
-text 0,434 "Paragraph 14 — Sphinx of black quartz, "
-text 0,435 "judge my vow."
-text 0,437 "Paragraph 15 — Sphinx of black quartz, "
-text 0,438 "judge my vow."
-text 0,440 "Jump to "
+text 23,389 "." fg=#000000
+text 0,391 "Chapter 7" fg=#000000 bold
+text 0,395 "Paragraph 01 — Sphinx of black quartz, " fg=#000000
+text 0,396 "judge my vow." fg=#000000
+text 0,398 "Paragraph 02 — Sphinx of black quartz, " fg=#000000
+text 0,399 "judge my vow." fg=#000000
+text 0,401 "Paragraph 03 — Sphinx of black quartz, " fg=#000000
+text 0,402 "judge my vow." fg=#000000
+text 0,404 "Paragraph 04 — Sphinx of black quartz, " fg=#000000
+text 0,405 "judge my vow." fg=#000000
+text 0,407 "Paragraph 05 — Sphinx of black quartz, " fg=#000000
+text 0,408 "judge my vow." fg=#000000
+text 0,410 "Paragraph 06 — Sphinx of black quartz, " fg=#000000
+text 0,411 "judge my vow." fg=#000000
+text 0,413 "Paragraph 07 — Sphinx of black quartz, " fg=#000000
+text 0,414 "judge my vow." fg=#000000
+text 0,416 "Paragraph 08 — Sphinx of black quartz, " fg=#000000
+text 0,417 "judge my vow." fg=#000000
+text 0,419 "Paragraph 09 — Sphinx of black quartz, " fg=#000000
+text 0,420 "judge my vow." fg=#000000
+text 0,422 "Paragraph 10 — Sphinx of black quartz, " fg=#000000
+text 0,423 "judge my vow." fg=#000000
+text 0,425 "Paragraph 11 — Sphinx of black quartz, " fg=#000000
+text 0,426 "judge my vow." fg=#000000
+text 0,428 "Paragraph 12 — Sphinx of black quartz, " fg=#000000
+text 0,429 "judge my vow." fg=#000000
+text 0,431 "Paragraph 13 — Sphinx of black quartz, " fg=#000000
+text 0,432 "judge my vow." fg=#000000
+text 0,434 "Paragraph 14 — Sphinx of black quartz, " fg=#000000
+text 0,435 "judge my vow." fg=#000000
+text 0,437 "Paragraph 15 — Sphinx of black quartz, " fg=#000000
+text 0,438 "judge my vow." fg=#000000
+text 0,440 "Jump to " fg=#000000
 text 8,440 "footer" fg=#569cd6 underline link=37
-text 14,440 " or "
+text 14,440 " or " fg=#000000
 text 18,440 "intro" fg=#569cd6 underline link=38
-text 23,440 "."
-text 0,442 "Chapter 8" bold
-text 0,446 "Paragraph 01 — How vexingly quick daft "
-text 0,447 "zebras jump."
-text 0,449 "Paragraph 02 — How vexingly quick daft "
-text 0,450 "zebras jump."
-text 0,452 "Paragraph 03 — How vexingly quick daft "
-text 0,453 "zebras jump."
-text 0,455 "Paragraph 04 — How vexingly quick daft "
-text 0,456 "zebras jump."
-text 0,458 "Paragraph 05 — How vexingly quick daft "
-text 0,459 "zebras jump."
-text 0,461 "Paragraph 06 — How vexingly quick daft "
-text 0,462 "zebras jump."
-text 0,464 "Paragraph 07 — How vexingly quick daft "
-text 0,465 "zebras jump."
-text 0,467 "Paragraph 08 — How vexingly quick daft "
-text 0,468 "zebras jump."
-text 0,470 "Paragraph 09 — How vexingly quick daft "
-text 0,471 "zebras jump."
-text 0,473 "Paragraph 10 — How vexingly quick daft "
-text 0,474 "zebras jump."
-text 0,476 "Paragraph 11 — How vexingly quick daft "
-text 0,477 "zebras jump."
-text 0,479 "Paragraph 12 — How vexingly quick daft "
-text 0,480 "zebras jump."
-text 0,482 "Paragraph 13 — How vexingly quick daft "
-text 0,483 "zebras jump."
-text 0,485 "Paragraph 14 — How vexingly quick daft "
-text 0,486 "zebras jump."
-text 0,488 "Paragraph 15 — How vexingly quick daft "
-text 0,489 "zebras jump."
-text 0,491 "Jump to "
+text 23,440 "." fg=#000000
+text 0,442 "Chapter 8" fg=#000000 bold
+text 0,446 "Paragraph 01 — How vexingly quick daft " fg=#000000
+text 0,447 "zebras jump." fg=#000000
+text 0,449 "Paragraph 02 — How vexingly quick daft " fg=#000000
+text 0,450 "zebras jump." fg=#000000
+text 0,452 "Paragraph 03 — How vexingly quick daft " fg=#000000
+text 0,453 "zebras jump." fg=#000000
+text 0,455 "Paragraph 04 — How vexingly quick daft " fg=#000000
+text 0,456 "zebras jump." fg=#000000
+text 0,458 "Paragraph 05 — How vexingly quick daft " fg=#000000
+text 0,459 "zebras jump." fg=#000000
+text 0,461 "Paragraph 06 — How vexingly quick daft " fg=#000000
+text 0,462 "zebras jump." fg=#000000
+text 0,464 "Paragraph 07 — How vexingly quick daft " fg=#000000
+text 0,465 "zebras jump." fg=#000000
+text 0,467 "Paragraph 08 — How vexingly quick daft " fg=#000000
+text 0,468 "zebras jump." fg=#000000
+text 0,470 "Paragraph 09 — How vexingly quick daft " fg=#000000
+text 0,471 "zebras jump." fg=#000000
+text 0,473 "Paragraph 10 — How vexingly quick daft " fg=#000000
+text 0,474 "zebras jump." fg=#000000
+text 0,476 "Paragraph 11 — How vexingly quick daft " fg=#000000
+text 0,477 "zebras jump." fg=#000000
+text 0,479 "Paragraph 12 — How vexingly quick daft " fg=#000000
+text 0,480 "zebras jump." fg=#000000
+text 0,482 "Paragraph 13 — How vexingly quick daft " fg=#000000
+text 0,483 "zebras jump." fg=#000000
+text 0,485 "Paragraph 14 — How vexingly quick daft " fg=#000000
+text 0,486 "zebras jump." fg=#000000
+text 0,488 "Paragraph 15 — How vexingly quick daft " fg=#000000
+text 0,489 "zebras jump." fg=#000000
+text 0,491 "Jump to " fg=#000000
 text 8,491 "footer" fg=#569cd6 underline link=39
-text 14,491 " or "
+text 14,491 " or " fg=#000000
 text 18,491 "intro" fg=#569cd6 underline link=40
-text 23,491 "."
-text 0,493 "Chapter 9" bold
-text 0,497 "Paragraph 01 — Waltz, bad nymph, for "
-text 0,498 "quick jigs vex."
-text 0,500 "Paragraph 02 — Waltz, bad nymph, for "
-text 0,501 "quick jigs vex."
-text 0,503 "Paragraph 03 — Waltz, bad nymph, for "
-text 0,504 "quick jigs vex."
-text 0,506 "Paragraph 04 — Waltz, bad nymph, for "
-text 0,507 "quick jigs vex."
-text 0,509 "Paragraph 05 — Waltz, bad nymph, for "
-text 0,510 "quick jigs vex."
-text 0,512 "Paragraph 06 — Waltz, bad nymph, for "
-text 0,513 "quick jigs vex."
-text 0,515 "Paragraph 07 — Waltz, bad nymph, for "
-text 0,516 "quick jigs vex."
-text 0,518 "Paragraph 08 — Waltz, bad nymph, for "
-text 0,519 "quick jigs vex."
-text 0,521 "Paragraph 09 — Waltz, bad nymph, for "
-text 0,522 "quick jigs vex."
-text 0,524 "Paragraph 10 — Waltz, bad nymph, for "
-text 0,525 "quick jigs vex."
-text 0,527 "Paragraph 11 — Waltz, bad nymph, for "
-text 0,528 "quick jigs vex."
-text 0,530 "Paragraph 12 — Waltz, bad nymph, for "
-text 0,531 "quick jigs vex."
-text 0,533 "Paragraph 13 — Waltz, bad nymph, for "
-text 0,534 "quick jigs vex."
-text 0,536 "Paragraph 14 — Waltz, bad nymph, for "
-text 0,537 "quick jigs vex."
-text 0,539 "Paragraph 15 — Waltz, bad nymph, for "
-text 0,540 "quick jigs vex."
-text 0,542 "Jump to "
+text 23,491 "." fg=#000000
+text 0,493 "Chapter 9" fg=#000000 bold
+text 0,497 "Paragraph 01 — Waltz, bad nymph, for " fg=#000000
+text 0,498 "quick jigs vex." fg=#000000
+text 0,500 "Paragraph 02 — Waltz, bad nymph, for " fg=#000000
+text 0,501 "quick jigs vex." fg=#000000
+text 0,503 "Paragraph 03 — Waltz, bad nymph, for " fg=#000000
+text 0,504 "quick jigs vex." fg=#000000
+text 0,506 "Paragraph 04 — Waltz, bad nymph, for " fg=#000000
+text 0,507 "quick jigs vex." fg=#000000
+text 0,509 "Paragraph 05 — Waltz, bad nymph, for " fg=#000000
+text 0,510 "quick jigs vex." fg=#000000
+text 0,512 "Paragraph 06 — Waltz, bad nymph, for " fg=#000000
+text 0,513 "quick jigs vex." fg=#000000
+text 0,515 "Paragraph 07 — Waltz, bad nymph, for " fg=#000000
+text 0,516 "quick jigs vex." fg=#000000
+text 0,518 "Paragraph 08 — Waltz, bad nymph, for " fg=#000000
+text 0,519 "quick jigs vex." fg=#000000
+text 0,521 "Paragraph 09 — Waltz, bad nymph, for " fg=#000000
+text 0,522 "quick jigs vex." fg=#000000
+text 0,524 "Paragraph 10 — Waltz, bad nymph, for " fg=#000000
+text 0,525 "quick jigs vex." fg=#000000
+text 0,527 "Paragraph 11 — Waltz, bad nymph, for " fg=#000000
+text 0,528 "quick jigs vex." fg=#000000
+text 0,530 "Paragraph 12 — Waltz, bad nymph, for " fg=#000000
+text 0,531 "quick jigs vex." fg=#000000
+text 0,533 "Paragraph 13 — Waltz, bad nymph, for " fg=#000000
+text 0,534 "quick jigs vex." fg=#000000
+text 0,536 "Paragraph 14 — Waltz, bad nymph, for " fg=#000000
+text 0,537 "quick jigs vex." fg=#000000
+text 0,539 "Paragraph 15 — Waltz, bad nymph, for " fg=#000000
+text 0,540 "quick jigs vex." fg=#000000
+text 0,542 "Jump to " fg=#000000
 text 8,542 "footer" fg=#569cd6 underline link=41
-text 14,542 " or "
+text 14,542 " or " fg=#000000
 text 18,542 "intro" fg=#569cd6 underline link=42
-text 23,542 "."
-text 0,544 "Chapter 10" bold
-text 0,548 "Paragraph 01 — Glib jocks quiz nymph to "
-text 0,549 "vex dwarf."
-text 0,551 "Paragraph 02 — Glib jocks quiz nymph to "
-text 0,552 "vex dwarf."
-text 0,554 "Paragraph 03 — Glib jocks quiz nymph to "
-text 0,555 "vex dwarf."
-text 0,557 "Paragraph 04 — Glib jocks quiz nymph to "
-text 0,558 "vex dwarf."
-text 0,560 "Paragraph 05 — Glib jocks quiz nymph to "
-text 0,561 "vex dwarf."
-text 0,563 "Paragraph 06 — Glib jocks quiz nymph to "
-text 0,564 "vex dwarf."
-text 0,566 "Paragraph 07 — Glib jocks quiz nymph to "
-text 0,567 "vex dwarf."
-text 0,569 "Paragraph 08 — Glib jocks quiz nymph to "
-text 0,570 "vex dwarf."
-text 0,572 "Paragraph 09 — Glib jocks quiz nymph to "
-text 0,573 "vex dwarf."
-text 0,575 "Paragraph 10 — Glib jocks quiz nymph to "
-text 0,576 "vex dwarf."
-text 0,578 "Paragraph 11 — Glib jocks quiz nymph to "
-text 0,579 "vex dwarf."
-text 0,581 "Paragraph 12 — Glib jocks quiz nymph to "
-text 0,582 "vex dwarf."
-text 0,584 "Paragraph 13 — Glib jocks quiz nymph to "
-text 0,585 "vex dwarf."
-text 0,587 "Paragraph 14 — Glib jocks quiz nymph to "
-text 0,588 "vex dwarf."
-text 0,590 "Paragraph 15 — Glib jocks quiz nymph to "
-text 0,591 "vex dwarf."
-text 0,593 "Jump to "
+text 23,542 "." fg=#000000
+text 0,544 "Chapter 10" fg=#000000 bold
+text 0,548 "Paragraph 01 — Glib jocks quiz nymph to " fg=#000000
+text 0,549 "vex dwarf." fg=#000000
+text 0,551 "Paragraph 02 — Glib jocks quiz nymph to " fg=#000000
+text 0,552 "vex dwarf." fg=#000000
+text 0,554 "Paragraph 03 — Glib jocks quiz nymph to " fg=#000000
+text 0,555 "vex dwarf." fg=#000000
+text 0,557 "Paragraph 04 — Glib jocks quiz nymph to " fg=#000000
+text 0,558 "vex dwarf." fg=#000000
+text 0,560 "Paragraph 05 — Glib jocks quiz nymph to " fg=#000000
+text 0,561 "vex dwarf." fg=#000000
+text 0,563 "Paragraph 06 — Glib jocks quiz nymph to " fg=#000000
+text 0,564 "vex dwarf." fg=#000000
+text 0,566 "Paragraph 07 — Glib jocks quiz nymph to " fg=#000000
+text 0,567 "vex dwarf." fg=#000000
+text 0,569 "Paragraph 08 — Glib jocks quiz nymph to " fg=#000000
+text 0,570 "vex dwarf." fg=#000000
+text 0,572 "Paragraph 09 — Glib jocks quiz nymph to " fg=#000000
+text 0,573 "vex dwarf." fg=#000000
+text 0,575 "Paragraph 10 — Glib jocks quiz nymph to " fg=#000000
+text 0,576 "vex dwarf." fg=#000000
+text 0,578 "Paragraph 11 — Glib jocks quiz nymph to " fg=#000000
+text 0,579 "vex dwarf." fg=#000000
+text 0,581 "Paragraph 12 — Glib jocks quiz nymph to " fg=#000000
+text 0,582 "vex dwarf." fg=#000000
+text 0,584 "Paragraph 13 — Glib jocks quiz nymph to " fg=#000000
+text 0,585 "vex dwarf." fg=#000000
+text 0,587 "Paragraph 14 — Glib jocks quiz nymph to " fg=#000000
+text 0,588 "vex dwarf." fg=#000000
+text 0,590 "Paragraph 15 — Glib jocks quiz nymph to " fg=#000000
+text 0,591 "vex dwarf." fg=#000000
+text 0,593 "Jump to " fg=#000000
 text 8,593 "footer" fg=#569cd6 underline link=43
-text 14,593 " or "
+text 14,593 " or " fg=#000000
 text 18,593 "intro" fg=#569cd6 underline link=44
-text 23,593 "."
-text 0,595 "Chapter 11" bold
-text 0,599 "Paragraph 01 — Pack my box with five "
-text 0,600 "dozen liquor jugs."
-text 0,602 "Paragraph 02 — Pack my box with five "
-text 0,603 "dozen liquor jugs."
-text 0,605 "Paragraph 03 — Pack my box with five "
-text 0,606 "dozen liquor jugs."
-text 0,608 "Paragraph 04 — Pack my box with five "
-text 0,609 "dozen liquor jugs."
-text 0,611 "Paragraph 05 — Pack my box with five "
-text 0,612 "dozen liquor jugs."
-text 0,614 "Paragraph 06 — Pack my box with five "
-text 0,615 "dozen liquor jugs."
-text 0,617 "Paragraph 07 — Pack my box with five "
-text 0,618 "dozen liquor jugs."
-text 0,620 "Paragraph 08 — Pack my box with five "
-text 0,621 "dozen liquor jugs."
-text 0,623 "Paragraph 09 — Pack my box with five "
-text 0,624 "dozen liquor jugs."
-text 0,626 "Paragraph 10 — Pack my box with five "
-text 0,627 "dozen liquor jugs."
-text 0,629 "Paragraph 11 — Pack my box with five "
-text 0,630 "dozen liquor jugs."
-text 0,632 "Paragraph 12 — Pack my box with five "
-text 0,633 "dozen liquor jugs."
-text 0,635 "Paragraph 13 — Pack my box with five "
-text 0,636 "dozen liquor jugs."
-text 0,638 "Paragraph 14 — Pack my box with five "
-text 0,639 "dozen liquor jugs."
-text 0,641 "Paragraph 15 — Pack my box with five "
-text 0,642 "dozen liquor jugs."
-text 0,644 "Jump to "
+text 23,593 "." fg=#000000
+text 0,595 "Chapter 11" fg=#000000 bold
+text 0,599 "Paragraph 01 — Pack my box with five " fg=#000000
+text 0,600 "dozen liquor jugs." fg=#000000
+text 0,602 "Paragraph 02 — Pack my box with five " fg=#000000
+text 0,603 "dozen liquor jugs." fg=#000000
+text 0,605 "Paragraph 03 — Pack my box with five " fg=#000000
+text 0,606 "dozen liquor jugs." fg=#000000
+text 0,608 "Paragraph 04 — Pack my box with five " fg=#000000
+text 0,609 "dozen liquor jugs." fg=#000000
+text 0,611 "Paragraph 05 — Pack my box with five " fg=#000000
+text 0,612 "dozen liquor jugs." fg=#000000
+text 0,614 "Paragraph 06 — Pack my box with five " fg=#000000
+text 0,615 "dozen liquor jugs." fg=#000000
+text 0,617 "Paragraph 07 — Pack my box with five " fg=#000000
+text 0,618 "dozen liquor jugs." fg=#000000
+text 0,620 "Paragraph 08 — Pack my box with five " fg=#000000
+text 0,621 "dozen liquor jugs." fg=#000000
+text 0,623 "Paragraph 09 — Pack my box with five " fg=#000000
+text 0,624 "dozen liquor jugs." fg=#000000
+text 0,626 "Paragraph 10 — Pack my box with five " fg=#000000
+text 0,627 "dozen liquor jugs." fg=#000000
+text 0,629 "Paragraph 11 — Pack my box with five " fg=#000000
+text 0,630 "dozen liquor jugs." fg=#000000
+text 0,632 "Paragraph 12 — Pack my box with five " fg=#000000
+text 0,633 "dozen liquor jugs." fg=#000000
+text 0,635 "Paragraph 13 — Pack my box with five " fg=#000000
+text 0,636 "dozen liquor jugs." fg=#000000
+text 0,638 "Paragraph 14 — Pack my box with five " fg=#000000
+text 0,639 "dozen liquor jugs." fg=#000000
+text 0,641 "Paragraph 15 — Pack my box with five " fg=#000000
+text 0,642 "dozen liquor jugs." fg=#000000
+text 0,644 "Jump to " fg=#000000
 text 8,644 "footer" fg=#569cd6 underline link=45
-text 14,644 " or "
+text 14,644 " or " fg=#000000
 text 18,644 "intro" fg=#569cd6 underline link=46
-text 23,644 "."
-text 0,646 "Chapter 12" bold
-text 0,650 "Paragraph 01 — Sphinx of black quartz, "
-text 0,651 "judge my vow."
-text 0,653 "Paragraph 02 — Sphinx of black quartz, "
-text 0,654 "judge my vow."
-text 0,656 "Paragraph 03 — Sphinx of black quartz, "
-text 0,657 "judge my vow."
-text 0,659 "Paragraph 04 — Sphinx of black quartz, "
-text 0,660 "judge my vow."
-text 0,662 "Paragraph 05 — Sphinx of black quartz, "
-text 0,663 "judge my vow."
-text 0,665 "Paragraph 06 — Sphinx of black quartz, "
-text 0,666 "judge my vow."
-text 0,668 "Paragraph 07 — Sphinx of black quartz, "
-text 0,669 "judge my vow."
-text 0,671 "Paragraph 08 — Sphinx of black quartz, "
-text 0,672 "judge my vow."
-text 0,674 "Paragraph 09 — Sphinx of black quartz, "
-text 0,675 "judge my vow."
-text 0,677 "Paragraph 10 — Sphinx of black quartz, "
-text 0,678 "judge my vow."
-text 0,680 "Paragraph 11 — Sphinx of black quartz, "
-text 0,681 "judge my vow."
-text 0,683 "Paragraph 12 — Sphinx of black quartz, "
-text 0,684 "judge my vow."
-text 0,686 "Paragraph 13 — Sphinx of black quartz, "
-text 0,687 "judge my vow."
-text 0,689 "Paragraph 14 — Sphinx of black quartz, "
-text 0,690 "judge my vow."
-text 0,692 "Paragraph 15 — Sphinx of black quartz, "
-text 0,693 "judge my vow."
-text 0,695 "Jump to "
+text 23,644 "." fg=#000000
+text 0,646 "Chapter 12" fg=#000000 bold
+text 0,650 "Paragraph 01 — Sphinx of black quartz, " fg=#000000
+text 0,651 "judge my vow." fg=#000000
+text 0,653 "Paragraph 02 — Sphinx of black quartz, " fg=#000000
+text 0,654 "judge my vow." fg=#000000
+text 0,656 "Paragraph 03 — Sphinx of black quartz, " fg=#000000
+text 0,657 "judge my vow." fg=#000000
+text 0,659 "Paragraph 04 — Sphinx of black quartz, " fg=#000000
+text 0,660 "judge my vow." fg=#000000
+text 0,662 "Paragraph 05 — Sphinx of black quartz, " fg=#000000
+text 0,663 "judge my vow." fg=#000000
+text 0,665 "Paragraph 06 — Sphinx of black quartz, " fg=#000000
+text 0,666 "judge my vow." fg=#000000
+text 0,668 "Paragraph 07 — Sphinx of black quartz, " fg=#000000
+text 0,669 "judge my vow." fg=#000000
+text 0,671 "Paragraph 08 — Sphinx of black quartz, " fg=#000000
+text 0,672 "judge my vow." fg=#000000
+text 0,674 "Paragraph 09 — Sphinx of black quartz, " fg=#000000
+text 0,675 "judge my vow." fg=#000000
+text 0,677 "Paragraph 10 — Sphinx of black quartz, " fg=#000000
+text 0,678 "judge my vow." fg=#000000
+text 0,680 "Paragraph 11 — Sphinx of black quartz, " fg=#000000
+text 0,681 "judge my vow." fg=#000000
+text 0,683 "Paragraph 12 — Sphinx of black quartz, " fg=#000000
+text 0,684 "judge my vow." fg=#000000
+text 0,686 "Paragraph 13 — Sphinx of black quartz, " fg=#000000
+text 0,687 "judge my vow." fg=#000000
+text 0,689 "Paragraph 14 — Sphinx of black quartz, " fg=#000000
+text 0,690 "judge my vow." fg=#000000
+text 0,692 "Paragraph 15 — Sphinx of black quartz, " fg=#000000
+text 0,693 "judge my vow." fg=#000000
+text 0,695 "Jump to " fg=#000000
 text 8,695 "footer" fg=#569cd6 underline link=47
-text 14,695 " or "
+text 14,695 " or " fg=#000000
 text 18,695 "intro" fg=#569cd6 underline link=48
-text 23,695 "."
-text 0,697 "Chapter 13" bold
-text 0,701 "Paragraph 01 — How vexingly quick daft "
-text 0,702 "zebras jump."
-text 0,704 "Paragraph 02 — How vexingly quick daft "
-text 0,705 "zebras jump."
-text 0,707 "Paragraph 03 — How vexingly quick daft "
-text 0,708 "zebras jump."
-text 0,710 "Paragraph 04 — How vexingly quick daft "
-text 0,711 "zebras jump."
-text 0,713 "Paragraph 05 — How vexingly quick daft "
-text 0,714 "zebras jump."
-text 0,716 "Paragraph 06 — How vexingly quick daft "
-text 0,717 "zebras jump."
-text 0,719 "Paragraph 07 — How vexingly quick daft "
-text 0,720 "zebras jump."
-text 0,722 "Paragraph 08 — How vexingly quick daft "
-text 0,723 "zebras jump."
-text 0,725 "Paragraph 09 — How vexingly quick daft "
-text 0,726 "zebras jump."
-text 0,728 "Paragraph 10 — How vexingly quick daft "
-text 0,729 "zebras jump."
-text 0,731 "Paragraph 11 — How vexingly quick daft "
-text 0,732 "zebras jump."
-text 0,734 "Paragraph 12 — How vexingly quick daft "
-text 0,735 "zebras jump."
-text 0,737 "Paragraph 13 — How vexingly quick daft "
-text 0,738 "zebras jump."
-text 0,740 "Paragraph 14 — How vexingly quick daft "
-text 0,741 "zebras jump."
-text 0,743 "Paragraph 15 — How vexingly quick daft "
-text 0,744 "zebras jump."
-text 0,746 "Jump to "
+text 23,695 "." fg=#000000
+text 0,697 "Chapter 13" fg=#000000 bold
+text 0,701 "Paragraph 01 — How vexingly quick daft " fg=#000000
+text 0,702 "zebras jump." fg=#000000
+text 0,704 "Paragraph 02 — How vexingly quick daft " fg=#000000
+text 0,705 "zebras jump." fg=#000000
+text 0,707 "Paragraph 03 — How vexingly quick daft " fg=#000000
+text 0,708 "zebras jump." fg=#000000
+text 0,710 "Paragraph 04 — How vexingly quick daft " fg=#000000
+text 0,711 "zebras jump." fg=#000000
+text 0,713 "Paragraph 05 — How vexingly quick daft " fg=#000000
+text 0,714 "zebras jump." fg=#000000
+text 0,716 "Paragraph 06 — How vexingly quick daft " fg=#000000
+text 0,717 "zebras jump." fg=#000000
+text 0,719 "Paragraph 07 — How vexingly quick daft " fg=#000000
+text 0,720 "zebras jump." fg=#000000
+text 0,722 "Paragraph 08 — How vexingly quick daft " fg=#000000
+text 0,723 "zebras jump." fg=#000000
+text 0,725 "Paragraph 09 — How vexingly quick daft " fg=#000000
+text 0,726 "zebras jump." fg=#000000
+text 0,728 "Paragraph 10 — How vexingly quick daft " fg=#000000
+text 0,729 "zebras jump." fg=#000000
+text 0,731 "Paragraph 11 — How vexingly quick daft " fg=#000000
+text 0,732 "zebras jump." fg=#000000
+text 0,734 "Paragraph 12 — How vexingly quick daft " fg=#000000
+text 0,735 "zebras jump." fg=#000000
+text 0,737 "Paragraph 13 — How vexingly quick daft " fg=#000000
+text 0,738 "zebras jump." fg=#000000
+text 0,740 "Paragraph 14 — How vexingly quick daft " fg=#000000
+text 0,741 "zebras jump." fg=#000000
+text 0,743 "Paragraph 15 — How vexingly quick daft " fg=#000000
+text 0,744 "zebras jump." fg=#000000
+text 0,746 "Jump to " fg=#000000
 text 8,746 "footer" fg=#569cd6 underline link=49
-text 14,746 " or "
+text 14,746 " or " fg=#000000
 text 18,746 "intro" fg=#569cd6 underline link=50
-text 23,746 "."
-text 0,748 "Chapter 14" bold
-text 0,752 "Paragraph 01 — Waltz, bad nymph, for "
-text 0,753 "quick jigs vex."
-text 0,755 "Paragraph 02 — Waltz, bad nymph, for "
-text 0,756 "quick jigs vex."
-text 0,758 "Paragraph 03 — Waltz, bad nymph, for "
-text 0,759 "quick jigs vex."
-text 0,761 "Paragraph 04 — Waltz, bad nymph, for "
-text 0,762 "quick jigs vex."
-text 0,764 "Paragraph 05 — Waltz, bad nymph, for "
-text 0,765 "quick jigs vex."
-text 0,767 "Paragraph 06 — Waltz, bad nymph, for "
-text 0,768 "quick jigs vex."
-text 0,770 "Paragraph 07 — Waltz, bad nymph, for "
-text 0,771 "quick jigs vex."
-text 0,773 "Paragraph 08 — Waltz, bad nymph, for "
-text 0,774 "quick jigs vex."
-text 0,776 "Paragraph 09 — Waltz, bad nymph, for "
-text 0,777 "quick jigs vex."
-text 0,779 "Paragraph 10 — Waltz, bad nymph, for "
-text 0,780 "quick jigs vex."
-text 0,782 "Paragraph 11 — Waltz, bad nymph, for "
-text 0,783 "quick jigs vex."
-text 0,785 "Paragraph 12 — Waltz, bad nymph, for "
-text 0,786 "quick jigs vex."
-text 0,788 "Paragraph 13 — Waltz, bad nymph, for "
-text 0,789 "quick jigs vex."
-text 0,791 "Paragraph 14 — Waltz, bad nymph, for "
-text 0,792 "quick jigs vex."
-text 0,794 "Paragraph 15 — Waltz, bad nymph, for "
-text 0,795 "quick jigs vex."
-text 0,797 "Jump to "
+text 23,746 "." fg=#000000
+text 0,748 "Chapter 14" fg=#000000 bold
+text 0,752 "Paragraph 01 — Waltz, bad nymph, for " fg=#000000
+text 0,753 "quick jigs vex." fg=#000000
+text 0,755 "Paragraph 02 — Waltz, bad nymph, for " fg=#000000
+text 0,756 "quick jigs vex." fg=#000000
+text 0,758 "Paragraph 03 — Waltz, bad nymph, for " fg=#000000
+text 0,759 "quick jigs vex." fg=#000000
+text 0,761 "Paragraph 04 — Waltz, bad nymph, for " fg=#000000
+text 0,762 "quick jigs vex." fg=#000000
+text 0,764 "Paragraph 05 — Waltz, bad nymph, for " fg=#000000
+text 0,765 "quick jigs vex." fg=#000000
+text 0,767 "Paragraph 06 — Waltz, bad nymph, for " fg=#000000
+text 0,768 "quick jigs vex." fg=#000000
+text 0,770 "Paragraph 07 — Waltz, bad nymph, for " fg=#000000
+text 0,771 "quick jigs vex." fg=#000000
+text 0,773 "Paragraph 08 — Waltz, bad nymph, for " fg=#000000
+text 0,774 "quick jigs vex." fg=#000000
+text 0,776 "Paragraph 09 — Waltz, bad nymph, for " fg=#000000
+text 0,777 "quick jigs vex." fg=#000000
+text 0,779 "Paragraph 10 — Waltz, bad nymph, for " fg=#000000
+text 0,780 "quick jigs vex." fg=#000000
+text 0,782 "Paragraph 11 — Waltz, bad nymph, for " fg=#000000
+text 0,783 "quick jigs vex." fg=#000000
+text 0,785 "Paragraph 12 — Waltz, bad nymph, for " fg=#000000
+text 0,786 "quick jigs vex." fg=#000000
+text 0,788 "Paragraph 13 — Waltz, bad nymph, for " fg=#000000
+text 0,789 "quick jigs vex." fg=#000000
+text 0,791 "Paragraph 14 — Waltz, bad nymph, for " fg=#000000
+text 0,792 "quick jigs vex." fg=#000000
+text 0,794 "Paragraph 15 — Waltz, bad nymph, for " fg=#000000
+text 0,795 "quick jigs vex." fg=#000000
+text 0,797 "Jump to " fg=#000000
 text 8,797 "footer" fg=#569cd6 underline link=51
-text 14,797 " or "
+text 14,797 " or " fg=#000000
 text 18,797 "intro" fg=#569cd6 underline link=52
-text 23,797 "."
-text 0,799 "Chapter 15" bold
-text 0,803 "Paragraph 01 — Glib jocks quiz nymph to "
-text 0,804 "vex dwarf."
-text 0,806 "Paragraph 02 — Glib jocks quiz nymph to "
-text 0,807 "vex dwarf."
-text 0,809 "Paragraph 03 — Glib jocks quiz nymph to "
-text 0,810 "vex dwarf."
-text 0,812 "Paragraph 04 — Glib jocks quiz nymph to "
-text 0,813 "vex dwarf."
-text 0,815 "Paragraph 05 — Glib jocks quiz nymph to "
-text 0,816 "vex dwarf."
-text 0,818 "Paragraph 06 — Glib jocks quiz nymph to "
-text 0,819 "vex dwarf."
-text 0,821 "Paragraph 07 — Glib jocks quiz nymph to "
-text 0,822 "vex dwarf."
-text 0,824 "Paragraph 08 — Glib jocks quiz nymph to "
-text 0,825 "vex dwarf."
-text 0,827 "Paragraph 09 — Glib jocks quiz nymph to "
-text 0,828 "vex dwarf."
-text 0,830 "Paragraph 10 — Glib jocks quiz nymph to "
-text 0,831 "vex dwarf."
-text 0,833 "Paragraph 11 — Glib jocks quiz nymph to "
-text 0,834 "vex dwarf."
-text 0,836 "Paragraph 12 — Glib jocks quiz nymph to "
-text 0,837 "vex dwarf."
-text 0,839 "Paragraph 13 — Glib jocks quiz nymph to "
-text 0,840 "vex dwarf."
-text 0,842 "Paragraph 14 — Glib jocks quiz nymph to "
-text 0,843 "vex dwarf."
-text 0,845 "Paragraph 15 — Glib jocks quiz nymph to "
-text 0,846 "vex dwarf."
-text 0,848 "Jump to "
+text 23,797 "." fg=#000000
+text 0,799 "Chapter 15" fg=#000000 bold
+text 0,803 "Paragraph 01 — Glib jocks quiz nymph to " fg=#000000
+text 0,804 "vex dwarf." fg=#000000
+text 0,806 "Paragraph 02 — Glib jocks quiz nymph to " fg=#000000
+text 0,807 "vex dwarf." fg=#000000
+text 0,809 "Paragraph 03 — Glib jocks quiz nymph to " fg=#000000
+text 0,810 "vex dwarf." fg=#000000
+text 0,812 "Paragraph 04 — Glib jocks quiz nymph to " fg=#000000
+text 0,813 "vex dwarf." fg=#000000
+text 0,815 "Paragraph 05 — Glib jocks quiz nymph to " fg=#000000
+text 0,816 "vex dwarf." fg=#000000
+text 0,818 "Paragraph 06 — Glib jocks quiz nymph to " fg=#000000
+text 0,819 "vex dwarf." fg=#000000
+text 0,821 "Paragraph 07 — Glib jocks quiz nymph to " fg=#000000
+text 0,822 "vex dwarf." fg=#000000
+text 0,824 "Paragraph 08 — Glib jocks quiz nymph to " fg=#000000
+text 0,825 "vex dwarf." fg=#000000
+text 0,827 "Paragraph 09 — Glib jocks quiz nymph to " fg=#000000
+text 0,828 "vex dwarf." fg=#000000
+text 0,830 "Paragraph 10 — Glib jocks quiz nymph to " fg=#000000
+text 0,831 "vex dwarf." fg=#000000
+text 0,833 "Paragraph 11 — Glib jocks quiz nymph to " fg=#000000
+text 0,834 "vex dwarf." fg=#000000
+text 0,836 "Paragraph 12 — Glib jocks quiz nymph to " fg=#000000
+text 0,837 "vex dwarf." fg=#000000
+text 0,839 "Paragraph 13 — Glib jocks quiz nymph to " fg=#000000
+text 0,840 "vex dwarf." fg=#000000
+text 0,842 "Paragraph 14 — Glib jocks quiz nymph to " fg=#000000
+text 0,843 "vex dwarf." fg=#000000
+text 0,845 "Paragraph 15 — Glib jocks quiz nymph to " fg=#000000
+text 0,846 "vex dwarf." fg=#000000
+text 0,848 "Jump to " fg=#000000
 text 8,848 "footer" fg=#569cd6 underline link=53
-text 14,848 " or "
+text 14,848 " or " fg=#000000
 text 18,848 "intro" fg=#569cd6 underline link=54
-text 23,848 "."
-text 0,850 "Chapter 16" bold
-text 0,854 "Paragraph 01 — Pack my box with five "
-text 0,855 "dozen liquor jugs."
-text 0,857 "Paragraph 02 — Pack my box with five "
-text 0,858 "dozen liquor jugs."
-text 0,860 "Paragraph 03 — Pack my box with five "
-text 0,861 "dozen liquor jugs."
-text 0,863 "Paragraph 04 — Pack my box with five "
-text 0,864 "dozen liquor jugs."
-text 0,866 "Paragraph 05 — Pack my box with five "
-text 0,867 "dozen liquor jugs."
-text 0,869 "Paragraph 06 — Pack my box with five "
-text 0,870 "dozen liquor jugs."
-text 0,872 "Paragraph 07 — Pack my box with five "
-text 0,873 "dozen liquor jugs."
-text 0,875 "Paragraph 08 — Pack my box with five "
-text 0,876 "dozen liquor jugs."
-text 0,878 "Paragraph 09 — Pack my box with five "
-text 0,879 "dozen liquor jugs."
-text 0,881 "Paragraph 10 — Pack my box with five "
-text 0,882 "dozen liquor jugs."
-text 0,884 "Paragraph 11 — Pack my box with five "
-text 0,885 "dozen liquor jugs."
-text 0,887 "Paragraph 12 — Pack my box with five "
-text 0,888 "dozen liquor jugs."
-text 0,890 "Paragraph 13 — Pack my box with five "
-text 0,891 "dozen liquor jugs."
-text 0,893 "Paragraph 14 — Pack my box with five "
-text 0,894 "dozen liquor jugs."
-text 0,896 "Paragraph 15 — Pack my box with five "
-text 0,897 "dozen liquor jugs."
-text 0,899 "Jump to "
+text 23,848 "." fg=#000000
+text 0,850 "Chapter 16" fg=#000000 bold
+text 0,854 "Paragraph 01 — Pack my box with five " fg=#000000
+text 0,855 "dozen liquor jugs." fg=#000000
+text 0,857 "Paragraph 02 — Pack my box with five " fg=#000000
+text 0,858 "dozen liquor jugs." fg=#000000
+text 0,860 "Paragraph 03 — Pack my box with five " fg=#000000
+text 0,861 "dozen liquor jugs." fg=#000000
+text 0,863 "Paragraph 04 — Pack my box with five " fg=#000000
+text 0,864 "dozen liquor jugs." fg=#000000
+text 0,866 "Paragraph 05 — Pack my box with five " fg=#000000
+text 0,867 "dozen liquor jugs." fg=#000000
+text 0,869 "Paragraph 06 — Pack my box with five " fg=#000000
+text 0,870 "dozen liquor jugs." fg=#000000
+text 0,872 "Paragraph 07 — Pack my box with five " fg=#000000
+text 0,873 "dozen liquor jugs." fg=#000000
+text 0,875 "Paragraph 08 — Pack my box with five " fg=#000000
+text 0,876 "dozen liquor jugs." fg=#000000
+text 0,878 "Paragraph 09 — Pack my box with five " fg=#000000
+text 0,879 "dozen liquor jugs." fg=#000000
+text 0,881 "Paragraph 10 — Pack my box with five " fg=#000000
+text 0,882 "dozen liquor jugs." fg=#000000
+text 0,884 "Paragraph 11 — Pack my box with five " fg=#000000
+text 0,885 "dozen liquor jugs." fg=#000000
+text 0,887 "Paragraph 12 — Pack my box with five " fg=#000000
+text 0,888 "dozen liquor jugs." fg=#000000
+text 0,890 "Paragraph 13 — Pack my box with five " fg=#000000
+text 0,891 "dozen liquor jugs." fg=#000000
+text 0,893 "Paragraph 14 — Pack my box with five " fg=#000000
+text 0,894 "dozen liquor jugs." fg=#000000
+text 0,896 "Paragraph 15 — Pack my box with five " fg=#000000
+text 0,897 "dozen liquor jugs." fg=#000000
+text 0,899 "Jump to " fg=#000000
 text 8,899 "footer" fg=#569cd6 underline link=55
-text 14,899 " or "
+text 14,899 " or " fg=#000000
 text 18,899 "intro" fg=#569cd6 underline link=56
-text 23,899 "."
-text 0,901 "Chapter 17" bold
-text 0,905 "Paragraph 01 — Sphinx of black quartz, "
-text 0,906 "judge my vow."
-text 0,908 "Paragraph 02 — Sphinx of black quartz, "
-text 0,909 "judge my vow."
-text 0,911 "Paragraph 03 — Sphinx of black quartz, "
-text 0,912 "judge my vow."
-text 0,914 "Paragraph 04 — Sphinx of black quartz, "
-text 0,915 "judge my vow."
-text 0,917 "Paragraph 05 — Sphinx of black quartz, "
-text 0,918 "judge my vow."
-text 0,920 "Paragraph 06 — Sphinx of black quartz, "
-text 0,921 "judge my vow."
-text 0,923 "Paragraph 07 — Sphinx of black quartz, "
-text 0,924 "judge my vow."
-text 0,926 "Paragraph 08 — Sphinx of black quartz, "
-text 0,927 "judge my vow."
-text 0,929 "Paragraph 09 — Sphinx of black quartz, "
-text 0,930 "judge my vow."
-text 0,932 "Paragraph 10 — Sphinx of black quartz, "
-text 0,933 "judge my vow."
-text 0,935 "Paragraph 11 — Sphinx of black quartz, "
-text 0,936 "judge my vow."
-text 0,938 "Paragraph 12 — Sphinx of black quartz, "
-text 0,939 "judge my vow."
-text 0,941 "Paragraph 13 — Sphinx of black quartz, "
-text 0,942 "judge my vow."
-text 0,944 "Paragraph 14 — Sphinx of black quartz, "
-text 0,945 "judge my vow."
-text 0,947 "Paragraph 15 — Sphinx of black quartz, "
-text 0,948 "judge my vow."
-text 0,950 "Jump to "
+text 23,899 "." fg=#000000
+text 0,901 "Chapter 17" fg=#000000 bold
+text 0,905 "Paragraph 01 — Sphinx of black quartz, " fg=#000000
+text 0,906 "judge my vow." fg=#000000
+text 0,908 "Paragraph 02 — Sphinx of black quartz, " fg=#000000
+text 0,909 "judge my vow." fg=#000000
+text 0,911 "Paragraph 03 — Sphinx of black quartz, " fg=#000000
+text 0,912 "judge my vow." fg=#000000
+text 0,914 "Paragraph 04 — Sphinx of black quartz, " fg=#000000
+text 0,915 "judge my vow." fg=#000000
+text 0,917 "Paragraph 05 — Sphinx of black quartz, " fg=#000000
+text 0,918 "judge my vow." fg=#000000
+text 0,920 "Paragraph 06 — Sphinx of black quartz, " fg=#000000
+text 0,921 "judge my vow." fg=#000000
+text 0,923 "Paragraph 07 — Sphinx of black quartz, " fg=#000000
+text 0,924 "judge my vow." fg=#000000
+text 0,926 "Paragraph 08 — Sphinx of black quartz, " fg=#000000
+text 0,927 "judge my vow." fg=#000000
+text 0,929 "Paragraph 09 — Sphinx of black quartz, " fg=#000000
+text 0,930 "judge my vow." fg=#000000
+text 0,932 "Paragraph 10 — Sphinx of black quartz, " fg=#000000
+text 0,933 "judge my vow." fg=#000000
+text 0,935 "Paragraph 11 — Sphinx of black quartz, " fg=#000000
+text 0,936 "judge my vow." fg=#000000
+text 0,938 "Paragraph 12 — Sphinx of black quartz, " fg=#000000
+text 0,939 "judge my vow." fg=#000000
+text 0,941 "Paragraph 13 — Sphinx of black quartz, " fg=#000000
+text 0,942 "judge my vow." fg=#000000
+text 0,944 "Paragraph 14 — Sphinx of black quartz, " fg=#000000
+text 0,945 "judge my vow." fg=#000000
+text 0,947 "Paragraph 15 — Sphinx of black quartz, " fg=#000000
+text 0,948 "judge my vow." fg=#000000
+text 0,950 "Jump to " fg=#000000
 text 8,950 "footer" fg=#569cd6 underline link=57
-text 14,950 " or "
+text 14,950 " or " fg=#000000
 text 18,950 "intro" fg=#569cd6 underline link=58
-text 23,950 "."
-text 0,952 "Chapter 18" bold
-text 0,956 "Paragraph 01 — How vexingly quick daft "
-text 0,957 "zebras jump."
-text 0,959 "Paragraph 02 — How vexingly quick daft "
-text 0,960 "zebras jump."
-text 0,962 "Paragraph 03 — How vexingly quick daft "
-text 0,963 "zebras jump."
-text 0,965 "Paragraph 04 — How vexingly quick daft "
-text 0,966 "zebras jump."
-text 0,968 "Paragraph 05 — How vexingly quick daft "
-text 0,969 "zebras jump."
-text 0,971 "Paragraph 06 — How vexingly quick daft "
-text 0,972 "zebras jump."
-text 0,974 "Paragraph 07 — How vexingly quick daft "
-text 0,975 "zebras jump."
-text 0,977 "Paragraph 08 — How vexingly quick daft "
-text 0,978 "zebras jump."
-text 0,980 "Paragraph 09 — How vexingly quick daft "
-text 0,981 "zebras jump."
-text 0,983 "Paragraph 10 — How vexingly quick daft "
-text 0,984 "zebras jump."
-text 0,986 "Paragraph 11 — How vexingly quick daft "
-text 0,987 "zebras jump."
-text 0,989 "Paragraph 12 — How vexingly quick daft "
-text 0,990 "zebras jump."
-text 0,992 "Paragraph 13 — How vexingly quick daft "
-text 0,993 "zebras jump."
-text 0,995 "Paragraph 14 — How vexingly quick daft "
-text 0,996 "zebras jump."
-text 0,998 "Paragraph 15 — How vexingly quick daft "
-text 0,999 "zebras jump."
-text 0,1001 "Jump to "
+text 23,950 "." fg=#000000
+text 0,952 "Chapter 18" fg=#000000 bold
+text 0,956 "Paragraph 01 — How vexingly quick daft " fg=#000000
+text 0,957 "zebras jump." fg=#000000
+text 0,959 "Paragraph 02 — How vexingly quick daft " fg=#000000
+text 0,960 "zebras jump." fg=#000000
+text 0,962 "Paragraph 03 — How vexingly quick daft " fg=#000000
+text 0,963 "zebras jump." fg=#000000
+text 0,965 "Paragraph 04 — How vexingly quick daft " fg=#000000
+text 0,966 "zebras jump." fg=#000000
+text 0,968 "Paragraph 05 — How vexingly quick daft " fg=#000000
+text 0,969 "zebras jump." fg=#000000
+text 0,971 "Paragraph 06 — How vexingly quick daft " fg=#000000
+text 0,972 "zebras jump." fg=#000000
+text 0,974 "Paragraph 07 — How vexingly quick daft " fg=#000000
+text 0,975 "zebras jump." fg=#000000
+text 0,977 "Paragraph 08 — How vexingly quick daft " fg=#000000
+text 0,978 "zebras jump." fg=#000000
+text 0,980 "Paragraph 09 — How vexingly quick daft " fg=#000000
+text 0,981 "zebras jump." fg=#000000
+text 0,983 "Paragraph 10 — How vexingly quick daft " fg=#000000
+text 0,984 "zebras jump." fg=#000000
+text 0,986 "Paragraph 11 — How vexingly quick daft " fg=#000000
+text 0,987 "zebras jump." fg=#000000
+text 0,989 "Paragraph 12 — How vexingly quick daft " fg=#000000
+text 0,990 "zebras jump." fg=#000000
+text 0,992 "Paragraph 13 — How vexingly quick daft " fg=#000000
+text 0,993 "zebras jump." fg=#000000
+text 0,995 "Paragraph 14 — How vexingly quick daft " fg=#000000
+text 0,996 "zebras jump." fg=#000000
+text 0,998 "Paragraph 15 — How vexingly quick daft " fg=#000000
+text 0,999 "zebras jump." fg=#000000
+text 0,1001 "Jump to " fg=#000000
 text 8,1001 "footer" fg=#569cd6 underline link=59
-text 14,1001 " or "
+text 14,1001 " or " fg=#000000
 text 18,1001 "intro" fg=#569cd6 underline link=60
-text 23,1001 "."
-text 0,1003 "Chapter 19" bold
-text 0,1007 "Paragraph 01 — Waltz, bad nymph, for "
-text 0,1008 "quick jigs vex."
-text 0,1010 "Paragraph 02 — Waltz, bad nymph, for "
-text 0,1011 "quick jigs vex."
-text 0,1013 "Paragraph 03 — Waltz, bad nymph, for "
-text 0,1014 "quick jigs vex."
-text 0,1016 "Paragraph 04 — Waltz, bad nymph, for "
-text 0,1017 "quick jigs vex."
-text 0,1019 "Paragraph 05 — Waltz, bad nymph, for "
-text 0,1020 "quick jigs vex."
-text 0,1022 "Paragraph 06 — Waltz, bad nymph, for "
-text 0,1023 "quick jigs vex."
-text 0,1025 "Paragraph 07 — Waltz, bad nymph, for "
-text 0,1026 "quick jigs vex."
-text 0,1028 "Paragraph 08 — Waltz, bad nymph, for "
-text 0,1029 "quick jigs vex."
-text 0,1031 "Paragraph 09 — Waltz, bad nymph, for "
-text 0,1032 "quick jigs vex."
-text 0,1034 "Paragraph 10 — Waltz, bad nymph, for "
-text 0,1035 "quick jigs vex."
-text 0,1037 "Paragraph 11 — Waltz, bad nymph, for "
-text 0,1038 "quick jigs vex."
-text 0,1040 "Paragraph 12 — Waltz, bad nymph, for "
-text 0,1041 "quick jigs vex."
-text 0,1043 "Paragraph 13 — Waltz, bad nymph, for "
-text 0,1044 "quick jigs vex."
-text 0,1046 "Paragraph 14 — Waltz, bad nymph, for "
-text 0,1047 "quick jigs vex."
-text 0,1049 "Paragraph 15 — Waltz, bad nymph, for "
-text 0,1050 "quick jigs vex."
-text 0,1052 "Jump to "
+text 23,1001 "." fg=#000000
+text 0,1003 "Chapter 19" fg=#000000 bold
+text 0,1007 "Paragraph 01 — Waltz, bad nymph, for " fg=#000000
+text 0,1008 "quick jigs vex." fg=#000000
+text 0,1010 "Paragraph 02 — Waltz, bad nymph, for " fg=#000000
+text 0,1011 "quick jigs vex." fg=#000000
+text 0,1013 "Paragraph 03 — Waltz, bad nymph, for " fg=#000000
+text 0,1014 "quick jigs vex." fg=#000000
+text 0,1016 "Paragraph 04 — Waltz, bad nymph, for " fg=#000000
+text 0,1017 "quick jigs vex." fg=#000000
+text 0,1019 "Paragraph 05 — Waltz, bad nymph, for " fg=#000000
+text 0,1020 "quick jigs vex." fg=#000000
+text 0,1022 "Paragraph 06 — Waltz, bad nymph, for " fg=#000000
+text 0,1023 "quick jigs vex." fg=#000000
+text 0,1025 "Paragraph 07 — Waltz, bad nymph, for " fg=#000000
+text 0,1026 "quick jigs vex." fg=#000000
+text 0,1028 "Paragraph 08 — Waltz, bad nymph, for " fg=#000000
+text 0,1029 "quick jigs vex." fg=#000000
+text 0,1031 "Paragraph 09 — Waltz, bad nymph, for " fg=#000000
+text 0,1032 "quick jigs vex." fg=#000000
+text 0,1034 "Paragraph 10 — Waltz, bad nymph, for " fg=#000000
+text 0,1035 "quick jigs vex." fg=#000000
+text 0,1037 "Paragraph 11 — Waltz, bad nymph, for " fg=#000000
+text 0,1038 "quick jigs vex." fg=#000000
+text 0,1040 "Paragraph 12 — Waltz, bad nymph, for " fg=#000000
+text 0,1041 "quick jigs vex." fg=#000000
+text 0,1043 "Paragraph 13 — Waltz, bad nymph, for " fg=#000000
+text 0,1044 "quick jigs vex." fg=#000000
+text 0,1046 "Paragraph 14 — Waltz, bad nymph, for " fg=#000000
+text 0,1047 "quick jigs vex." fg=#000000
+text 0,1049 "Paragraph 15 — Waltz, bad nymph, for " fg=#000000
+text 0,1050 "quick jigs vex." fg=#000000
+text 0,1052 "Jump to " fg=#000000
 text 8,1052 "footer" fg=#569cd6 underline link=61
-text 14,1052 " or "
+text 14,1052 " or " fg=#000000
 text 18,1052 "intro" fg=#569cd6 underline link=62
-text 23,1052 "."
-text 0,1054 "Chapter 20" bold
-text 0,1058 "Paragraph 01 — Glib jocks quiz nymph to "
-text 0,1059 "vex dwarf."
-text 0,1061 "Paragraph 02 — Glib jocks quiz nymph to "
-text 0,1062 "vex dwarf."
-text 0,1064 "Paragraph 03 — Glib jocks quiz nymph to "
-text 0,1065 "vex dwarf."
-text 0,1067 "Paragraph 04 — Glib jocks quiz nymph to "
-text 0,1068 "vex dwarf."
-text 0,1070 "Paragraph 05 — Glib jocks quiz nymph to "
-text 0,1071 "vex dwarf."
-text 0,1073 "Paragraph 06 — Glib jocks quiz nymph to "
-text 0,1074 "vex dwarf."
-text 0,1076 "Paragraph 07 — Glib jocks quiz nymph to "
-text 0,1077 "vex dwarf."
-text 0,1079 "Paragraph 08 — Glib jocks quiz nymph to "
-text 0,1080 "vex dwarf."
-text 0,1082 "Paragraph 09 — Glib jocks quiz nymph to "
-text 0,1083 "vex dwarf."
-text 0,1085 "Paragraph 10 — Glib jocks quiz nymph to "
-text 0,1086 "vex dwarf."
-text 0,1088 "Paragraph 11 — Glib jocks quiz nymph to "
-text 0,1089 "vex dwarf."
-text 0,1091 "Paragraph 12 — Glib jocks quiz nymph to "
-text 0,1092 "vex dwarf."
-text 0,1094 "Paragraph 13 — Glib jocks quiz nymph to "
-text 0,1095 "vex dwarf."
-text 0,1097 "Paragraph 14 — Glib jocks quiz nymph to "
-text 0,1098 "vex dwarf."
-text 0,1100 "Paragraph 15 — Glib jocks quiz nymph to "
-text 0,1101 "vex dwarf."
-text 0,1103 "Jump to "
+text 23,1052 "." fg=#000000
+text 0,1054 "Chapter 20" fg=#000000 bold
+text 0,1058 "Paragraph 01 — Glib jocks quiz nymph to " fg=#000000
+text 0,1059 "vex dwarf." fg=#000000
+text 0,1061 "Paragraph 02 — Glib jocks quiz nymph to " fg=#000000
+text 0,1062 "vex dwarf." fg=#000000
+text 0,1064 "Paragraph 03 — Glib jocks quiz nymph to " fg=#000000
+text 0,1065 "vex dwarf." fg=#000000
+text 0,1067 "Paragraph 04 — Glib jocks quiz nymph to " fg=#000000
+text 0,1068 "vex dwarf." fg=#000000
+text 0,1070 "Paragraph 05 — Glib jocks quiz nymph to " fg=#000000
+text 0,1071 "vex dwarf." fg=#000000
+text 0,1073 "Paragraph 06 — Glib jocks quiz nymph to " fg=#000000
+text 0,1074 "vex dwarf." fg=#000000
+text 0,1076 "Paragraph 07 — Glib jocks quiz nymph to " fg=#000000
+text 0,1077 "vex dwarf." fg=#000000
+text 0,1079 "Paragraph 08 — Glib jocks quiz nymph to " fg=#000000
+text 0,1080 "vex dwarf." fg=#000000
+text 0,1082 "Paragraph 09 — Glib jocks quiz nymph to " fg=#000000
+text 0,1083 "vex dwarf." fg=#000000
+text 0,1085 "Paragraph 10 — Glib jocks quiz nymph to " fg=#000000
+text 0,1086 "vex dwarf." fg=#000000
+text 0,1088 "Paragraph 11 — Glib jocks quiz nymph to " fg=#000000
+text 0,1089 "vex dwarf." fg=#000000
+text 0,1091 "Paragraph 12 — Glib jocks quiz nymph to " fg=#000000
+text 0,1092 "vex dwarf." fg=#000000
+text 0,1094 "Paragraph 13 — Glib jocks quiz nymph to " fg=#000000
+text 0,1095 "vex dwarf." fg=#000000
+text 0,1097 "Paragraph 14 — Glib jocks quiz nymph to " fg=#000000
+text 0,1098 "vex dwarf." fg=#000000
+text 0,1100 "Paragraph 15 — Glib jocks quiz nymph to " fg=#000000
+text 0,1101 "vex dwarf." fg=#000000
+text 0,1103 "Jump to " fg=#000000
 text 8,1103 "footer" fg=#569cd6 underline link=63
-text 14,1103 " or "
+text 14,1103 " or " fg=#000000
 text 18,1103 "intro" fg=#569cd6 underline link=64
-text 23,1103 "."
-text 0,1105 "Appendix" bold
-text 0,1109 "Paragraph 01 — Five quacking zephyrs "
-text 0,1110 "jolt my wax bed."
-text 0,1112 "Paragraph 02 — Five quacking zephyrs "
-text 0,1113 "jolt my wax bed."
-text 0,1115 "Paragraph 03 — Five quacking zephyrs "
-text 0,1116 "jolt my wax bed."
-text 0,1118 "Paragraph 04 — Five quacking zephyrs "
-text 0,1119 "jolt my wax bed."
-text 0,1121 "Paragraph 05 — Five quacking zephyrs "
-text 0,1122 "jolt my wax bed."
-text 0,1124 "Paragraph 06 — Five quacking zephyrs "
-text 0,1125 "jolt my wax bed."
-text 0,1127 "Paragraph 07 — Five quacking zephyrs "
-text 0,1128 "jolt my wax bed."
-text 0,1130 "Paragraph 08 — Five quacking zephyrs "
-text 0,1131 "jolt my wax bed."
-text 0,1133 "Paragraph 09 — Five quacking zephyrs "
-text 0,1134 "jolt my wax bed."
-text 0,1136 "Paragraph 10 — Five quacking zephyrs "
-text 0,1137 "jolt my wax bed."
-text 0,1139 "Paragraph 11 — Five quacking zephyrs "
-text 0,1140 "jolt my wax bed."
-text 0,1142 "Paragraph 12 — Five quacking zephyrs "
-text 0,1143 "jolt my wax bed."
-text 0,1145 "Paragraph 13 — Five quacking zephyrs "
-text 0,1146 "jolt my wax bed."
-text 0,1148 "Paragraph 14 — Five quacking zephyrs "
-text 0,1149 "jolt my wax bed."
-text 0,1151 "Paragraph 15 — Five quacking zephyrs "
-text 0,1152 "jolt my wax bed."
-text 0,1154 "Jump to "
+text 23,1103 "." fg=#000000
+text 0,1105 "Appendix" fg=#000000 bold
+text 0,1109 "Paragraph 01 — Five quacking zephyrs " fg=#000000
+text 0,1110 "jolt my wax bed." fg=#000000
+text 0,1112 "Paragraph 02 — Five quacking zephyrs " fg=#000000
+text 0,1113 "jolt my wax bed." fg=#000000
+text 0,1115 "Paragraph 03 — Five quacking zephyrs " fg=#000000
+text 0,1116 "jolt my wax bed." fg=#000000
+text 0,1118 "Paragraph 04 — Five quacking zephyrs " fg=#000000
+text 0,1119 "jolt my wax bed." fg=#000000
+text 0,1121 "Paragraph 05 — Five quacking zephyrs " fg=#000000
+text 0,1122 "jolt my wax bed." fg=#000000
+text 0,1124 "Paragraph 06 — Five quacking zephyrs " fg=#000000
+text 0,1125 "jolt my wax bed." fg=#000000
+text 0,1127 "Paragraph 07 — Five quacking zephyrs " fg=#000000
+text 0,1128 "jolt my wax bed." fg=#000000
+text 0,1130 "Paragraph 08 — Five quacking zephyrs " fg=#000000
+text 0,1131 "jolt my wax bed." fg=#000000
+text 0,1133 "Paragraph 09 — Five quacking zephyrs " fg=#000000
+text 0,1134 "jolt my wax bed." fg=#000000
+text 0,1136 "Paragraph 10 — Five quacking zephyrs " fg=#000000
+text 0,1137 "jolt my wax bed." fg=#000000
+text 0,1139 "Paragraph 11 — Five quacking zephyrs " fg=#000000
+text 0,1140 "jolt my wax bed." fg=#000000
+text 0,1142 "Paragraph 12 — Five quacking zephyrs " fg=#000000
+text 0,1143 "jolt my wax bed." fg=#000000
+text 0,1145 "Paragraph 13 — Five quacking zephyrs " fg=#000000
+text 0,1146 "jolt my wax bed." fg=#000000
+text 0,1148 "Paragraph 14 — Five quacking zephyrs " fg=#000000
+text 0,1149 "jolt my wax bed." fg=#000000
+text 0,1151 "Paragraph 15 — Five quacking zephyrs " fg=#000000
+text 0,1152 "jolt my wax bed." fg=#000000
+text 0,1154 "Jump to " fg=#000000
 text 8,1154 "footer" fg=#569cd6 underline link=65
-text 14,1154 " or "
+text 14,1154 " or " fg=#000000
 text 18,1154 "intro" fg=#569cd6 underline link=66
-text 23,1154 "."
-text 0,1156 "Footer" bold
-text 0,1160 "Paragraph 01 — You reached the bottom of "
-text 0,1161 "the fragment test page."
-text 0,1163 "Paragraph 02 — You reached the bottom of "
-text 0,1164 "the fragment test page."
-text 0,1166 "Paragraph 03 — You reached the bottom of "
-text 0,1167 "the fragment test page."
-text 0,1169 "Paragraph 04 — You reached the bottom of "
-text 0,1170 "the fragment test page."
-text 0,1172 "Paragraph 05 — You reached the bottom of "
-text 0,1173 "the fragment test page."
-text 0,1175 "Paragraph 06 — You reached the bottom of "
-text 0,1176 "the fragment test page."
-text 0,1178 "Paragraph 07 — You reached the bottom of "
-text 0,1179 "the fragment test page."
-text 0,1181 "Paragraph 08 — You reached the bottom of "
-text 0,1182 "the fragment test page."
-text 0,1184 "Paragraph 09 — You reached the bottom of "
-text 0,1185 "the fragment test page."
-text 0,1187 "Paragraph 10 — You reached the bottom of "
-text 0,1188 "the fragment test page."
-text 0,1190 "Paragraph 11 — You reached the bottom of "
-text 0,1191 "the fragment test page."
-text 0,1193 "Paragraph 12 — You reached the bottom of "
-text 0,1194 "the fragment test page."
-text 0,1196 "Paragraph 13 — You reached the bottom of "
-text 0,1197 "the fragment test page."
-text 0,1199 "Paragraph 14 — You reached the bottom of "
-text 0,1200 "the fragment test page."
-text 0,1202 "Paragraph 15 — You reached the bottom of "
-text 0,1203 "the fragment test page."
+text 23,1154 "." fg=#000000
+text 0,1156 "Footer" fg=#000000 bold
+text 0,1160 "Paragraph 01 — You reached the bottom of " fg=#000000
+text 0,1161 "the fragment test page." fg=#000000
+text 0,1163 "Paragraph 02 — You reached the bottom of " fg=#000000
+text 0,1164 "the fragment test page." fg=#000000
+text 0,1166 "Paragraph 03 — You reached the bottom of " fg=#000000
+text 0,1167 "the fragment test page." fg=#000000
+text 0,1169 "Paragraph 04 — You reached the bottom of " fg=#000000
+text 0,1170 "the fragment test page." fg=#000000
+text 0,1172 "Paragraph 05 — You reached the bottom of " fg=#000000
+text 0,1173 "the fragment test page." fg=#000000
+text 0,1175 "Paragraph 06 — You reached the bottom of " fg=#000000
+text 0,1176 "the fragment test page." fg=#000000
+text 0,1178 "Paragraph 07 — You reached the bottom of " fg=#000000
+text 0,1179 "the fragment test page." fg=#000000
+text 0,1181 "Paragraph 08 — You reached the bottom of " fg=#000000
+text 0,1182 "the fragment test page." fg=#000000
+text 0,1184 "Paragraph 09 — You reached the bottom of " fg=#000000
+text 0,1185 "the fragment test page." fg=#000000
+text 0,1187 "Paragraph 10 — You reached the bottom of " fg=#000000
+text 0,1188 "the fragment test page." fg=#000000
+text 0,1190 "Paragraph 11 — You reached the bottom of " fg=#000000
+text 0,1191 "the fragment test page." fg=#000000
+text 0,1193 "Paragraph 12 — You reached the bottom of " fg=#000000
+text 0,1194 "the fragment test page." fg=#000000
+text 0,1196 "Paragraph 13 — You reached the bottom of " fg=#000000
+text 0,1197 "the fragment test page." fg=#000000
+text 0,1199 "Paragraph 14 — You reached the bottom of " fg=#000000
+text 0,1200 "the fragment test page." fg=#000000
+text 0,1202 "Paragraph 15 — You reached the bottom of " fg=#000000
+text 0,1203 "the fragment test page." fg=#000000
 text 0,1205 "Back to intro" fg=#569cd6 underline link=67
-text 13,1205 " · "
+text 13,1205 " · " fg=#000000
 text 16,1205 "Middle chapter" fg=#569cd6 underline link=68"
 `;
 
@@ -1966,348 +1966,348 @@ text 19,9 ".\\n    " fg=#cccccc"
 `;
 
 exports[`display-list snapshots images-page at 80x24: images-page-80x24 1`] = `
-"text 0,0 "Image placeholders" bold
-text 0,5 "See the "
+"text 0,0 "Image placeholders" fg=#000000 bold
+text 0,5 "See the " fg=#000000
 text 8,5 "[alt: sales chart]" fg=#888888 italic
-text 26,5 " for quarterly results.\\n    "
-text 0,7 "Decorative icon: "
+text 26,5 " for quarterly results.\\n    " fg=#000000
+text 0,7 "Decorative icon: " fg=#000000
 text 17,7 "[image]" fg=#888888 italic
 text 0,9 "[alt: hero banner]" fg=#888888 italic"
 `;
 
 exports[`display-list snapshots images-page at 40x24: images-page-40x24 1`] = `
-"text 0,0 "Image " bold
-text 0,4 "placeholders" bold
-text 0,9 "See the "
+"text 0,0 "Image " fg=#000000 bold
+text 0,4 "placeholders" fg=#000000 bold
+text 0,9 "See the " fg=#000000
 text 8,9 "[alt: sales chart]" fg=#888888 italic
-text 26,9 " for quarterly "
-text 0,10 "results.\\n    "
-text 0,12 "Decorative icon: "
+text 26,9 " for quarterly " fg=#000000
+text 0,10 "results.\\n    " fg=#000000
+text 0,12 "Decorative icon: " fg=#000000
 text 17,12 "[image]" fg=#888888 italic
 text 0,14 "[alt: hero banner]" fg=#888888 italic"
 `;
 
 exports[`display-list snapshots table-page at 80x24: table-page-80x24 1`] = `
-"text 0,0 "Quarterly metrics" bold
-text 0,6 "─────  ─────"
-text 0,5 "Name " bold
-text 7,5 "Value" bold
-text 0,7 "Alpha"
-text 7,7 "1    "
-text 0,8 "Beta "
-text 7,8 "2    ""
+"text 0,0 "Quarterly metrics" fg=#000000 bold
+text 0,6 "─────  ─────" fg=#000000
+text 0,5 "Name " fg=#000000 bold
+text 7,5 "Value" fg=#000000 bold
+text 0,7 "Alpha" fg=#000000
+text 7,7 "1    " fg=#000000
+text 0,8 "Beta " fg=#000000
+text 7,8 "2    " fg=#000000"
 `;
 
 exports[`display-list snapshots table-page at 40x24: table-page-40x24 1`] = `
-"text 0,0 "Quarterly " bold
-text 0,4 "metrics" bold
-text 0,10 "─────  ─────"
-text 0,9 "Name " bold
-text 7,9 "Value" bold
-text 0,11 "Alpha"
-text 7,11 "1    "
-text 0,12 "Beta "
-text 7,12 "2    ""
+"text 0,0 "Quarterly " fg=#000000 bold
+text 0,4 "metrics" fg=#000000 bold
+text 0,10 "─────  ─────" fg=#000000
+text 0,9 "Name " fg=#000000 bold
+text 7,9 "Value" fg=#000000 bold
+text 0,11 "Alpha" fg=#000000
+text 7,11 "1    " fg=#000000
+text 0,12 "Beta " fg=#000000
+text 7,12 "2    " fg=#000000"
 `;
 
 exports[`display-list snapshots definitions-page at 80x24: definitions-page-80x24 1`] = `
-"text 0,0 "Glossary" bold
-text 0,5 "Term" bold
-text 4,6 "Definition one with enough words to wrap across the viewport."
-text 4,7 "Definition two"
-text 0,8 "Another term" bold
-text 4,9 "A shorter definition.""
+"text 0,0 "Glossary" fg=#000000 bold
+text 0,5 "Term" fg=#000000 bold
+text 4,6 "Definition one with enough words to wrap across the viewport." fg=#000000
+text 4,7 "Definition two" fg=#000000
+text 0,8 "Another term" fg=#000000 bold
+text 4,9 "A shorter definition." fg=#000000"
 `;
 
 exports[`display-list snapshots definitions-page at 40x24: definitions-page-40x24 1`] = `
-"text 0,0 "Glossary" bold
-text 0,5 "Term" bold
-text 4,6 "Definition one with enough words to "
-text 4,7 "wrap across the viewport."
-text 4,8 "Definition two"
-text 0,9 "Another term" bold
-text 4,10 "A shorter definition.""
+"text 0,0 "Glossary" fg=#000000 bold
+text 0,5 "Term" fg=#000000 bold
+text 4,6 "Definition one with enough words to " fg=#000000
+text 4,7 "wrap across the viewport." fg=#000000
+text 4,8 "Definition two" fg=#000000
+text 0,9 "Another term" fg=#000000 bold
+text 4,10 "A shorter definition." fg=#000000"
 `;
 
 exports[`display-list snapshots blockquote-page at 80x24: blockquote-page-80x24 1`] = `
-"text 0,0 "Blockquote Demo" bold
-text 0,5 "Body text sits at the left edge."
-text 4,7 "This quotation is indented by default."
-text 4,10 "Outer quote."
-text 8,12 "Nested quote indents further.""
+"text 0,0 "Blockquote Demo" fg=#000000 bold
+text 0,5 "Body text sits at the left edge." fg=#000000
+text 4,7 "This quotation is indented by default." fg=#000000
+text 4,10 "Outer quote." fg=#000000
+text 8,12 "Nested quote indents further." fg=#000000"
 `;
 
 exports[`display-list snapshots blockquote-page at 40x24: blockquote-page-40x24 1`] = `
-"text 0,0 "Blockquote Demo" bold
-text 0,5 "Body text sits at the left edge."
-text 4,7 "This quotation is indented by "
-text 4,8 "default."
-text 4,11 "Outer quote."
-text 8,13 "Nested quote indents further.""
+"text 0,0 "Blockquote Demo" fg=#000000 bold
+text 0,5 "Body text sits at the left edge." fg=#000000
+text 4,7 "This quotation is indented by " fg=#000000
+text 4,8 "default." fg=#000000
+text 4,11 "Outer quote." fg=#000000
+text 8,13 "Nested quote indents further." fg=#000000"
 `;
 
 exports[`display-list snapshots hr-page at 80x24: hr-page-80x24 1`] = `
-"text 0,0 "Horizontal Rule Demo" bold
-text 0,5 "Section one ends here."
+"text 0,0 "Horizontal Rule Demo" fg=#000000 bold
+text 0,5 "Section one ends here." fg=#000000
 text 0,8 "────────────────────────────────────────────────────────────────────────────────" fg=#666666
-text 0,11 "Section two starts below the rule."
-text 4,13 "Indented container."
+text 0,11 "Section two starts below the rule." fg=#000000
+text 4,13 "Indented container." fg=#000000
 text 4,16 "────────────────────────────────────────────────────────────────────────────" fg=#666666
-text 4,19 "Rule follows the inset.""
+text 4,19 "Rule follows the inset." fg=#000000"
 `;
 
 exports[`display-list snapshots hr-page at 40x24: hr-page-40x24 1`] = `
-"text 0,0 "Horizontal Rule " bold
-text 0,4 "Demo" bold
-text 0,9 "Section one ends here."
+"text 0,0 "Horizontal Rule " fg=#000000 bold
+text 0,4 "Demo" fg=#000000 bold
+text 0,9 "Section one ends here." fg=#000000
 text 0,12 "────────────────────────────────────────" fg=#666666
-text 0,15 "Section two starts below the rule."
-text 4,17 "Indented container."
+text 0,15 "Section two starts below the rule." fg=#000000
+text 4,17 "Indented container." fg=#000000
 text 4,20 "────────────────────────────────────" fg=#666666
-text 4,23 "Rule follows the inset.""
+text 4,23 "Rule follows the inset." fg=#000000"
 `;
 
 exports[`display-list snapshots pre-page at 80x24: pre-page-80x24 1`] = `
-"text 0,0 "Preformatted Demo" bold
-text 0,5 "Normal paragraph text still wraps at the viewport edge."
-text 0,7 "  indented line"
-text 0,8 "second line"
-text 0,10 "function greet(name) {"
-text 0,11 "  return \\"hello \\" + name;"
-text 0,12 "}"
-text 0,13 "    "
-text 0,15 "  *"
-text 0,16 " ***"
-text 0,17 "*****"
-text 0,18 " ***"
-text 0,19 "  *"
-text 0,20 "    ""
+"text 0,0 "Preformatted Demo" fg=#000000 bold
+text 0,5 "Normal paragraph text still wraps at the viewport edge." fg=#000000
+text 0,7 "  indented line" fg=#000000
+text 0,8 "second line" fg=#000000
+text 0,10 "function greet(name) {" fg=#000000
+text 0,11 "  return \\"hello \\" + name;" fg=#000000
+text 0,12 "}" fg=#000000
+text 0,13 "    " fg=#000000
+text 0,15 "  *" fg=#000000
+text 0,16 " ***" fg=#000000
+text 0,17 "*****" fg=#000000
+text 0,18 " ***" fg=#000000
+text 0,19 "  *" fg=#000000
+text 0,20 "    " fg=#000000"
 `;
 
 exports[`display-list snapshots pre-page at 40x24: pre-page-40x24 1`] = `
-"text 0,0 "Preformatted " bold
-text 0,4 "Demo" bold
-text 0,9 "Normal paragraph text still wraps at the "
-text 0,10 "viewport edge."
-text 0,12 "  indented line"
-text 0,13 "second line"
-text 0,15 "function greet(name) {"
-text 0,16 "  return \\"hello \\" + name;"
-text 0,17 "}"
-text 0,18 "    "
-text 0,20 "  *"
-text 0,21 " ***"
-text 0,22 "*****"
-text 0,23 " ***"
-text 0,24 "  *"
-text 0,25 "    ""
+"text 0,0 "Preformatted " fg=#000000 bold
+text 0,4 "Demo" fg=#000000 bold
+text 0,9 "Normal paragraph text still wraps at the " fg=#000000
+text 0,10 "viewport edge." fg=#000000
+text 0,12 "  indented line" fg=#000000
+text 0,13 "second line" fg=#000000
+text 0,15 "function greet(name) {" fg=#000000
+text 0,16 "  return \\"hello \\" + name;" fg=#000000
+text 0,17 "}" fg=#000000
+text 0,18 "    " fg=#000000
+text 0,20 "  *" fg=#000000
+text 0,21 " ***" fg=#000000
+text 0,22 "*****" fg=#000000
+text 0,23 " ***" fg=#000000
+text 0,24 "  *" fg=#000000
+text 0,25 "    " fg=#000000"
 `;
 
 exports[`display-list snapshots inset-page at 80x24: inset-page-80x24 1`] = `
 "fill 4,5 76x1 bg=#333
-text 0,0 "Horizontal Inset Demo" bold
-text 6,5 "Quoted text stays indented from the left edge."
-text 2,7 "This paragraph wraps inside horizontal margins.""
+text 0,0 "Horizontal Inset Demo" fg=#000000 bold
+text 6,5 "Quoted text stays indented from the left edge." fg=#000000
+text 2,7 "This paragraph wraps inside horizontal margins." fg=#000000"
 `;
 
 exports[`display-list snapshots inset-page at 40x24: inset-page-40x24 1`] = `
 "fill 4,9 36x2 bg=#333
-text 0,0 "Horizontal Inset " bold
-text 0,4 "Demo" bold
-text 6,9 "Quoted text stays indented from "
-text 6,10 "the left edge."
-text 2,12 "This paragraph wraps inside "
-text 2,13 "horizontal margins.""
+text 0,0 "Horizontal Inset " fg=#000000 bold
+text 0,4 "Demo" fg=#000000 bold
+text 6,9 "Quoted text stays indented from " fg=#000000
+text 6,10 "the left edge." fg=#000000
+text 2,12 "This paragraph wraps inside " fg=#000000
+text 2,13 "horizontal margins." fg=#000000"
 `;
 
 exports[`display-list snapshots fixtures-blog-post at 80x24: fixtures-blog-post-80x24 1`] = `
-"text 0,0 "Why terminal browsers still " bold
-text 0,4 "matter" bold
-text 0,9 "Published on "
-text 13,9 "2026-07-01" bold
-text 23,9 " ·\\n      "
+"text 0,0 "Why terminal browsers still " fg=#000000 bold
+text 0,4 "matter" fg=#000000 bold
+text 0,9 "Published on " fg=#000000
+text 13,9 "2026-07-01" fg=#000000 bold
+text 23,9 " ·\\n      " fg=#000000
 text 32,9 "browsers" fg=#569cd6 underline link=0
-text 40,9 ",\\n      "
+text 40,9 ",\\n      " fg=#000000
 text 48,9 "cli" fg=#569cd6 underline link=1
-text 51,9 "\\n    "
-text 0,11 "Most developers live in the terminal. A browser that renders pages where you "
-text 0,12 "already work\\n      removes context switching without pretending to be a full "
-text 0,13 "desktop browser.\\n    "
-text 0,15 "Readable defaults beat pixel parity" bold
-text 0,19 "Pagina focuses on semantic content: headings, links, lists, and "
-text 0,20 "monospace-friendly layout.\\n      See the "
+text 51,9 "\\n    " fg=#000000
+text 0,11 "Most developers live in the terminal. A browser that renders pages where you " fg=#000000
+text 0,12 "already work\\n      removes context switching without pretending to be a full " fg=#000000
+text 0,13 "desktop browser.\\n    " fg=#000000
+text 0,15 "Readable defaults beat pixel parity" fg=#000000 bold
+text 0,19 "Pagina focuses on semantic content: headings, links, lists, and " fg=#000000
+text 0,20 "monospace-friendly layout.\\n      See the " fg=#000000
 text 41,20 "project docs" fg=#569cd6 underline link=2
-text 53,20 " for supported HTML.\\n    "
-text 4,22 "Terminal UI is a feature, not a fallback."
-text 0,25 "What to try next" bold
-text 0,28 "- "
-text 0,28 "Open local HTML files from disk"
-text 0,30 "- "
-text 0,30 "Follow links with keyboard focus"
-text 0,32 "- "
-text 0,32 "Scroll long articles with "
-text 26,32 "j" italic
-text 27,32 " and "
-text 32,32 "k" italic"
+text 53,20 " for supported HTML.\\n    " fg=#000000
+text 4,22 "Terminal UI is a feature, not a fallback." fg=#000000
+text 0,25 "What to try next" fg=#000000 bold
+text 0,28 "- " fg=#000000
+text 0,28 "Open local HTML files from disk" fg=#000000
+text 0,30 "- " fg=#000000
+text 0,30 "Follow links with keyboard focus" fg=#000000
+text 0,32 "- " fg=#000000
+text 0,32 "Scroll long articles with " fg=#000000
+text 26,32 "j" fg=#000000 italic
+text 27,32 " and " fg=#000000
+text 32,32 "k" fg=#000000 italic"
 `;
 
 exports[`display-list snapshots fixtures-blog-post at 40x24: fixtures-blog-post-40x24 1`] = `
-"text 0,0 "Why terminal " bold
-text 0,4 "browsers still " bold
-text 0,8 "matter" bold
-text 0,13 "Published on "
-text 13,13 "2026-07-01" bold
-text 23,13 " ·\\n      "
+"text 0,0 "Why terminal " fg=#000000 bold
+text 0,4 "browsers still " fg=#000000 bold
+text 0,8 "matter" fg=#000000 bold
+text 0,13 "Published on " fg=#000000
+text 13,13 "2026-07-01" fg=#000000 bold
+text 23,13 " ·\\n      " fg=#000000
 text 32,13 "browsers" fg=#569cd6 underline link=0
-text 0,14 ",\\n      "
+text 0,14 ",\\n      " fg=#000000
 text 8,14 "cli" fg=#569cd6 underline link=1
-text 11,14 "\\n    "
-text 0,16 "Most developers live in the terminal. A "
-text 0,17 "browser that renders pages where you "
-text 0,18 "already work\\n      removes context "
-text 0,19 "switching without pretending to be a "
-text 0,20 "full desktop browser.\\n    "
-text 0,22 "Readable defaults beat " bold
-text 0,25 "pixel parity" bold
-text 0,29 "Pagina focuses on semantic content: "
-text 0,30 "headings, links, lists, and "
-text 0,31 "monospace-friendly layout.\\n      See the "
+text 11,14 "\\n    " fg=#000000
+text 0,16 "Most developers live in the terminal. A " fg=#000000
+text 0,17 "browser that renders pages where you " fg=#000000
+text 0,18 "already work\\n      removes context " fg=#000000
+text 0,19 "switching without pretending to be a " fg=#000000
+text 0,20 "full desktop browser.\\n    " fg=#000000
+text 0,22 "Readable defaults beat " fg=#000000 bold
+text 0,25 "pixel parity" fg=#000000 bold
+text 0,29 "Pagina focuses on semantic content: " fg=#000000
+text 0,30 "headings, links, lists, and " fg=#000000
+text 0,31 "monospace-friendly layout.\\n      See the " fg=#000000
 text 0,32 "project docs" fg=#569cd6 underline link=2
-text 12,32 " for supported HTML.\\n    "
-text 4,34 "Terminal UI is a feature, not a "
-text 4,35 "fallback."
-text 0,38 "What to try next" bold
-text 0,41 "- "
-text 0,41 "Open local HTML files from disk"
-text 0,43 "- "
-text 0,43 "Follow links with keyboard focus"
-text 0,45 "- "
-text 0,45 "Scroll long articles with "
-text 26,45 "j" italic
-text 27,45 " and "
-text 32,45 "k" italic"
+text 12,32 " for supported HTML.\\n    " fg=#000000
+text 4,34 "Terminal UI is a feature, not a " fg=#000000
+text 4,35 "fallback." fg=#000000
+text 0,38 "What to try next" fg=#000000 bold
+text 0,41 "- " fg=#000000
+text 0,41 "Open local HTML files from disk" fg=#000000
+text 0,43 "- " fg=#000000
+text 0,43 "Follow links with keyboard focus" fg=#000000
+text 0,45 "- " fg=#000000
+text 0,45 "Scroll long articles with " fg=#000000
+text 26,45 "j" fg=#000000 italic
+text 27,45 " and " fg=#000000
+text 32,45 "k" fg=#000000 italic"
 `;
 
 exports[`display-list snapshots fixtures-docs-page at 80x24: fixtures-docs-page-80x24 1`] = `
-"text 0,0 "Loading pages" bold
-text 0,5 "Pagina loads local files and remote URLs. Start from the\\n      "
+"text 0,0 "Loading pages" fg=#000000 bold
+text 0,5 "Pagina loads local files and remote URLs. Start from the\\n      " fg=#000000
 text 63,5 "documentation " fg=#569cd6 underline link=0
 text 0,6 "index" fg=#569cd6 underline link=0
-text 5,6 " or pass a path on the command line.\\n    "
-text 0,8 "Basic usage" bold
+text 5,6 " or pass a path on the command line.\\n    " fg=#000000
+text 0,8 "Basic usage" fg=#000000 bold
 text 0,12 "bun start examples/page.html" fg=#ce9178 bg=#2a2a2a
 text 0,13 "bun start https://example.com/guide.html" fg=#ce9178 bg=#2a2a2a
-text 0,15 "The loader resolves relative links against the current document location."
-text 0,17 "Glossary" bold
-text 0,21 "Viewport" bold
-text 4,22 "Terminal width and height used for layout and wrapping."
-text 0,23 "Display list" bold
-text 4,24 "Paint commands emitted after layout: text spans and background fills."
-text 0,26 "Related pages" bold
-text 0,30 "- "
+text 0,15 "The loader resolves relative links against the current document location." fg=#000000
+text 0,17 "Glossary" fg=#000000 bold
+text 0,21 "Viewport" fg=#000000 bold
+text 4,22 "Terminal width and height used for layout and wrapping." fg=#000000
+text 0,23 "Display list" fg=#000000 bold
+text 4,24 "Paint commands emitted after layout: text spans and background fills." fg=#000000
+text 0,26 "Related pages" fg=#000000 bold
+text 0,30 "- " fg=#000000
 text 0,30 "Navigation" fg=#569cd6 underline link=1
-text 0,32 "- "
+text 0,32 "- " fg=#000000
 text 0,32 "Rendering pipeline" fg=#569cd6 underline link=2"
 `;
 
 exports[`display-list snapshots fixtures-docs-page at 40x24: fixtures-docs-page-40x24 1`] = `
-"text 0,0 "Loading pages" bold
-text 0,5 "Pagina loads local files and remote "
-text 0,6 "URLs. Start from the\\n      "
+"text 0,0 "Loading pages" fg=#000000 bold
+text 0,5 "Pagina loads local files and remote " fg=#000000
+text 0,6 "URLs. Start from the\\n      " fg=#000000
 text 27,6 "documentation " fg=#569cd6 underline link=0
 text 0,7 "index" fg=#569cd6 underline link=0
-text 5,7 " or pass a path on the command "
-text 0,8 "line.\\n    "
-text 0,10 "Basic usage" bold
+text 5,7 " or pass a path on the command " fg=#000000
+text 0,8 "line.\\n    " fg=#000000
+text 0,10 "Basic usage" fg=#000000 bold
 text 0,14 "bun start examples/page.html" fg=#ce9178 bg=#2a2a2a
 text 0,15 "bun start https://example.com/guide.html" fg=#ce9178 bg=#2a2a2a
-text 0,17 "The loader resolves relative links "
-text 0,18 "against the current document location."
-text 0,20 "Glossary" bold
-text 0,24 "Viewport" bold
-text 4,25 "Terminal width and height used for "
-text 4,26 "layout and wrapping."
-text 0,27 "Display list" bold
-text 4,28 "Paint commands emitted after layout: "
-text 4,29 "text spans and background fills."
-text 0,31 "Related pages" bold
-text 0,35 "- "
+text 0,17 "The loader resolves relative links " fg=#000000
+text 0,18 "against the current document location." fg=#000000
+text 0,20 "Glossary" fg=#000000 bold
+text 0,24 "Viewport" fg=#000000 bold
+text 4,25 "Terminal width and height used for " fg=#000000
+text 4,26 "layout and wrapping." fg=#000000
+text 0,27 "Display list" fg=#000000 bold
+text 4,28 "Paint commands emitted after layout: " fg=#000000
+text 4,29 "text spans and background fills." fg=#000000
+text 0,31 "Related pages" fg=#000000 bold
+text 0,35 "- " fg=#000000
 text 0,35 "Navigation" fg=#569cd6 underline link=1
-text 0,37 "- "
+text 0,37 "- " fg=#000000
 text 0,37 "Rendering pipeline" fg=#569cd6 underline link=2"
 `;
 
 exports[`display-list snapshots fixtures-readme-page at 80x24: fixtures-readme-page-80x24 1`] = `
-"text 0,0 "Pagina" bold
-text 0,5 "A terminal browser for HTML pages. Install with "
+"text 0,0 "Pagina" fg=#000000 bold
+text 0,5 "A terminal browser for HTML pages. Install with " fg=#000000
 text 48,5 "bun install" fg=#ce9178 bg=#2a2a2a
-text 59,5 " and run "
+text 59,5 " and run " fg=#000000
 text 68,5 "bun start" fg=#ce9178 bg=#2a2a2a
-text 77,5 "."
-text 0,7 "Features" bold
-text 0,11 "- "
-text 0,11 "Keyboard-first navigation"
-text 0,13 "- "
-text 0,13 "Supported markup\\n        "
-text 2,14 "- "
-text 2,14 "Headings, paragraphs, links"
-text 2,16 "- "
-text 2,16 "Lists, tables, blockquotes"
-text 0,20 "- "
-text 0,20 "Local files and remote URLs"
-text 0,23 "Commands" bold
-text 0,28 "─────  ───────────────────"
-text 0,27 "Key  " bold
-text 7,27 "Action             " bold
-text 0,29 "Enter"
-text 7,29 "Follow focused link"
-text 0,30 "u    "
-text 7,30 "Go back            "
-text 0,31 "o    "
-text 7,31 "Open URL prompt    "
-text 0,33 "Links" bold
-text 0,37 "Repository: "
+text 77,5 "." fg=#000000
+text 0,7 "Features" fg=#000000 bold
+text 0,11 "- " fg=#000000
+text 0,11 "Keyboard-first navigation" fg=#000000
+text 0,13 "- " fg=#000000
+text 0,13 "Supported markup\\n        " fg=#000000
+text 2,14 "- " fg=#000000
+text 2,14 "Headings, paragraphs, links" fg=#000000
+text 2,16 "- " fg=#000000
+text 2,16 "Lists, tables, blockquotes" fg=#000000
+text 0,20 "- " fg=#000000
+text 0,20 "Local files and remote URLs" fg=#000000
+text 0,23 "Commands" fg=#000000 bold
+text 0,28 "─────  ───────────────────" fg=#000000
+text 0,27 "Key  " fg=#000000 bold
+text 7,27 "Action             " fg=#000000 bold
+text 0,29 "Enter" fg=#000000
+text 7,29 "Follow focused link" fg=#000000
+text 0,30 "u    " fg=#000000
+text 7,30 "Go back            " fg=#000000
+text 0,31 "o    " fg=#000000
+text 7,31 "Open URL prompt    " fg=#000000
+text 0,33 "Links" fg=#000000 bold
+text 0,37 "Repository: " fg=#000000
 text 12,37 "example.com/pagina" fg=#569cd6 underline link=0
-text 30,37 " ·\\n      Issues: "
+text 30,37 " ·\\n      Issues: " fg=#000000
 text 47,37 "report a bug" fg=#569cd6 underline link=1
-text 59,37 "\\n    ""
+text 59,37 "\\n    " fg=#000000"
 `;
 
 exports[`display-list snapshots fixtures-readme-page at 40x24: fixtures-readme-page-40x24 1`] = `
-"text 0,0 "Pagina" bold
-text 0,5 "A terminal browser for HTML pages. "
-text 0,6 "Install with "
+"text 0,0 "Pagina" fg=#000000 bold
+text 0,5 "A terminal browser for HTML pages. " fg=#000000
+text 0,6 "Install with " fg=#000000
 text 13,6 "bun install" fg=#ce9178 bg=#2a2a2a
-text 24,6 " and run "
+text 24,6 " and run " fg=#000000
 text 33,6 "bun " fg=#ce9178 bg=#2a2a2a
 text 0,7 "start" fg=#ce9178 bg=#2a2a2a
-text 5,7 "."
-text 0,9 "Features" bold
-text 0,13 "- "
-text 0,13 "Keyboard-first navigation"
-text 0,15 "- "
-text 0,15 "Supported markup\\n        "
-text 2,16 "- "
-text 2,16 "Headings, paragraphs, links"
-text 2,18 "- "
-text 2,18 "Lists, tables, blockquotes"
-text 0,22 "- "
-text 0,22 "Local files and remote URLs"
-text 0,25 "Commands" bold
-text 0,30 "─────  ───────────────────"
-text 0,29 "Key  " bold
-text 7,29 "Action             " bold
-text 0,31 "Enter"
-text 7,31 "Follow focused link"
-text 0,32 "u    "
-text 7,32 "Go back            "
-text 0,33 "o    "
-text 7,33 "Open URL prompt    "
-text 0,35 "Links" bold
-text 0,39 "Repository: "
+text 5,7 "." fg=#000000
+text 0,9 "Features" fg=#000000 bold
+text 0,13 "- " fg=#000000
+text 0,13 "Keyboard-first navigation" fg=#000000
+text 0,15 "- " fg=#000000
+text 0,15 "Supported markup\\n        " fg=#000000
+text 2,16 "- " fg=#000000
+text 2,16 "Headings, paragraphs, links" fg=#000000
+text 2,18 "- " fg=#000000
+text 2,18 "Lists, tables, blockquotes" fg=#000000
+text 0,22 "- " fg=#000000
+text 0,22 "Local files and remote URLs" fg=#000000
+text 0,25 "Commands" fg=#000000 bold
+text 0,30 "─────  ───────────────────" fg=#000000
+text 0,29 "Key  " fg=#000000 bold
+text 7,29 "Action             " fg=#000000 bold
+text 0,31 "Enter" fg=#000000
+text 7,31 "Follow focused link" fg=#000000
+text 0,32 "u    " fg=#000000
+text 7,32 "Go back            " fg=#000000
+text 0,33 "o    " fg=#000000
+text 7,33 "Open URL prompt    " fg=#000000
+text 0,35 "Links" fg=#000000 bold
+text 0,39 "Repository: " fg=#000000
 text 12,39 "example.com/pagina" fg=#569cd6 underline link=0
-text 30,39 " ·\\n      "
-text 0,40 "Issues: "
+text 30,39 " ·\\n      " fg=#000000
+text 0,40 "Issues: " fg=#000000
 text 8,40 "report a bug" fg=#569cd6 underline link=1
-text 20,40 "\\n    ""
+text 20,40 "\\n    " fg=#000000"
 `;

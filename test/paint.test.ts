@@ -37,6 +37,7 @@ describe("paint", () => {
       x: 0,
       y: 0,
       text: "ab",
+      fg: "#000000",
       bold: undefined,
       italic: undefined,
       underline: undefined,

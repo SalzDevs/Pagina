@@ -103,6 +103,9 @@ export const IMG_PLACEHOLDER_FG = "#888888";
 export const INLINE_CODE_FG = "#ce9178";
 export const INLINE_CODE_BG = "#2a2a2a";
 
+/** Default body text color (matches browser UA `body { color: #000 }`). */
+export const UA_BODY_FG = "#000000";
+
 const INLINE_BG_PARENT_TAGS = new Set(["code", "kbd", "samp"]);
 
 function uaDisplay(tag: string): Display {
@@ -137,6 +140,9 @@ function uaStyleForElement(tag: string, inherited: ComputedStyle): ComputedStyle
       return { ...style, underline: true };
     case "a":
       return { ...style, underline: true, fg: "#569cd6" };
+    case "body":
+    case "html":
+      return { ...style, display: "block", fg: UA_BODY_FG };
     case "h1":
     case "h2":
     case "h3":
