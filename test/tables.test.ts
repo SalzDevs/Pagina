@@ -5,9 +5,11 @@ import { parseHTML } from "../parser/html";
 import {
   collectCellText,
   collectTableRows,
+  formatTableCellText,
   formatTableHeaderRule,
   isTableElement,
   measureTable,
+  shrinkColumnWidthsToFit,
   TABLE_CELL_GAP,
   TABLE_ELLIPSIS,
   truncateTableCellText,
@@ -54,6 +56,13 @@ function tableFragments(table: StyledNode | undefined, output: LayoutOutput) {
   return fragments;
 }
 
+function fragmentForCellText(
+  fragments: ReturnType<typeof tableFragments>,
+  text: string,
+) {
+  return fragments.find((fragment) => fragment.text.trim() === text);
+}
+
 describe("table layout", () => {
   test("detects table elements and applies bold UA styles to th cells", async () => {
     const html = `
@@ -84,13 +93,12 @@ describe("table layout", () => {
     const laidOut = layout(styled, { viewport });
     const fragments = tableFragments(table, laidOut.output);
 
-    const byText = new Map(fragments.map((fragment) => [fragment.text, fragment]));
-    const nameX = byText.get("Name")?.x;
-    const alphaX = byText.get("Alpha")?.x;
-    const betaX = byText.get("Beta")?.x;
-    const valueX = byText.get("Value")?.x;
-    const oneX = byText.get("1")?.x;
-    const twoX = byText.get("2")?.x;
+    const nameX = fragmentForCellText(fragments, "Name")?.x;
+    const alphaX = fragmentForCellText(fragments, "Alpha")?.x;
+    const betaX = fragmentForCellText(fragments, "Beta")?.x;
+    const valueX = fragmentForCellText(fragments, "Value")?.x;
+    const oneX = fragmentForCellText(fragments, "1")?.x;
+    const twoX = fragmentForCellText(fragments, "2")?.x;
 
     expect(nameX).toBe(alphaX);
     expect(alphaX).toBe(betaX);
@@ -132,11 +140,10 @@ describe("table layout", () => {
     const expectedRule = formatTableHeaderRule(measured.columnWidths, TABLE_CELL_GAP);
     const tableRule = laidOut.output.getFragments(table);
     const fragments = tableFragments(table, laidOut.output);
-    const byText = new Map(fragments.map((fragment) => [fragment.text, fragment]));
 
     expect(tableRule.some((fragment) => fragment.text === expectedRule)).toBe(true);
-    expect(byText.get("Name")?.y).toBeLessThan(tableRule[0]!.y);
-    expect(byText.get("Alpha")?.y).toBeGreaterThan(tableRule[0]!.y);
+    expect(fragmentForCellText(fragments, "Name")?.y).toBeLessThan(tableRule[0]!.y);
+    expect(fragmentForCellText(fragments, "Alpha")?.y).toBeGreaterThan(tableRule[0]!.y);
   });
 
   test("paints aligned table text commands", async () => {
@@ -151,9 +158,9 @@ describe("table layout", () => {
     const painted = paint(styled, laidOut.output);
     const texts = painted.displayList.filter(isTextCommand).map((command) => command.text);
 
-    expect(texts).toContain("Name");
-    expect(texts).toContain("Alpha");
-    expect(texts).toContain("1");
+    expect(texts.some((text) => text.trim() === "Name")).toBe(true);
+    expect(texts.some((text) => text.trim() === "Alpha")).toBe(true);
+    expect(texts.some((text) => text.trim() === "1")).toBe(true);
     expect(texts.some((text) => text.includes("────"))).toBe(true);
   });
 
@@ -161,18 +168,38 @@ describe("table layout", () => {
     const html = await Bun.file("examples/table-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)));
     const table = findTable(styled);
-    const laidOut = layout(styled, { viewport });
+    const laidOut = layout(styled, { viewport: { width: 80, height: 20 } });
     const fragments = tableFragments(table, laidOut.output);
-    const byText = new Map(fragments.map((fragment) => [fragment.text, fragment]));
 
-    expect(byText.get("Name")?.x).toBe(byText.get("Alpha")?.x);
-    expect(byText.get("Value")?.x).toBe(byText.get("1")?.x);
+    expect(fragmentForCellText(fragments, "Name")?.x).toBe(fragmentForCellText(fragments, "Alpha")?.x);
+    expect(fragmentForCellText(fragments, "Value")?.x).toBe(fragmentForCellText(fragments, "1")?.x);
+    expect(fragmentForCellText(fragments, "Name")?.width).toBe(fragmentForCellText(fragments, "Alpha")?.width);
+  });
+
+  test("keeps table-page.html columns aligned at 40 columns", async () => {
+    const html = await Bun.file("examples/table-page.html").text();
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const table = findTable(styled);
+    const laidOut = layout(styled, { viewport: { width: 40, height: 20 } });
+    const fragments = tableFragments(table, laidOut.output);
+
+    expect(fragmentForCellText(fragments, "Name")?.x).toBe(fragmentForCellText(fragments, "Beta")?.x);
+    expect(fragmentForCellText(fragments, "Value")?.x).toBe(fragmentForCellText(fragments, "2")?.x);
   });
 
   test("truncates squeezed cells with an ellipsis", () => {
     expect(truncateTableCellText("Quarterly revenue", 4)).toBe("Qua…");
     expect(truncateTableCellText("Quarterly revenue", 1)).toBe(TABLE_ELLIPSIS);
     expect(truncateTableCellText("Alpha", 5)).toBe("Alpha");
+  });
+
+  test("pads cells to their column width after truncation", () => {
+    expect(formatTableCellText("Name", 5)).toBe("Name ");
+    expect(formatTableCellText("Quarterly revenue", 4)).toBe("Qua…");
+  });
+
+  test("shrinks rounded column widths to fit the viewport", () => {
+    expect(shrinkColumnWidthsToFit([7, 7, 7], 20)).toEqual([6, 6, 6]);
   });
 
   test("shows ellipsis in narrow table layouts", async () => {
@@ -187,8 +214,38 @@ describe("table layout", () => {
     const laidOut = layout(styled, { viewport: { width: 14, height: 10 } });
     const fragments = tableFragments(table, laidOut.output);
 
-    const truncated = fragments.find((fragment) => fragment.text.endsWith(TABLE_ELLIPSIS));
+    const truncated = fragments.find((fragment) => fragment.text.trim().endsWith(TABLE_ELLIPSIS));
     expect(truncated).toBeDefined();
-    expect(truncated!.text.length).toBeLessThan("Quarterly report".length);
+    expect(truncated!.width).toBeLessThanOrEqual("Quarterly report".length);
+  });
+
+  test("degrades gracefully at narrow widths with truncated cells", async () => {
+    const html = `
+      <table>
+        <tr><th>Product</th><th>Revenue</th><th>Notes</th></tr>
+        <tr><td>Quarterly report</td><td>1000000</td><td>Shipped worldwide</td></tr>
+      </table>
+    `;
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const table = findTable(styled)!;
+    const viewportWidth = 28;
+    const laidOut = layout(styled, { viewport: { width: viewportWidth, height: 10 } });
+    const fragments = tableFragments(table, laidOut.output);
+    const measured = measureTable(table, viewportWidth);
+    const totalWidth =
+      measured.columnWidths.reduce((sum, width) => sum + width, 0) +
+      (measured.columnCount - 1) * TABLE_CELL_GAP;
+
+    expect(totalWidth).toBeLessThanOrEqual(viewportWidth);
+    expect(fragmentForCellText(fragments, "Product")?.x).toBeDefined();
+    const productX = fragmentForCellText(fragments, "Product")!.x;
+    const dataColumn = fragments.find(
+      (fragment) =>
+        fragment.x === productX &&
+        fragment.y > fragmentForCellText(fragments, "Product")!.y &&
+        !fragment.text.includes("─"),
+    );
+    expect(dataColumn).toBeDefined();
+    expect(fragments.some((fragment) => fragment.text.trim().endsWith(TABLE_ELLIPSIS))).toBe(true);
   });
 });

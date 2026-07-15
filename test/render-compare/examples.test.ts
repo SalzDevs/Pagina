@@ -72,6 +72,45 @@ describe("render comparison — styling fidelity", () => {
   });
 });
 
+describe("render comparison — table structure", () => {
+  test("aligns table-page.html columns at 80 columns", async () => {
+    const page = await loadPageContent("examples/table-page.html", { viewportWidth: DEFAULT_VIEWPORT.width });
+    const laidOut = layout(page.styled, { viewport: DEFAULT_VIEWPORT });
+    const body = page.styled.children[0]?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "body",
+    );
+    const table = body?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "table",
+    );
+
+    const fragments: Array<{ x: number; text: string }> = [];
+    const walk = (node: typeof table) => {
+      if (!node) return;
+      for (const fragment of laidOut.output.getFragments(node)) {
+        fragments.push({ x: fragment.x, text: fragment.text.trim() });
+      }
+      for (const child of node.children) walk(child as typeof table);
+    };
+    walk(table);
+
+    const nameX = fragments.find((fragment) => fragment.text === "Name")?.x;
+    const alphaX = fragments.find((fragment) => fragment.text === "Alpha")?.x;
+    const valueX = fragments.find((fragment) => fragment.text === "Value")?.x;
+    const oneX = fragments.find((fragment) => fragment.text === "1")?.x;
+
+    expect(nameX).toBe(alphaX);
+    expect(valueX).toBe(oneX);
+    expect(valueX).toBeGreaterThan(nameX!);
+  });
+
+  test("includes table header rule on table-page.html", async () => {
+    const pagina = await buildPaginaRender("examples/table-page.html", DEFAULT_VIEWPORT);
+    expect(pagina.plainText).toMatch(/Name\s+Value/);
+    expect(pagina.plainText).toMatch(/─{3,}/);
+    expect(pagina.plainText).toMatch(/Alpha\s+1/);
+  });
+});
+
 describe("render comparison — heading hierarchy", () => {
   test("renders distinct heading sizes on long-page.html", async () => {
     const page = await loadPageContent("examples/long-page.html", { viewportWidth: DEFAULT_VIEWPORT.width });

@@ -110,13 +110,19 @@ export function fitColumnWidths(
   if (natural === 0) return columnWidths.map(() => 1);
 
   for (const floor of [minColumnWidth, 1] as const) {
-    const widths = proportionalColumnWidths(columnWidths, available, natural, floor);
+    const widths = shrinkColumnWidthsToFit(
+      proportionalColumnWidths(columnWidths, available, natural, floor),
+      available,
+    );
     if (widths.reduce((sum, width) => sum + width, 0) <= available) {
       return widths;
     }
   }
 
-  return proportionalColumnWidths(columnWidths, available, natural, 1);
+  return shrinkColumnWidthsToFit(
+    proportionalColumnWidths(columnWidths, available, natural, 1),
+    available,
+  );
 }
 
 function proportionalColumnWidths(
@@ -128,12 +134,42 @@ function proportionalColumnWidths(
   return columnWidths.map((width) => Math.max(floor, Math.floor((width * available) / natural)));
 }
 
+/** Trim proportional rounding overflow so columns fit the viewport. */
+export function shrinkColumnWidthsToFit(columnWidths: number[], available: number): number[] {
+  const widths = [...columnWidths];
+  let total = widths.reduce((sum, width) => sum + width, 0);
+
+  while (total > available) {
+    const maxWidth = Math.max(...widths);
+    let reduced = false;
+
+    for (let column = 0; column < widths.length; column++) {
+      if (widths[column] === maxWidth && widths[column]! > 1) {
+        widths[column]! -= 1;
+        total -= 1;
+        reduced = true;
+      }
+    }
+
+    if (!reduced) break;
+  }
+
+  return widths;
+}
+
 /** Trim cell text to a column width and append an ellipsis when truncated. */
 export function truncateTableCellText(text: string, width: number): string {
   if (width <= 0 || text.length === 0) return "";
   if (text.length <= width) return text;
   if (width === 1) return TABLE_ELLIPSIS;
   return `${text.slice(0, width - TABLE_ELLIPSIS.length)}${TABLE_ELLIPSIS}`;
+}
+
+/** Format a cell for monospace columns: truncate overflow, then pad to column width. */
+export function formatTableCellText(text: string, width: number): string {
+  const truncated = truncateTableCellText(text, width);
+  if (truncated.length >= width) return truncated;
+  return `${truncated}${" ".repeat(width - truncated.length)}`;
 }
 
 export function columnOffsets(columnWidths: number[], startX: number, gap: number): number[] {
@@ -199,13 +235,14 @@ export function layoutTable(
     for (let column = 0; column < columnCount; column++) {
       const cell = cells[column];
       const rawText = texts[column] ?? "";
-      const text = truncateTableCellText(rawText, columnWidths[column]!);
-      if (!cell || text.length === 0) continue;
+      const columnWidth = columnWidths[column]!;
+      const text = formatTableCellText(rawText, columnWidth);
+      if (!cell || text.trim().length === 0) continue;
 
       deps.addFragment(cell, {
         x: offsets[column]!,
         y: ctx.y,
-        width: text.length,
+        width: columnWidth,
         height: rowHeight,
         text,
       });
