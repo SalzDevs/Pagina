@@ -3,6 +3,8 @@ import { resolve } from "node:path";
 import { loadPageContent } from "../../navigation/load-page";
 import { buildPageView } from "../../viewport/page-view";
 import { BREADCRUMB_HEIGHT } from "../../render/breadcrumb";
+import { buildLinkHitIndex, linkIndexAtPoint } from "../../links/hit";
+import { mouseToDocumentPoint } from "../../viewport/mouse";
 import {
   historyTargetAtBreadcrumbColumn,
   layoutBreadcrumb,
@@ -64,4 +66,29 @@ export function breadcrumbClickPoint(
   }
 
   return { x: column + 1, y: 0 };
+}
+
+/** Find screen coordinates over content that are not on a link. */
+export async function emptyContentPoint(
+  pagePath: string,
+  layout: UxLayout,
+  scrollY: number,
+): Promise<{ x: number; y: number }> {
+  const resolved = resolve(pagePath);
+  const page = await loadPageContent(resolved, { viewportWidth: layout.width });
+  const contentHeight = Math.max(1, layout.height - BREADCRUMB_HEIGHT);
+  const view = buildPageView(page.styled, { width: layout.width, height: contentHeight });
+  const hitIndex = buildLinkHitIndex(view.links);
+  const chrome = { top: BREADCRUMB_HEIGHT };
+
+  for (let screenY = BREADCRUMB_HEIGHT; screenY < layout.height; screenY++) {
+    for (let screenX = 0; screenX < layout.width; screenX++) {
+      const point = mouseToDocumentPoint({ x: screenX, y: screenY }, chrome, scrollY);
+      if (linkIndexAtPoint(hitIndex, point.x, point.y) === null) {
+        return { x: screenX, y: screenY };
+      }
+    }
+  }
+
+  throw new Error(`No empty content cell found on ${pagePath}`);
 }

@@ -19,7 +19,7 @@ import {
   waitForLoad,
   type UxTestContext,
 } from "./setup";
-import { breadcrumbClickPoint, linkScreenPoint } from "./geometry";
+import { breadcrumbClickPoint, emptyContentPoint, linkScreenPoint } from "./geometry";
 
 const originalFetch = globalThis.fetch;
 const contexts: UxTestContext[] = [];
@@ -304,6 +304,43 @@ describe("UX E2E — open prompt history and bookmarks", () => {
     } finally {
       await rm(configDir, { recursive: true, force: true });
     }
+  });
+});
+
+describe("UX E2E — sticky keyboard link focus", () => {
+  test("keeps the focused link index while scrolling with j/k", async () => {
+    const ctx = await boot("examples/fragments-page.html", { height: 18 });
+    const session = ctx.app.getSession();
+    expect(session).not.toBeNull();
+    expect(session!.focusedLinkIndex).toBe(0);
+
+    await press(ctx, "]");
+    expect(ctx.app.getSession()?.focusedLinkIndex).toBe(1);
+
+    const startY = session!.viewport.scrollY;
+    await press(ctx, "j");
+    await press(ctx, "j");
+    await press(ctx, "j");
+
+    expect(session!.viewport.scrollY).toBeGreaterThan(startY);
+    expect(ctx.app.getSession()?.focusedLinkIndex).toBe(1);
+  });
+
+  test("keeps keyboard focus after scrolling and moving the mouse off links", async () => {
+    const page = "examples/fragments-page.html";
+    const layout = { width: 80, height: 18 };
+    const ctx = await boot(page, layout);
+
+    await press(ctx, "]");
+    expect(ctx.app.getSession()?.focusedLinkIndex).toBe(1);
+
+    await press(ctx, "j");
+    await press(ctx, "j");
+    const scrollY = ctx.app.getSession()!.viewport.scrollY;
+    const point = await emptyContentPoint(page, layout, scrollY);
+    await moveMouse(ctx, point.x, point.y);
+
+    expect(ctx.app.getSession()?.focusedLinkIndex).toBe(1);
   });
 });
 
