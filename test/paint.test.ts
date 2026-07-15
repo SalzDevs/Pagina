@@ -24,6 +24,19 @@ describe("paint", () => {
     expect(displayList.every((cmd) => typeof cmd.y === "number")).toBe(true);
   });
 
+  test("derives readable foreground when text keeps a light background", async () => {
+    const styled = await computeStyles(
+      convert(parseHTML(`<html><body><samp style="background-color:#eee">hi</samp></body></html>`)),
+    );
+
+    const laidOut = layout(styled, { viewport });
+    const displayList = paint(styled, laidOut.output).displayList;
+    const text = displayList.find(isTextCommand);
+
+    expect(text?.bg).toBe("#eee");
+    expect(text?.fg).toBe("#000000");
+  });
+
   test("uses layout positions for each command", async () => {
     const html = "<p>ab</p>";
     const styled = await computeStyles(convert(parseHTML(html)));

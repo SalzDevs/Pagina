@@ -1,4 +1,5 @@
 import { NodeType } from "../dom/node";
+import { contrastingForeground, parseTerminalColor } from "../links/focus-style";
 import type { Link, LinkBounds } from "../links/types";
 import type { LayoutOutput } from "../layout/output";
 import { isBlock } from "../style/display";
@@ -130,6 +131,16 @@ function extendRootBackgroundFills(
   }
 }
 
+function resolveTextForeground(fg?: string, bg?: string): string | undefined {
+  if (fg) return fg;
+  if (!bg) return undefined;
+
+  const background = parseTerminalColor(bg);
+  if (!background) return undefined;
+
+  return contrastingForeground(background);
+}
+
 function paintTextNode(
   node: StyledNode,
   layout: LayoutOutput,
@@ -137,7 +148,7 @@ function paintTextNode(
   ctx: PaintContext,
 ): void {
   const style = {
-    fg: node.style.fg,
+    fg: resolveTextForeground(node.style.fg, node.style.bg),
     bg: node.style.bg,
     bold: node.style.bold || undefined,
     italic: node.style.italic || undefined,
