@@ -72,6 +72,18 @@ describe("layout", () => {
     expect(fragments?.every((fragment) => fragment.y === 0)).toBe(true);
   });
 
+  test("emits one fragment per inline text node instead of per word", async () => {
+    const html = "<p>See the quarterly results.</p>";
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const laidOut = layout(styled, { viewport: { width: 40, height: 5 } });
+    const paragraph = findParagraph(styled);
+    const textNode = paragraph?.children.find((child) => child.dom.type === "text");
+
+    expect(laidOut.output.getFragments(textNode!)).toEqual([
+      expect.objectContaining({ text: "See the quarterly results." }),
+    ]);
+  });
+
   test("assigns block height from wrapped content", async () => {
     const html = "<p>one two three four five six seven eight nine ten</p>";
     const styled = await computeStyles(convert(parseHTML(html)));

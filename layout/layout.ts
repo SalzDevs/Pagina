@@ -58,6 +58,26 @@ interface LineRun {
   width: number;
 }
 
+/** Merge contiguous runs from the same styled node into one fragment. */
+function mergeAdjacentLineRuns(runs: LineRun[]): LineRun[] {
+  if (runs.length <= 1) return runs;
+
+  const merged: LineRun[] = [{ ...runs[0]! }];
+  for (let index = 1; index < runs.length; index++) {
+    const run = runs[index]!;
+    const previous = merged[merged.length - 1]!;
+    if (previous.node === run.node && previous.x + previous.width === run.x) {
+      previous.text += run.text;
+      previous.width += run.width;
+      continue;
+    }
+
+    merged.push({ ...run });
+  }
+
+  return merged;
+}
+
 const BLOCK_GAP = 1;
 const DEFAULT_VIEWPORT: Viewport = { width: 80, height: 24 };
 
@@ -108,7 +128,7 @@ function wrapSegments(
     const lineHeight =
       lineRuns.length === 0 ? 1 : Math.max(...lineRuns.map((run) => nodeLineHeight(run.node)));
 
-    for (const run of lineRuns) {
+    for (const run of mergeAdjacentLineRuns(lineRuns)) {
       addTrackedFragment(ctx, run.node, {
         x: startX + run.x,
         y: currentY,

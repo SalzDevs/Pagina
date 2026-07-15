@@ -71,12 +71,16 @@ describe("image placeholders", () => {
     const styled = await computeStyles(convert(parseHTML(html)));
     const paragraph = findParagraph(styled);
     const laidOut = layout(styled, { viewport });
+    const img = findImg(paragraph);
     const fragments = paragraph?.children.flatMap((child) => laidOut.output.getFragments(child)) ?? [];
     const text = fragments.map((fragment) => fragment.text).join("");
 
     expect(text).toContain("See the");
     expect(text).toContain("[alt: sales chart]");
     expect(text).toContain("for details.");
+    expect(laidOut.output.getFragments(img!)).toEqual([
+      expect.objectContaining({ text: "[alt: sales chart]" }),
+    ]);
   });
 
   test("lays out block-level images as their own placeholder line", async () => {
@@ -101,5 +105,6 @@ describe("image placeholders", () => {
     expect(combined).toContain("[image]");
     expect(combined).toContain("Before");
     expect(combined).toContain("after");
+    expect(textCommands.filter((text) => text.includes("[image]"))).toEqual(["[image]"]);
   });
 });

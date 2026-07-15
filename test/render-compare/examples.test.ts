@@ -71,6 +71,28 @@ describe("render comparison — styling fidelity", () => {
   });
 });
 
+describe("render comparison — inline spacing", () => {
+  test("keeps single spaces in inline paragraphs on images-page.html", async () => {
+    const page = await loadPageContent("examples/images-page.html", { viewportWidth: DEFAULT_VIEWPORT.width });
+    const view = buildPageView(page.styled, DEFAULT_VIEWPORT);
+
+    expect(
+      view.displayList
+        .filter(isTextCommand)
+        .filter((command) => command.text === "[alt: sales chart]"),
+    ).toHaveLength(1);
+  });
+
+  test("does not pad words when joining display-list text for comparison", async () => {
+    const pagina = await buildPaginaRender("examples/images-page.html", DEFAULT_VIEWPORT);
+    const inlineLine = pagina.plainText
+      .split("\n")
+      .find((line) => line.includes("[alt: sales chart]"));
+
+    expect(inlineLine).toBe("See the [alt: sales chart] for quarterly results.");
+  });
+});
+
 describe("render comparison — list structure", () => {
   test("indents nested list items on lists-page.html", async () => {
     const page = await loadPageContent("examples/lists-page.html", { viewportWidth: DEFAULT_VIEWPORT.width });

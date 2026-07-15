@@ -62,7 +62,7 @@ describe("paint", () => {
     const laidOut = layout(styled, { viewport });
     const displayList = paint(styled, laidOut.output).displayList;
     const codeText = displayList.find(
-      (cmd) => isTextCommand(cmd) && cmd.text === "bun",
+      (cmd) => isTextCommand(cmd) && cmd.text === "bun start",
     );
 
     expect(codeText?.fg).toBe("#ce9178");
