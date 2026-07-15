@@ -242,6 +242,57 @@ describe("UX E2E — navigation edge cases", () => {
       restoreClipboard();
     }
   });
+
+  test("shows CSS warning feedback in the breadcrumb", async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), "pagina-css-warning-"));
+    const pagePath = join(tempDir, "page.html");
+    await writeFile(
+      pagePath,
+      `<!DOCTYPE html><html><head><link rel="stylesheet" href="missing.css" /></head><body><h1>CSS Warning Test</h1></body></html>`,
+    );
+
+    const ctx = await boot(resolve(pagePath));
+    expect(breadcrumb(ctx)).toMatch(/⚠CSS|CSS failed|missing\.css/i);
+
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
+  test("clears CSS warning feedback after navigating away", async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), "pagina-css-warning-"));
+    const pagePath = join(tempDir, "page.html");
+    await writeFile(
+      pagePath,
+      `<!DOCTYPE html><html><head><link rel="stylesheet" href="missing.css" /></head><body><h1>CSS Warning Test</h1></body></html>`,
+    );
+
+    const ctx = await boot(resolve(pagePath));
+    expect(breadcrumb(ctx)).toMatch(/⚠CSS|CSS failed|missing\.css/i);
+
+    await press(ctx, ":");
+    await typeText(ctx, "examples/links-page.html");
+    await submit(ctx);
+    await waitForLoad(ctx);
+
+    expect(breadcrumb(ctx)).not.toMatch(/⚠CSS|CSS failed/i);
+    expect(breadcrumb(ctx)).toMatch(/Links Demo|links-page/i);
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
+  test("lists failed stylesheet URLs in the help overlay", async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), "pagina-css-warning-"));
+    const pagePath = join(tempDir, "page.html");
+    await writeFile(
+      pagePath,
+      `<!DOCTYPE html><html><head><link rel="stylesheet" href="missing.css" /></head><body><h1>CSS Warning Test</h1></body></html>`,
+    );
+
+    const ctx = await boot(resolve(pagePath));
+    await press(ctx, "?");
+
+    expect(ctx.app.getUiState().helpVisible).toBe(true);
+    expect(ctx.captureCharFrame()).toMatch(/missing\.css|CSS/i);
+    await rm(tempDir, { recursive: true, force: true });
+  });
 });
 
 describe("UX E2E — open prompt history and bookmarks", () => {
