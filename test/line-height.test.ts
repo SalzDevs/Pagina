@@ -14,9 +14,9 @@ describe("lineHeightForFontSize", () => {
   });
 
   test("scales larger font sizes to multiple rows", () => {
-    expect(lineHeightForFontSize(1.17)).toBe(2);
-    expect(lineHeightForFontSize(1.5)).toBe(2);
-    expect(lineHeightForFontSize(2)).toBe(3);
+    expect(lineHeightForFontSize(1.3)).toBe(2);
+    expect(lineHeightForFontSize(1.75)).toBe(3);
+    expect(lineHeightForFontSize(2.5)).toBe(4);
   });
 });
 

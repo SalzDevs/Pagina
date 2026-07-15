@@ -22,10 +22,10 @@ export function wrapCharacterBudget(contentWidth: number, fontSize?: number): nu
 
 /** Default font-size multipliers for heading tags. */
 export const HEADING_FONT_SIZES: Record<string, number> = {
-  h1: 2,
-  h2: 1.5,
-  h3: 1.17,
-  h4: 1,
-  h5: 0.83,
-  h6: 0.67,
+  h1: 2.5,
+  h2: 1.75,
+  h3: 1.3,
+  h4: 1.05,
+  h5: 0.875,
+  h6: 0.75,
 };

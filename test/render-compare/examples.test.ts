@@ -4,6 +4,7 @@ import { comparePageRender, formatComparisonReport } from "./compare";
 import { DEFAULT_VIEWPORT, EXAMPLE_PAGES, NARROW_VIEWPORT } from "./fixtures";
 import { buildPaginaRender } from "./pagina";
 import { buildPageReference } from "./reference";
+import { layout } from "../../layout/layout";
 import { loadPageContent } from "../../navigation/load-page";
 import { buildPageView } from "../../viewport/page-view";
 import { isTextCommand } from "../../paint/display-list";
@@ -68,6 +69,27 @@ describe("render comparison — styling fidelity", () => {
     expect(pagina.cssWarnings).toEqual([]);
     expect(pagina.styleSamples.some((sample) => sample.fg === "#ffd700")).toBe(true);
     expect(pagina.styleSamples.some((sample) => sample.fg === "#8be9fd")).toBe(true);
+  });
+});
+
+describe("render comparison — heading hierarchy", () => {
+  test("renders distinct heading sizes on long-page.html", async () => {
+    const page = await loadPageContent("examples/long-page.html", { viewportWidth: DEFAULT_VIEWPORT.width });
+    const styled = page.styled;
+    const laidOut = layout(styled, { viewport: DEFAULT_VIEWPORT });
+
+    const body = styled.children[0]?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "body",
+    );
+    const h1 = body?.children.find((child) => child.dom.type === "element" && child.dom.tag === "h1");
+    const h2 = body?.children.find((child) => child.dom.type === "element" && child.dom.tag === "h2");
+    const h1Text = h1?.children.find((child) => child.dom.type === "text");
+    const h2Text = h2?.children.find((child) => child.dom.type === "text");
+
+    const h1Height = laidOut.output.getFragments(h1Text!)[0]?.height ?? 0;
+    const h2Height = laidOut.output.getFragments(h2Text!)[0]?.height ?? 0;
+
+    expect(h1Height).toBeGreaterThan(h2Height);
   });
 });
 
