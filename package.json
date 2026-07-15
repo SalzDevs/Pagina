@@ -6,6 +6,7 @@
   "scripts": {
     "start": "bun run index.ts examples/page.html",
     "test": "bun test test/",
+    "test:ux": "bun test test/ux/",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

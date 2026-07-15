@@ -7,8 +7,25 @@ export interface BreadcrumbBar {
   height: number;
   bar: BoxRenderable;
   update: (text: string) => void;
+  getText: () => string;
   resize: (width: number) => void;
   destroy: () => void;
+}
+
+function stringifyRenderableText(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (
+    content &&
+    typeof content === "object" &&
+    "chunks" in content &&
+    Array.isArray((content as { chunks: unknown[] }).chunks)
+  ) {
+    return (content as { chunks: Array<{ text?: string }> }).chunks
+      .map((chunk) => chunk.text ?? "")
+      .join("");
+  }
+
+  return String(content ?? "");
 }
 
 /** Mount a persistent breadcrumb bar at the top of the terminal. */
@@ -46,6 +63,9 @@ export function mountBreadcrumb(renderer: CliRenderer): BreadcrumbBar {
     update(content: string) {
       text.content = content;
       renderer.requestRender();
+    },
+    getText() {
+      return stringifyRenderableText(text.content);
     },
     resize(width: number) {
       bar.width = width;
