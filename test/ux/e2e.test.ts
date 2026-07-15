@@ -216,6 +216,115 @@ describe("UX E2E — navigation edge cases", () => {
   });
 });
 
+describe("UX E2E — reload", () => {
+  test("soft reload serves cached content after the file changes on disk", async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), "pagina-reload-"));
+    const pagePath = join(tempDir, "page.html");
+    await writeFile(
+      pagePath,
+      `<!DOCTYPE html><html><body><h1>Version 1</h1></body></html>`,
+    );
+
+    const ctx = await boot(resolve(pagePath));
+    expect(ctx.captureCharFrame()).toContain("Version 1");
+    expect(ctx.app.getHistory().index).toBe(0);
+
+    await writeFile(
+      pagePath,
+      `<!DOCTYPE html><html><body><h1>Version 2</h1></body></html>`,
+    );
+    await press(ctx, "r");
+    await waitForLoad(ctx);
+
+    expect(ctx.captureCharFrame()).toContain("Version 1");
+    expect(ctx.app.getHistory().index).toBe(0);
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
+  test("hard reload bypasses cache and reads updated local content", async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), "pagina-reload-"));
+    const pagePath = join(tempDir, "page.html");
+    await writeFile(
+      pagePath,
+      `<!DOCTYPE html><html><body><h1>Version 1</h1></body></html>`,
+    );
+
+    const ctx = await boot(resolve(pagePath));
+    await writeFile(
+      pagePath,
+      `<!DOCTYPE html><html><body><h1>Version 2</h1></body></html>`,
+    );
+
+    await press(ctx, "r", { shift: true });
+    await waitForLoad(ctx);
+
+    expect(ctx.captureCharFrame()).toContain("Version 2");
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
+  test("soft reload does not refetch a cached remote page", async () => {
+    const ctx = await boot();
+    let fetchCount = 0;
+
+    globalThis.fetch = (async () => {
+      fetchCount += 1;
+      return new Response("<html><body><h1>Remote v1</h1></body></html>", {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      });
+    }) as typeof fetch;
+
+    await press(ctx, ":");
+    await typeText(ctx, "https://example.com/reload-test.html");
+    await submit(ctx);
+    await waitForLoad(ctx);
+
+    expect(fetchCount).toBe(1);
+    expect(ctx.captureCharFrame()).toContain("Remote v1");
+
+    globalThis.fetch = (async () => {
+      fetchCount += 1;
+      return new Response("<html><body><h1>Remote v2</h1></body></html>", {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      });
+    }) as typeof fetch;
+
+    await press(ctx, "r");
+    await waitForLoad(ctx);
+
+    expect(fetchCount).toBe(1);
+    expect(ctx.captureCharFrame()).toContain("Remote v1");
+  });
+
+  test("hard reload refetches remote content", async () => {
+    const ctx = await boot();
+    let fetchCount = 0;
+
+    globalThis.fetch = (async () => {
+      fetchCount += 1;
+      const version = fetchCount === 1 ? "Remote v1" : "Remote v2";
+      return new Response(`<html><body><h1>${version}</h1></body></html>`, {
+        status: 200,
+        headers: { "Content-Type": "text/html" },
+      });
+    }) as typeof fetch;
+
+    await press(ctx, ":");
+    await typeText(ctx, "https://example.com/reload-test.html");
+    await submit(ctx);
+    await waitForLoad(ctx);
+
+    expect(ctx.captureCharFrame()).toContain("Remote v1");
+
+    await press(ctx, "r", { ctrl: true });
+    await waitForLoad(ctx);
+
+    expect(fetchCount).toBe(2);
+    expect(ctx.captureCharFrame()).toContain("Remote v2");
+  });
+});
+
 describe("UX E2E — remote loading", () => {
   test("keeps the current page visible while a remote page loads", async () => {
     const ctx = await boot();
