@@ -136,4 +136,58 @@ describe("paint", () => {
       true,
     );
   });
+
+  test("extends body background fills through full content height", async () => {
+    const paragraphs = Array.from({ length: 40 }, (_, index) => `<p>Paragraph ${index}</p>`).join("");
+    const html = `
+      <style>
+        body { background: #111111; color: #cccccc; }
+      </style>
+      <h1>Long styled page</h1>
+      ${paragraphs}
+    `;
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const laidOut = layout(styled, { viewport });
+    const painted = paint(styled, laidOut.output, { viewportHeight: viewport.height });
+    const body = styled.children[0]?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "body",
+    );
+    const bodyFill = painted.displayList
+      .filter(isFillCommand)
+      .find(
+        (command) =>
+          command.bg === "#111111" &&
+          command.x === 0 &&
+          command.y === 0 &&
+          command.width === viewport.width,
+      );
+
+    expect(bodyFill).toBeDefined();
+    expect(bodyFill!.height).toBeGreaterThanOrEqual(painted.contentHeight);
+    expect(bodyFill!.height).toBeGreaterThan(viewport.height);
+  });
+
+  test("keeps linked-page body background across tall content", async () => {
+    const paragraphs = Array.from({ length: 40 }, (_, index) => `<p>Paragraph ${index}</p>`).join("");
+    const html = await Bun.file("examples/linked-page.html").text();
+    const longHtml = html.replace("</body>", `${paragraphs}</body>`);
+    const styled = await computeStyles(convert(parseHTML(longHtml)), {
+      pageLocation: "examples/linked-page.html",
+      documentBase: `${process.cwd()}/examples`,
+    });
+    const laidOut = layout(styled, { viewport });
+    const painted = paint(styled, laidOut.output, { viewportHeight: viewport.height });
+    const bodyFill = painted.displayList
+      .filter(isFillCommand)
+      .find(
+        (command) =>
+          command.bg === "#111111" &&
+          command.x === 0 &&
+          command.y === 0 &&
+          command.width === viewport.width,
+      );
+
+    expect(bodyFill).toBeDefined();
+    expect(bodyFill!.height).toBeGreaterThanOrEqual(painted.contentHeight);
+  });
 });

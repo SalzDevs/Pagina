@@ -80,6 +80,56 @@ function paintBlockBackground(
   trackBottom(output, fill.y, fill.height);
 }
 
+function extendRootBackgroundFills(
+  root: StyledNode,
+  layout: LayoutOutput,
+  fills: FillCommand[],
+  contentHeight: number,
+  viewportHeight?: number,
+): void {
+  const targets: StyledNode[] = [];
+  const walk = (node: StyledNode) => {
+    if (
+      node.dom.type === NodeType.Element &&
+      (node.dom.tag === "body" || node.dom.tag === "html") &&
+      node.style.bg
+    ) {
+      targets.push(node);
+    }
+
+    for (const child of node.children) {
+      walk(child);
+    }
+  };
+
+  walk(root);
+
+  for (const target of targets) {
+    const box = layout.getLayout(target);
+    if (!box) continue;
+
+    const minHeight = Math.max(
+      box.height,
+      contentHeight - box.y,
+      viewportHeight ?? 0,
+    );
+
+    for (const fill of fills) {
+      if (
+        fill.bg !== target.style.bg ||
+        fill.x !== box.x ||
+        fill.y !== box.y ||
+        fill.width !== box.width
+      ) {
+        continue;
+      }
+
+      fill.height = Math.max(fill.height, minHeight);
+      break;
+    }
+  }
+}
+
 function paintTextNode(
   node: StyledNode,
   layout: LayoutOutput,
@@ -207,10 +257,19 @@ export function paint(
   const displayList: DisplayList = [...output.fills, ...output.texts];
   const measuredHeight =
     displayList.length === 0 ? 0 : Math.max(...displayList.map((command) => commandBottom(command)));
+  const contentHeight = Math.max(output.maxBottom, measuredHeight);
+
+  extendRootBackgroundFills(
+    node,
+    layout,
+    output.fills,
+    contentHeight,
+    options.viewportHeight,
+  );
 
   return {
     displayList,
     links: output.links,
-    contentHeight: Math.max(output.maxBottom, measuredHeight),
+    contentHeight,
   };
 }
