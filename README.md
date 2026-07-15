@@ -123,15 +123,24 @@ load → parseHTML → convert → computeStyles → layout → paint → mountD
 Pagina implements a small subset of CSS aimed at terminal rendering. Supported today:
 
 - Selectors: tag, class, id, and simple descendant chains
-- Common text and box properties (`color`, `background`, spacing, `font-size`, etc.)
+- Link pseudo-classes stripped from selectors (`:link`, `:visited`, `:any-link`)
+- Common text and box properties (`color`, `background`, spacing, `font-size`, `opacity`, etc.)
+- `width` with `px`, `ch`, `%`, and `vw` (resolved against terminal columns)
+- Horizontal centering via `margin-left: auto` / `margin-right: auto` when `width` is set
+- Viewport-relative margins with `vh` and `vw` (resolved against terminal rows/columns)
 - `@media` queries for `screen`, `min-width`, and `max-width` (compared against terminal columns; `ch` and `px` map 1:1 to columns)
 - `:root` custom properties and basic `var(--token)` resolution for colors
+- Auto-contrast body text on light backgrounds when authors omit `color`
+
+`https://example.com/` is the main real-world parity target: content, link color, centered card width, readable contrast, and dimmed body copy from `opacity: 0.8`.
 
 Not supported or ignored:
 
 - `@supports`, `@keyframes`, and most other at-rules
 - Complex selectors (`:hover`, `::before`, attribute selectors)
 - `@media` features beyond width (orientation, resolution, etc.)
+- `font-family`, flexbox, grid, floats, and positioned layout
+- Transforms, filters, shadows, and animations
 
 Media queries are evaluated when styles are computed and re-evaluated on terminal resize.
 
