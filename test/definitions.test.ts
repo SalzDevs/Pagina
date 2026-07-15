@@ -10,6 +10,8 @@ import {
 } from "../layout/definitions";
 import { layout } from "../layout/layout";
 import type { LayoutOutput } from "../layout/output";
+import { paint } from "../paint/paint";
+import { isTextCommand } from "../paint/display-list";
 import { computeStyles, type StyledNode } from "../style/style";
 
 const viewport = { width: 40, height: 20 };
@@ -134,5 +136,46 @@ describe("definition list layout", () => {
     expect(Math.min(...descriptionFragments.map((fragment) => fragment.x))).toBeGreaterThanOrEqual(
       DEFINITION_INDENT,
     );
+  });
+
+  test("places terms and definitions on distinct rows at 80 columns", async () => {
+    const html = await Bun.file("examples/definitions-page.html").text();
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const laidOut = layout(styled, { viewport: { width: 80, height: 30 } });
+    const termFragments = nodeFragments(findTerm(styled), laidOut.output);
+    const firstDescription = nodeFragments(findDescription(styled, 0), laidOut.output);
+    const secondDescription = nodeFragments(findDescription(styled, 1), laidOut.output);
+
+    expect(termFragments[0]?.y).toBeLessThan(firstDescription[0]?.y!);
+    expect(firstDescription[0]?.x).toBe(DEFINITION_INDENT);
+    expect(secondDescription[0]?.x).toBe(DEFINITION_INDENT);
+    expect(firstDescription[0]?.y).toBeLessThan(secondDescription[0]?.y!);
+  });
+
+  test("paints definition list offsets in the display list", async () => {
+    const html = await Bun.file("examples/definitions-page.html").text();
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const laidOut = layout(styled, { viewport: { width: 80, height: 30 } });
+    const painted = paint(styled, laidOut.output);
+    const commands = painted.displayList.filter(isTextCommand);
+
+    const term = commands.find((command) => command.text.trim() === "Term");
+    const definitionOne = commands.find((command) =>
+      command.text.includes("Definition one with enough words"),
+    );
+    const definitionTwo = commands.find((command) => command.text.trim() === "Definition two");
+    const anotherTerm = commands.find((command) => command.text.trim() === "Another term");
+    const shorterDefinition = commands.find((command) =>
+      command.text.includes("A shorter definition"),
+    );
+
+    expect(term?.x).toBe(0);
+    expect(definitionOne?.x).toBe(DEFINITION_INDENT);
+    expect(definitionTwo?.x).toBe(DEFINITION_INDENT);
+    expect(anotherTerm?.x).toBe(0);
+    expect(shorterDefinition?.x).toBe(DEFINITION_INDENT);
+    expect(term!.y).toBeLessThan(definitionOne!.y);
+    expect(definitionOne!.y).toBeLessThan(definitionTwo!.y);
+    expect(definitionTwo!.y).toBeLessThan(anotherTerm!.y);
   });
 });

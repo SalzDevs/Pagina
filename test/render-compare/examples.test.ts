@@ -9,6 +9,7 @@ import { loadPageContent } from "../../navigation/load-page";
 import { buildPageView } from "../../viewport/page-view";
 import { isTextCommand } from "../../paint/display-list";
 import { BLOCKQUOTE_INDENT } from "../../style/style";
+import { DEFINITION_INDENT } from "../../layout/definitions";
 
 const comparisons = await Promise.all(
   EXAMPLE_PAGES.map(async (pagePath) => {
@@ -145,6 +146,44 @@ describe("render comparison — blockquote structure", () => {
 
     expect(bodyLine?.startsWith("Body text")).toBe(true);
     expect((nestedLine?.match(/^ */)?.[0].length ?? 0)).toBeGreaterThanOrEqual(BLOCKQUOTE_INDENT * 2);
+  });
+});
+
+describe("render comparison — definition list structure", () => {
+  test("indents descriptions on definitions-page.html", async () => {
+    const page = await loadPageContent("examples/definitions-page.html", {
+      viewportWidth: DEFAULT_VIEWPORT.width,
+    });
+    const view = buildPageView(page.styled, DEFAULT_VIEWPORT);
+    const commands = view.displayList.filter(isTextCommand);
+
+    const term = commands.find((command) => command.text.trim() === "Term");
+    const definitionOne = commands.find((command) =>
+      command.text.includes("Definition one with enough words"),
+    );
+    const definitionTwo = commands.find((command) => command.text.trim() === "Definition two");
+    const anotherTerm = commands.find((command) => command.text.trim() === "Another term");
+
+    expect(term?.x).toBe(0);
+    expect(definitionOne?.x).toBe(DEFINITION_INDENT);
+    expect(definitionTwo?.x).toBe(DEFINITION_INDENT);
+    expect(anotherTerm?.x).toBe(0);
+    expect(term!.y).toBeLessThan(definitionOne!.y);
+    expect(definitionOne!.y).toBeLessThan(definitionTwo!.y);
+    expect(definitionTwo!.y).toBeLessThan(anotherTerm!.y);
+  });
+
+  test("preserves definition list indentation in plain text extraction", async () => {
+    const pagina = await buildPaginaRender("examples/definitions-page.html", DEFAULT_VIEWPORT);
+    const lines = pagina.plainText.split("\n");
+
+    const termLine = lines.find((line) => line.trim() === "Term");
+    const definitionLine = lines.find((line) => line.includes("Definition one"));
+
+    expect((termLine?.match(/^ */)?.[0].length ?? 0)).toBe(0);
+    expect((definitionLine?.match(/^ */)?.[0].length ?? 0)).toBeGreaterThanOrEqual(
+      DEFINITION_INDENT,
+    );
   });
 });
 
