@@ -1,8 +1,9 @@
 export interface MediaContext {
   viewportWidth: number;
+  viewportHeight?: number;
 }
 
-export const DEFAULT_MEDIA_CONTEXT: MediaContext = { viewportWidth: 80 };
+export const DEFAULT_MEDIA_CONTEXT: MediaContext = { viewportWidth: 80, viewportHeight: 24 };
 
 function mediaLengthToColumns(value: string): number | null {
   const match = value.trim().match(/^([\d.]+)(px|ch|em|rem)?$/i);

@@ -24,6 +24,9 @@ export interface ComputedStyle {
   marginBottom?: number;
   marginLeft?: number;
   marginRight?: number;
+  marginLeftAuto?: boolean;
+  marginRightAuto?: boolean;
+  width?: number;
   paddingTop?: number;
   paddingBottom?: number;
   paddingLeft?: number;
@@ -250,6 +253,7 @@ export interface ComputeStylesOptions {
   pageLocation?: string;
   documentBase?: string;
   viewportWidth?: number;
+  viewportHeight?: number;
   cssWarnings?: string[];
 }
 
@@ -260,8 +264,10 @@ export async function computeStyles(
 ): Promise<StyledNode> {
   const documentBase = options.documentBase ?? options.pageLocation;
   const viewportWidth = options.viewportWidth ?? DEFAULT_MEDIA_CONTEXT.viewportWidth;
+  const viewportHeight = options.viewportHeight ?? DEFAULT_MEDIA_CONTEXT.viewportHeight;
   const { rules, warnings } = await collectStylesheetRules(root, options.pageLocation, documentBase, {
     viewportWidth,
+    viewportHeight,
   });
   if (options.cssWarnings) {
     options.cssWarnings.push(...warnings);

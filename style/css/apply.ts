@@ -85,6 +85,9 @@ function mergeDeclarations(
   set("marginBottom", declarations.marginBottom);
   set("marginLeft", declarations.marginLeft);
   set("marginRight", declarations.marginRight);
+  if (declarations.marginLeftAuto) next.marginLeftAuto = true;
+  if (declarations.marginRightAuto) next.marginRightAuto = true;
+  set("width", declarations.width);
   set("paddingTop", declarations.paddingTop);
   set("paddingBottom", declarations.paddingBottom);
   set("paddingLeft", declarations.paddingLeft);

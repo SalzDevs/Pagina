@@ -3,29 +3,6 @@ import type { CssDeclarations, CssRule, CssSelector, SimpleSelector } from "./ty
 
 export type { MediaContext } from "./media";
 
-const FONT_SIZE_KEYWORDS: Record<string, number> = {
-  "xx-small": 0.6,
-  "x-small": 0.75,
-  small: 0.875,
-  medium: 1,
-  large: 1.125,
-  "x-large": 1.25,
-  "xx-large": 1.5,
-};
-
-function parseLength(value: string): number | undefined {
-  const trimmed = value.trim();
-  if (trimmed.length === 0) return undefined;
-
-  const match = trimmed.match(/^(-?\d+(?:\.\d+)?)(px|em|rem|%|ch)?$/);
-  if (!match) return undefined;
-
-  const amount = Number(match[1]);
-  if (Number.isNaN(amount)) return undefined;
-
-  return Math.max(0, Math.round(amount));
-}
-
 type SpacingSide = "Top" | "Right" | "Bottom" | "Left";
 
 type SpacingDeclarationKey =
@@ -38,15 +15,124 @@ type SpacingDeclarationKey =
   | "paddingBottom"
   | "paddingLeft";
 
+const FONT_SIZE_KEYWORDS: Record<string, number> = {
+  "xx-small": 0.6,
+  "x-small": 0.75,
+  small: 0.875,
+  medium: 1,
+  large: 1.125,
+  "x-large": 1.25,
+  "xx-large": 1.5,
+};
+
+function parseLength(value: string, context: MediaContext = DEFAULT_MEDIA_CONTEXT): number | undefined {
+  const trimmed = value.trim().toLowerCase();
+  if (trimmed.length === 0 || trimmed === "auto") return undefined;
+
+  const viewportHeight = context.viewportHeight ?? 24;
+
+  const vw = trimmed.match(/^(-?\d+(?:\.\d+)?)vw$/);
+  if (vw) {
+    return Math.max(0, Math.round((Number(vw[1]) * context.viewportWidth) / 100));
+  }
+
+  const vh = trimmed.match(/^(-?\d+(?:\.\d+)?)vh$/);
+  if (vh) {
+    return Math.max(0, Math.round((Number(vh[1]) * viewportHeight) / 100));
+  }
+
+  const percent = trimmed.match(/^(-?\d+(?:\.\d+)?)%$/);
+  if (percent) {
+    return Math.max(0, Math.round((Number(percent[1]) * context.viewportWidth) / 100));
+  }
+
+  const match = trimmed.match(/^(-?\d+(?:\.\d+)?)(px|em|rem|ch)?$/);
+  if (!match) return undefined;
+
+  const amount = Number(match[1]);
+  if (Number.isNaN(amount)) return undefined;
+
+  switch (match[2] ?? "px") {
+    case "ch":
+      return Math.max(0, Math.round(amount));
+    case "em":
+    case "rem":
+      return Math.max(0, Math.round(amount * 16));
+    default:
+      return Math.max(0, Math.round(amount));
+  }
+}
+
+function applyMarginShorthand(declarations: CssDeclarations, value: string, context: MediaContext): void {
+  const parts = value.split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return;
+
+  const read = (index: number): number | "auto" | undefined => {
+    const part = parts[index]?.trim().toLowerCase();
+    if (!part) return undefined;
+    if (part === "auto") return "auto";
+    return parseLength(parts[index]!, context);
+  };
+
+  const sides: Record<SpacingSide, number | "auto" | undefined> = {
+    Top: undefined,
+    Right: undefined,
+    Bottom: undefined,
+    Left: undefined,
+  };
+
+  if (parts.length === 1) {
+    sides.Top = read(0);
+    sides.Right = read(0);
+    sides.Bottom = read(0);
+    sides.Left = read(0);
+  } else if (parts.length === 2) {
+    sides.Top = read(0);
+    sides.Bottom = read(0);
+    sides.Right = read(1);
+    sides.Left = read(1);
+  } else if (parts.length === 3) {
+    sides.Top = read(0);
+    sides.Right = read(1);
+    sides.Left = read(1);
+    sides.Bottom = read(2);
+  } else {
+    sides.Top = read(0);
+    sides.Right = read(1);
+    sides.Bottom = read(2);
+    sides.Left = read(3);
+  }
+
+  for (const side of ["Top", "Right", "Bottom", "Left"] as const) {
+    const spacing = sides[side];
+    if (spacing === undefined) continue;
+
+    if (spacing === "auto") {
+      if (side === "Left") declarations.marginLeftAuto = true;
+      if (side === "Right") declarations.marginRightAuto = true;
+      continue;
+    }
+
+    const key = `margin${side}` as SpacingDeclarationKey;
+    declarations[key] = spacing;
+  }
+}
+
 function applySpacingShorthand(
   declarations: CssDeclarations,
   prefix: "margin" | "padding",
   value: string,
+  context: MediaContext = DEFAULT_MEDIA_CONTEXT,
 ): void {
+  if (prefix === "margin") {
+    applyMarginShorthand(declarations, value, context);
+    return;
+  }
+
   const parts = value.split(/\s+/).filter(Boolean);
   if (parts.length === 0) return;
 
-  const read = (index: number) => parseLength(parts[index]!);
+  const read = (index: number) => parseLength(parts[index]!, context);
 
   const sides: Record<SpacingSide, number | undefined> = {
     Top: undefined,
@@ -111,7 +197,10 @@ function parseFontSize(value: string): number | undefined {
   }
 }
 
-function parseDeclarations(block: string): CssDeclarations {
+function parseDeclarations(
+  block: string,
+  context: MediaContext = DEFAULT_MEDIA_CONTEXT,
+): CssDeclarations {
   const declarations: CssDeclarations = {};
 
   for (const chunk of block.split(";")) {
@@ -156,35 +245,46 @@ function parseDeclarations(block: string): CssDeclarations {
       case "white-space":
         declarations.whiteSpace = value;
         break;
+      case "width":
+        declarations.width = parseLength(value, context);
+        break;
       case "margin-top":
-        declarations.marginTop = parseLength(value);
+        declarations.marginTop = parseLength(value, context);
         break;
       case "margin-bottom":
-        declarations.marginBottom = parseLength(value);
+        declarations.marginBottom = parseLength(value, context);
         break;
       case "margin-left":
-        declarations.marginLeft = parseLength(value);
+        if (value.trim().toLowerCase() === "auto") {
+          declarations.marginLeftAuto = true;
+        } else {
+          declarations.marginLeft = parseLength(value, context);
+        }
         break;
       case "margin-right":
-        declarations.marginRight = parseLength(value);
+        if (value.trim().toLowerCase() === "auto") {
+          declarations.marginRightAuto = true;
+        } else {
+          declarations.marginRight = parseLength(value, context);
+        }
         break;
       case "padding-top":
-        declarations.paddingTop = parseLength(value);
+        declarations.paddingTop = parseLength(value, context);
         break;
       case "padding-bottom":
-        declarations.paddingBottom = parseLength(value);
+        declarations.paddingBottom = parseLength(value, context);
         break;
       case "padding-left":
-        declarations.paddingLeft = parseLength(value);
+        declarations.paddingLeft = parseLength(value, context);
         break;
       case "padding-right":
-        declarations.paddingRight = parseLength(value);
+        declarations.paddingRight = parseLength(value, context);
         break;
       case "margin":
-        applySpacingShorthand(declarations, "margin", value);
+        applySpacingShorthand(declarations, "margin", value, context);
         break;
       case "padding":
-        applySpacingShorthand(declarations, "padding", value);
+        applySpacingShorthand(declarations, "padding", value, context);
         break;
     }
   }
@@ -374,7 +474,7 @@ export function parseStylesheet(
 
     rules.push({
       selectors,
-      declarations: parseDeclarations(block.body),
+      declarations: parseDeclarations(block.body, context),
     });
   }
 

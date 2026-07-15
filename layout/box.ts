@@ -17,13 +17,24 @@ export function blockBox(
   originX: number,
   availableWidth: number,
 ): BlockBox {
-  const marginLeft = style.marginLeft ?? 0;
-  const marginRight = style.marginRight ?? 0;
+  let marginLeft = style.marginLeft ?? 0;
+  let marginRight = style.marginRight ?? 0;
   const paddingLeft = style.paddingLeft ?? 0;
   const paddingRight = style.paddingRight ?? 0;
+  const declaredWidth = style.width;
+
+  let layoutWidth = Math.max(1, availableWidth - marginLeft - marginRight);
+  if (declaredWidth !== undefined) {
+    layoutWidth = Math.min(layoutWidth, declaredWidth);
+  }
+
+  if (style.marginLeftAuto && style.marginRightAuto && declaredWidth !== undefined) {
+    const spare = Math.max(0, availableWidth - layoutWidth);
+    marginLeft = Math.floor(spare / 2);
+    marginRight = spare - marginLeft;
+  }
 
   const layoutX = originX + marginLeft;
-  const layoutWidth = Math.max(1, availableWidth - marginLeft - marginRight);
   const contentX = layoutX + paddingLeft;
   const contentWidth = Math.max(1, layoutWidth - paddingLeft - paddingRight);
 

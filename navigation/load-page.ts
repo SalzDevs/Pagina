@@ -9,6 +9,7 @@ import type { LoadedPageContent } from "./page-cache";
 
 export interface LoadPageOptions {
   viewportWidth?: number;
+  viewportHeight?: number;
   signal?: AbortSignal;
 }
 
@@ -42,6 +43,7 @@ export async function loadPageContent(
     pageLocation,
     documentBase,
     viewportWidth: options.viewportWidth,
+    viewportHeight: options.viewportHeight,
     cssWarnings,
   });
 

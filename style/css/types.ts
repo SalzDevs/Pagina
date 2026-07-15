@@ -26,6 +26,9 @@ export interface CssDeclarations {
   marginBottom?: number;
   marginLeft?: number;
   marginRight?: number;
+  marginLeftAuto?: boolean;
+  marginRightAuto?: boolean;
+  width?: number;
   paddingTop?: number;
   paddingBottom?: number;
   paddingLeft?: number;

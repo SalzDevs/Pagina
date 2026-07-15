@@ -107,7 +107,10 @@ export async function buildPaginaRender(
   viewport: { width: number; height: number },
 ): Promise<PaginaRender> {
   const resolved = resolvePageLocation(pagePath);
-  const page = await loadPageContent(resolved, { viewportWidth: viewport.width });
+  const page = await loadPageContent(resolved, {
+    viewportWidth: viewport.width,
+    viewportHeight: viewport.height,
+  });
   const view = buildPageView(page.styled, viewport);
   const plainText = linearizeDisplayList(view.displayList);
 

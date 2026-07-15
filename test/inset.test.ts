@@ -83,6 +83,24 @@ describe("horizontal spacing parse", () => {
     expect(rules[0]?.declarations.paddingLeft).toBe(3);
     expect(rules[0]?.declarations.paddingRight).toBe(3);
   });
+
+  test("parses vw width and margin auto shorthand", () => {
+    const rules = parseStylesheet("body { width: 60vw; margin: 0 auto; }", {
+      viewportWidth: 80,
+      viewportHeight: 24,
+    });
+    expect(rules[0]?.declarations.width).toBe(48);
+    expect(rules[0]?.declarations.marginLeftAuto).toBe(true);
+    expect(rules[0]?.declarations.marginRightAuto).toBe(true);
+  });
+
+  test("parses vh margins relative to viewport height", () => {
+    const rules = parseStylesheet("body { margin-top: 15vh; }", {
+      viewportWidth: 80,
+      viewportHeight: 24,
+    });
+    expect(rules[0]?.declarations.marginTop).toBe(4);
+  });
 });
 
 describe("blockBox", () => {
@@ -107,6 +125,29 @@ describe("blockBox", () => {
       layoutWidth: 34,
       contentX: 6,
       contentWidth: 31,
+    });
+  });
+
+  test("centers a declared width with horizontal auto margins", () => {
+    const box = blockBox(
+      {
+        display: "block",
+        bold: false,
+        italic: false,
+        underline: false,
+        width: 48,
+        marginLeftAuto: true,
+        marginRightAuto: true,
+      },
+      0,
+      80,
+    );
+
+    expect(box).toEqual({
+      layoutX: 16,
+      layoutWidth: 48,
+      contentX: 16,
+      contentWidth: 48,
     });
   });
 });
