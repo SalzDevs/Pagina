@@ -10,6 +10,7 @@ export interface UxTestContext {
   app: Awaited<ReturnType<typeof createPaginaApp>>;
   renderer: Awaited<ReturnType<typeof createTestRenderer>>["renderer"];
   mockInput: Awaited<ReturnType<typeof createTestRenderer>>["mockInput"];
+  mockMouse: Awaited<ReturnType<typeof createTestRenderer>>["mockMouse"];
   flush: Awaited<ReturnType<typeof createTestRenderer>>["flush"];
   waitForFrame: Awaited<ReturnType<typeof createTestRenderer>>["waitForFrame"];
   renderOnce: Awaited<ReturnType<typeof createTestRenderer>>["renderOnce"];
@@ -39,6 +40,7 @@ export async function createUxTestApp(
     app,
     renderer: harness.renderer,
     mockInput: harness.mockInput,
+    mockMouse: harness.mockMouse,
     flush: harness.flush,
     waitForFrame: harness.waitForFrame,
     renderOnce: harness.renderOnce,
@@ -90,6 +92,18 @@ export async function waitForLoad(ctx: UxTestContext, ms = 50) {
 /** Press Escape (requires kitty keyboard mode in the test renderer). */
 export async function pressEscape(ctx: UxTestContext) {
   ctx.mockInput.pressEscape();
+  await ctx.flush();
+}
+
+/** Click at root-relative terminal coordinates. */
+export async function click(ctx: UxTestContext, x: number, y: number) {
+  await ctx.mockMouse.click(x, y);
+  await ctx.flush();
+}
+
+/** Move the mouse without clicking. */
+export async function moveMouse(ctx: UxTestContext, x: number, y: number) {
+  await ctx.mockMouse.moveTo(x, y);
   await ctx.flush();
 }
 

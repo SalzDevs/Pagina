@@ -6,8 +6,10 @@ import { resolve } from "node:path";
 
 import {
   breadcrumb,
+  click,
   createUxTestApp,
   followLink,
+  moveMouse,
   press,
   pressEscape,
   submit,
@@ -15,6 +17,7 @@ import {
   waitForLoad,
   type UxTestContext,
 } from "./setup";
+import { breadcrumbClickPoint, linkScreenPoint } from "./geometry";
 
 const originalFetch = globalThis.fetch;
 const contexts: UxTestContext[] = [];
@@ -213,6 +216,45 @@ describe("UX E2E — navigation edge cases", () => {
     await press(ctx, "y");
 
     expect(breadcrumb(ctx)).toMatch(/Copied|Copy failed/i);
+  });
+});
+
+describe("UX E2E — mouse", () => {
+  const linksPage = "examples/links-page.html";
+  const layout = { width: 80, height: 24 };
+
+  test("follows a link with a mouse click", async () => {
+    const ctx = await boot();
+    const point = await linkScreenPoint(linksPage, 0, layout);
+
+    await click(ctx, point.x, point.y);
+    await waitForLoad(ctx);
+
+    expect(ctx.captureCharFrame()).toMatch(/Other Page|other page/i);
+    expect(ctx.app.getHistory().index).toBe(1);
+  });
+
+  test("jumps history by clicking a breadcrumb segment", async () => {
+    const ctx = await boot();
+    await followLink(ctx);
+    await waitForLoad(ctx);
+    expect(ctx.app.getHistory().index).toBe(1);
+
+    const point = breadcrumbClickPoint(ctx.app.getHistory(), layout.width, 0);
+    await click(ctx, point.x, point.y);
+    await waitForLoad(ctx);
+
+    expect(ctx.app.getHistory().index).toBe(0);
+    expect(breadcrumb(ctx)).toMatch(/Links Demo|links-page/i);
+  });
+
+  test("keeps keyboard link focus when the mouse moves off links", async () => {
+    const ctx = await boot();
+    await press(ctx, "]");
+    expect(ctx.app.getSession()?.focusedLinkIndex).toBe(1);
+
+    await moveMouse(ctx, 40, 10);
+    expect(ctx.app.getSession()?.focusedLinkIndex).toBe(1);
   });
 });
 
