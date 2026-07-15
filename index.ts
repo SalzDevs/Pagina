@@ -26,12 +26,13 @@ import { splitPageLocation } from "./navigation/fragment";
 import { isRemoteUrl } from "./navigation/resolve";
 import { BREADCRUMB_HEIGHT, mountBreadcrumb } from "./render/breadcrumb";
 import { mountHelpOverlay } from "./render/help-overlay";
+import { mountDebugOverlay } from "./render/debug-overlay";
 import { mountHistoryOverlay } from "./render/history-overlay";
 import { mountLoadingOverlay } from "./render/loading-overlay";
 import type { MountLayout } from "./render/render";
 import { createKeyboardInput } from "./viewport/keyboard";
 import { isLoadCancelKey } from "./viewport/load-cancel-key";
-import { buildPageView } from "./viewport/page-view";
+import { buildPageView, type PageView } from "./viewport/page-view";
 import { createBrowserSession, type BrowserSession } from "./viewport/session";
 import { clampScrollY } from "./viewport/scroll";
 import { formatScrollStatus, isVerticallyScrollable } from "./viewport/scroll-indicator";
@@ -88,9 +89,11 @@ async function main() {
 
   const breadcrumb = mountBreadcrumb(renderer);
   const help = mountHelpOverlay(renderer);
+  const debug = mountDebugOverlay(renderer);
   const historyOverlay = mountHistoryOverlay(renderer);
   const loading = mountLoadingOverlay(renderer);
   let helpVisible = false;
+  let debugVisible = false;
   let historyPicker: HistoryPickerState = createHistoryPickerState();
   let openPrompt: OpenPromptState = createOpenPromptState();
   let openPromptHistory = await createPersistentOpenPromptHistory();
@@ -108,6 +111,7 @@ async function main() {
   let loadGeneration = 0;
   let loadAbortController: AbortController | null = null;
   let currentFocusableLinkCount = 0;
+  let lastPageView: PageView | null = null;
 
   const startRendererOnce = () => {
     if (rendererStarted) return;
@@ -173,12 +177,39 @@ async function main() {
     updateBreadcrumb();
   };
 
+  const syncDebugContext = () => {
+    if (!loadedPage) {
+      debug.setContext(null);
+      return;
+    }
+
+    const chrome = contentLayout();
+    debug.setContext({
+      page: loadedPage,
+      viewportWidth: chrome.width,
+      viewportHeight: chrome.height,
+      contentWidth: lastPageView?.contentWidth,
+      contentHeight: lastPageView?.contentHeight,
+      linkCount: lastPageView?.links.length,
+      fragmentCount: lastPageView?.fragmentPositions.size,
+    });
+  };
+
   const updateBreadcrumb = () => {
     if (helpVisible) {
       breadcrumb.update(
         help.isScrollable()
           ? "Help — ? to close, ↑/↓ to scroll"
           : "Help — press ? to close",
+      );
+      return;
+    }
+
+    if (debugVisible) {
+      breadcrumb.update(
+        debug.isScrollable()
+          ? "Debug — v to close, ↑/↓ to scroll"
+          : "Debug — press v to close",
       );
       return;
     }
@@ -245,6 +276,8 @@ async function main() {
   const toggleHelp = () => {
     helpVisible = !helpVisible;
     if (helpVisible) {
+      debugVisible = false;
+      debug.setVisible(false);
       openPrompt = createOpenPromptState();
       search = createSearchState();
       searchMatches = [];
@@ -252,6 +285,22 @@ async function main() {
       closeHistoryPicker();
     }
     help.setVisible(helpVisible);
+    updateBreadcrumb();
+  };
+
+  const toggleDebug = () => {
+    debugVisible = !debugVisible;
+    if (debugVisible) {
+      helpVisible = false;
+      help.setVisible(false);
+      openPrompt = createOpenPromptState();
+      search = createSearchState();
+      searchMatches = [];
+      session?.clearSearchHighlight();
+      closeHistoryPicker();
+      syncDebugContext();
+    }
+    debug.setVisible(debugVisible);
     updateBreadcrumb();
   };
 
@@ -267,6 +316,10 @@ async function main() {
         if (helpVisible) {
           helpVisible = false;
           help.setVisible(false);
+        }
+        if (debugVisible) {
+          debugVisible = false;
+          debug.setVisible(false);
         }
         historyPicker = result.state;
         historyOverlay.setHistory(history, historyPicker.selectedIndex);
@@ -301,6 +354,10 @@ async function main() {
           helpVisible = false;
           help.setVisible(false);
         }
+        if (debugVisible) {
+          debugVisible = false;
+          debug.setVisible(false);
+        }
         openPrompt = result.state;
         updateBreadcrumb();
         return true;
@@ -332,6 +389,10 @@ async function main() {
         if (helpVisible) {
           helpVisible = false;
           help.setVisible(false);
+        }
+        if (debugVisible) {
+          debugVisible = false;
+          debug.setVisible(false);
         }
         search = result.state;
         updateBreadcrumb();
@@ -428,6 +489,8 @@ async function main() {
       width: chrome.width,
       height: chrome.height,
     });
+    lastPageView = view;
+    syncDebugContext();
 
     const previousFocusedLink =
       previousFocusedLinkBeforeDestroy !== null &&
@@ -487,11 +550,14 @@ async function main() {
       isOpenPromptVisible: () => openPrompt.active,
       isSearchPromptVisible: () => search.promptActive,
       isHistoryPickerVisible: () => historyPicker.active,
+      isDebugVisible: () => debugVisible,
       onToggleHelp: toggleHelp,
+      onToggleDebug: toggleDebug,
       onOpenPromptKey: handleOpenPromptKey,
       onSearchKey: handleSearchKey,
       onHistoryPickerKey: handleHistoryPickerKey,
       onHelpKey: (key) => help.handleKey(key),
+      onDebugKey: (key) => debug.handleKey(key),
       onReload: reloadCurrentPage,
       onCopyUrl: copyCurrentPageUrl,
       onNavigate: (target, targetFragment) => loadPage(target, "push", targetFragment ?? null),
@@ -566,6 +632,7 @@ async function main() {
 
   const relayoutCurrentPage = async () => {
     help.resize(renderer.width, renderer.height);
+    debug.resize(renderer.width, renderer.height);
     historyOverlay.resize(renderer.width, renderer.height);
     breadcrumb.resize(renderer.width);
     loading.resize(renderer.width, renderer.height);
@@ -580,7 +647,9 @@ async function main() {
       height: chrome.height,
     });
 
+    lastPageView = view;
     session.relayout(view, chrome);
+    syncDebugContext();
     applySearch();
     updateBreadcrumb();
     syncCssWarnings();
@@ -641,6 +710,10 @@ async function main() {
     if (helpVisible) {
       helpVisible = false;
       help.setVisible(false);
+    }
+    if (debugVisible) {
+      debugVisible = false;
+      debug.setVisible(false);
     }
     openPrompt = createOpenPromptState();
     search = createSearchState();
@@ -734,7 +807,7 @@ async function main() {
   renderer.on(CliRenderEvents.RESIZE, relayoutCurrentPage);
 
   breadcrumb.bar.onMouseUp = (event) => {
-    if (helpVisible || openPrompt.active || search.promptActive || historyPicker.active) return;
+    if (helpVisible || debugVisible || openPrompt.active || search.promptActive || historyPicker.active) return;
     if (event.button !== 0 || event.type !== "up") return;
     if (history.entries.length === 0) return;
 

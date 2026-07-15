@@ -1,4 +1,5 @@
 import { formatCssWarningHelpSection } from "../navigation/history";
+import { formatRuntimeLimitsHelpSection } from "./runtime-limits";
 
 export interface KeybindingEntry {
   keys: string;
@@ -31,6 +32,7 @@ export const PAGINA_KEYBINDINGS: KeybindingEntry[] = [
   { keys: "n / N", description: "Next / previous search match" },
   { keys: "Tab, ↑/↓, Ctrl+A/E", description: "Edit open prompt (complete, history, jump)" },
   { keys: "?", description: "Toggle help" },
+  { keys: "v", description: "Toggle page debug view" },
   { keys: "Ctrl+C", description: "Quit" },
 ];
 
@@ -68,6 +70,7 @@ export function formatHelpLines(
   }
 
   lines.push("", "On Linux/Windows, use u / U for back and forward.");
+  lines.push(...formatRuntimeLimitsHelpSection(width));
 
   if (options.cssWarnings?.length) {
     lines.push(...formatCssWarningHelpSection(options.cssWarnings, width));

@@ -35,8 +35,21 @@ describe("keybindings", () => {
     const lines = formatHelpLines(60);
     expect(lines[0]).toContain("Pagina");
     expect(lines.some((line) => line.includes("Linux/Windows"))).toBe(true);
+    expect(lines.some((line) => line.includes("Limits & behavior"))).toBe(true);
     expect(lines.at(-1)).toBe("Press ? to close");
     expect(lines.every((line) => line.length <= 60)).toBe(true);
+  });
+
+  test("documents runtime limits and behavior", () => {
+    const text = formatHelpLines(80).join("\n");
+
+    expect(text).toContain("30 s timeout");
+    expect(text).toContain("2 MB max response");
+    expect(text).toContain("10 redirects max");
+    expect(text).toContain("Esc to cancel slow remote fetches");
+    expect(text).toContain("r reloads from cache");
+    expect(text).toContain("R / Ctrl+R bypasses cache");
+    expect(text).toContain("mailto:, tel:, data:, javascript:");
   });
 
   test("includes failed stylesheet urls in help when present", () => {

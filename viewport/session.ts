@@ -12,6 +12,7 @@ import {
 } from "../links/focus";
 import { handleHistoryKey } from "../navigation/history-keys";
 import { isHelpToggleKey } from "./help-key";
+import { isDebugToggleKey } from "./debug-key";
 import { handleCopyUrlKey } from "./copy-url-key";
 import { handleReloadKey } from "./reload-key";
 import { isSamePage, parseLinkTarget, isActionableLinkTarget, unfollowableLinkLabel, EMPTY_LINK_LABEL } from "../navigation/fragment";
@@ -47,11 +48,14 @@ export interface BrowserSessionOptions {
   isOpenPromptVisible?: () => boolean;
   isSearchPromptVisible?: () => boolean;
   isHistoryPickerVisible?: () => boolean;
+  isDebugVisible?: () => boolean;
   onToggleHelp?: () => void;
+  onToggleDebug?: () => void;
   onOpenPromptKey?: (key: KeyEvent) => boolean;
   onSearchKey?: (key: KeyEvent) => boolean;
   onHistoryPickerKey?: (key: KeyEvent) => boolean;
   onHelpKey?: (key: KeyEvent) => boolean;
+  onDebugKey?: (key: KeyEvent) => boolean;
   onNavigate: (location: string, fragment?: string | null) => void | Promise<void>;
   onHistoryBack?: () => void | Promise<void>;
   onHistoryForward?: () => void | Promise<void>;
@@ -297,6 +301,11 @@ export function createBrowserSession(
           return;
         }
 
+        if (isDebugToggleKey(key)) {
+          options.onToggleDebug?.();
+          return;
+        }
+
         if (options.onOpenPromptKey?.(key)) return;
 
         if (options.onSearchKey?.(key)) return;
@@ -310,6 +319,11 @@ export function createBrowserSession(
 
         if (options.isHelpVisible?.()) {
           options.onHelpKey?.(key);
+          return;
+        }
+
+        if (options.isDebugVisible?.()) {
+          options.onDebugKey?.(key);
           return;
         }
 
@@ -358,6 +372,7 @@ export function createBrowserSession(
       mouseScrollHandler = (event) => {
         if (
           options.isHelpVisible?.() ||
+          options.isDebugVisible?.() ||
           options.isOpenPromptVisible?.() ||
           options.isSearchPromptVisible?.() ||
           options.isHistoryPickerVisible?.()
@@ -373,6 +388,7 @@ export function createBrowserSession(
       mouseMoveHandler = (event) => {
         if (
           options.isHelpVisible?.() ||
+          options.isDebugVisible?.() ||
           options.isOpenPromptVisible?.() ||
           options.isSearchPromptVisible?.() ||
           options.isHistoryPickerVisible?.()
@@ -399,6 +415,7 @@ export function createBrowserSession(
       mouseUpHandler = (event) => {
         if (
           options.isHelpVisible?.() ||
+          options.isDebugVisible?.() ||
           options.isOpenPromptVisible?.() ||
           options.isSearchPromptVisible?.() ||
           options.isHistoryPickerVisible?.()
