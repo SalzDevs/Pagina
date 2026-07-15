@@ -123,6 +123,24 @@ describe("layout lists", () => {
     expect(itemText(innerItem, laidOut.output)).toBe(`${BULLET_MARKER}Inner`);
   });
 
+  test("indents nested ordered lists", async () => {
+    const html = "<ol><li>Outer<ol><li>Inner</li></ol></li></ol>";
+    const styled = await computeStyles(convert(parseHTML(html)));
+
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
+
+    const outer = findList(styled, "ol");
+    const outerItem = outer?.children[0];
+    const nestedList = outerItem?.children.find(
+      (child) => child.dom.type === "element" && child.dom.tag === "ol",
+    );
+    const innerItem = nestedList?.children[0];
+
+    expect(markerX(outerItem, laidOut.output)).toBe(0);
+    expect(markerX(innerItem, laidOut.output)).toBe(2);
+    expect(itemText(innerItem, laidOut.output)).toBe("1. Inner");
+  });
+
   test("lays out examples/lists-page.html with bullets and numbers", async () => {
     const html = await Bun.file("examples/lists-page.html").text();
     const styled = await computeStyles(convert(parseHTML(html)));

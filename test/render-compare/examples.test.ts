@@ -4,7 +4,9 @@ import { comparePageRender, formatComparisonReport } from "./compare";
 import { DEFAULT_VIEWPORT, EXAMPLE_PAGES, NARROW_VIEWPORT } from "./fixtures";
 import { buildPaginaRender } from "./pagina";
 import { buildPageReference } from "./reference";
-import { buildPageReference } from "./reference";
+import { loadPageContent } from "../../navigation/load-page";
+import { buildPageView } from "../../viewport/page-view";
+import { isTextCommand } from "../../paint/display-list";
 
 const comparisons = await Promise.all(
   EXAMPLE_PAGES.map(async (pagePath) => {
@@ -66,6 +68,35 @@ describe("render comparison — styling fidelity", () => {
     expect(pagina.cssWarnings).toEqual([]);
     expect(pagina.styleSamples.some((sample) => sample.fg === "#ffd700")).toBe(true);
     expect(pagina.styleSamples.some((sample) => sample.fg === "#8be9fd")).toBe(true);
+  });
+});
+
+describe("render comparison — list structure", () => {
+  test("indents nested list items on lists-page.html", async () => {
+    const page = await loadPageContent("examples/lists-page.html", { viewportWidth: DEFAULT_VIEWPORT.width });
+    const view = buildPageView(page.styled, DEFAULT_VIEWPORT);
+    const markers = view.displayList
+      .filter(isTextCommand)
+      .filter((command) => command.text === "- ");
+
+    const outerMarkers = markers.filter((command) => command.x === 0);
+    const nestedMarkers = markers.filter((command) => command.x >= 2);
+
+    expect(outerMarkers.length).toBeGreaterThan(0);
+    expect(nestedMarkers.length).toBeGreaterThan(0);
+    expect(Math.min(...nestedMarkers.map((command) => command.x))).toBeGreaterThan(0);
+  });
+
+  test("preserves nested list indentation in plain text extraction", async () => {
+    const pagina = await buildPaginaRender("examples/lists-page.html", DEFAULT_VIEWPORT);
+    const innerLine = pagina.plainText.split("\n").find((line) => line.includes("Inner A"));
+    const outerLine = pagina.plainText.split("\n").find((line) => line.includes("Outer one"));
+
+    expect(innerLine).toBeDefined();
+    expect(outerLine).toBeDefined();
+    expect((innerLine?.match(/^ */)?.[0].length ?? 0)).toBeGreaterThan(
+      outerLine?.match(/^ */)?.[0].length ?? 0,
+    );
   });
 });
 

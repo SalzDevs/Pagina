@@ -76,13 +76,22 @@ function linearizeDisplayList(displayList: ReturnType<typeof buildPageView>["dis
 
   return [...lines.entries()]
     .sort(([leftY], [rightY]) => leftY - rightY)
-    .map(([, row]) =>
-      row
-        .sort((left, right) => left.x - right.x)
-        .map((cell) => cell.text)
-        .join(" ")
-        .trimEnd(),
-    )
+    .map(([, row]) => {
+      const sorted = [...row].sort((left, right) => left.x - right.x);
+      let line = "";
+      let cursor = 0;
+
+      for (const cell of sorted) {
+        const start = Math.max(cursor, cell.x);
+        if (start > line.length) {
+          line += " ".repeat(start - line.length);
+        }
+        line += cell.text;
+        cursor = line.length;
+      }
+
+      return line.trimEnd();
+    })
     .join("\n")
     .trim();
 }
