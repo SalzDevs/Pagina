@@ -11,7 +11,9 @@ import {
   followLink,
   moveMouse,
   press,
+  pressArrow,
   pressEscape,
+  pressTab,
   submit,
   typeText,
   waitForLoad,
@@ -216,6 +218,92 @@ describe("UX E2E — navigation edge cases", () => {
     await press(ctx, "y");
 
     expect(breadcrumb(ctx)).toMatch(/Copied|Copy failed/i);
+  });
+});
+
+describe("UX E2E — open prompt history and bookmarks", () => {
+  test("recalls prior entries with Up and restores draft with Down", async () => {
+    const ctx = await boot();
+    await press(ctx, ":");
+    await typeText(ctx, "examples/page.html");
+    await submit(ctx);
+    await waitForLoad(ctx);
+
+    await press(ctx, ":");
+    await typeText(ctx, "draft path");
+    await pressArrow(ctx, "up");
+
+    expect(breadcrumb(ctx)).toMatch(/examples\/page\.html/);
+
+    await pressArrow(ctx, "down");
+    expect(breadcrumb(ctx)).toMatch(/draft path/);
+  });
+
+  test("navigates via @bookmark from the open prompt", async () => {
+    const ctx = await boot("examples/links-page.html", {
+      seedBookmarks: [{ name: "docs", location: "examples/page.html" }],
+    });
+
+    await press(ctx, ":");
+    await typeText(ctx, "@docs");
+    await submit(ctx);
+    await waitForLoad(ctx);
+
+    expect(ctx.captureCharFrame()).toMatch(/Hello!|Pagina/i);
+    expect(breadcrumb(ctx)).toMatch(/Hello!|page\.html/i);
+  });
+
+  test("tab-completes local paths in the open prompt", async () => {
+    const ctx = await boot();
+    await press(ctx, ":");
+    await typeText(ctx, "examples/pa");
+    await pressTab(ctx);
+
+    expect(breadcrumb(ctx)).toMatch(/examples\/page\.html/);
+  });
+
+  test("tab-completes bookmark names in the open prompt", async () => {
+    const ctx = await boot("examples/links-page.html", {
+      seedBookmarks: [
+        { name: "docs", location: "examples/page.html" },
+        { name: "downloads", location: "examples/other-page.html" },
+      ],
+    });
+
+    await press(ctx, ":");
+    await typeText(ctx, "@doc");
+    await pressTab(ctx);
+
+    expect(breadcrumb(ctx)).toMatch(/@docs/);
+  });
+
+  test("persists open-prompt history across app restarts", async () => {
+    const configDir = await mkdtemp(join(tmpdir(), "pagina-ux-persist-"));
+
+    try {
+      const first = await createUxTestApp("examples/links-page.html", {
+        configDir,
+        keepConfig: true,
+      });
+      await press(first, ":");
+      await typeText(first, "examples/page.html");
+      await submit(first);
+      await waitForLoad(first);
+      await first.cleanup();
+
+      const second = await createUxTestApp("examples/links-page.html", {
+        configDir,
+        keepConfig: true,
+      });
+      contexts.push(second);
+
+      await press(second, ":");
+      await pressArrow(second, "up");
+
+      expect(breadcrumb(second)).toMatch(/examples\/page\.html/);
+    } finally {
+      await rm(configDir, { recursive: true, force: true });
+    }
   });
 });
 

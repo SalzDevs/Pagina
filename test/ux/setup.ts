@@ -1,4 +1,4 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 
@@ -8,6 +8,7 @@ import { createPaginaApp } from "../../app/pagina-app";
 
 export interface UxTestContext {
   app: Awaited<ReturnType<typeof createPaginaApp>>;
+  configDir: string;
   renderer: Awaited<ReturnType<typeof createTestRenderer>>["renderer"];
   mockInput: Awaited<ReturnType<typeof createTestRenderer>>["mockInput"];
   mockMouse: Awaited<ReturnType<typeof createTestRenderer>>["mockMouse"];
@@ -21,9 +22,27 @@ export interface UxTestContext {
 /** Boot Pagina against a local example page for UX flow tests. */
 export async function createUxTestApp(
   page = "examples/links-page.html",
-  options: { width?: number; height?: number } = {},
+  options: {
+    width?: number;
+    height?: number;
+    configDir?: string;
+    keepConfig?: boolean;
+    seedBookmarks?: Array<{ name: string; location: string }>;
+  } = {},
 ): Promise<UxTestContext> {
-  const configDir = await mkdtemp(join(tmpdir(), "pagina-ux-"));
+  const ownsConfigDir = !options.configDir;
+  const configDir =
+    options.configDir ?? (await mkdtemp(join(tmpdir(), "pagina-ux-")));
+  const keepConfig = options.keepConfig ?? false;
+
+  if (options.seedBookmarks) {
+    await mkdir(configDir, { recursive: true });
+    await writeFile(
+      join(configDir, "bookmarks.json"),
+      `${JSON.stringify({ bookmarks: options.seedBookmarks }, null, 2)}\n`,
+    );
+  }
+
   const harness = await createTestRenderer({
     width: options.width ?? 80,
     height: options.height ?? 24,
@@ -38,6 +57,7 @@ export async function createUxTestApp(
 
   return {
     app,
+    configDir,
     renderer: harness.renderer,
     mockInput: harness.mockInput,
     mockMouse: harness.mockMouse,
@@ -48,7 +68,9 @@ export async function createUxTestApp(
     async cleanup() {
       app.destroy();
       harness.renderer.destroy();
-      await rm(configDir, { recursive: true, force: true });
+      if (ownsConfigDir && !keepConfig) {
+        await rm(configDir, { recursive: true, force: true });
+      }
     },
   };
 }
@@ -104,6 +126,21 @@ export async function click(ctx: UxTestContext, x: number, y: number) {
 /** Move the mouse without clicking. */
 export async function moveMouse(ctx: UxTestContext, x: number, y: number) {
   await ctx.mockMouse.moveTo(x, y);
+  await ctx.flush();
+}
+
+/** Press Tab in the active prompt. */
+export async function pressTab(ctx: UxTestContext) {
+  ctx.mockInput.pressTab();
+  await ctx.flush();
+}
+
+/** Press an arrow key in the active prompt. */
+export async function pressArrow(
+  ctx: UxTestContext,
+  direction: "up" | "down" | "left" | "right",
+) {
+  ctx.mockInput.pressArrow(direction);
   await ctx.flush();
 }
 
