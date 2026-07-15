@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "start": "bun run index.ts examples/page.html",
-    "test": "bun test test/",
+    "test": "bun test test/ --path-ignore-patterns '**/browser-baseline/**'",
+    "test:browser-baseline": "bun test test/browser-baseline/",
     "test:ux": "bun test test/ux/",
     "test:ux:update-snapshots": "bun test test/ux/frame-snapshots.test.ts --update-snapshots",
     "test:render-compare": "bun test test/render-compare/",
@@ -14,6 +15,7 @@
   },
   "devDependencies": {
     "@types/bun": "1.3.14",
+    "playwright": "^1.61.1",
     "typescript": "^5"
   },
   "peerDependencies": {

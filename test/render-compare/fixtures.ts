@@ -1,3 +1,9 @@
+export const REAL_WORLD_FIXTURES = [
+  "examples/fixtures/blog-post.html",
+  "examples/fixtures/docs-page.html",
+  "examples/fixtures/readme-page.html",
+] as const;
+
 export const EXAMPLE_PAGES = [
   "examples/page.html",
   "examples/lists-page.html",
@@ -16,6 +22,7 @@ export const EXAMPLE_PAGES = [
   "examples/hr-page.html",
   "examples/pre-page.html",
   "examples/inset-page.html",
+  ...REAL_WORLD_FIXTURES,
 ] as const;
 
 export const DEFAULT_VIEWPORT = { width: 80, height: 24 } as const;

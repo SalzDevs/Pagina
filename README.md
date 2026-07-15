@@ -34,6 +34,15 @@ Press **`?`** at any time to show in-app keyboard and mouse help. Press **`:`** 
 bun test
 ```
 
+The default suite skips optional Playwright checks. To compare Pagina output against headless Chrome `document.body.innerText` for representative pages:
+
+```bash
+bunx playwright install chromium   # once per machine
+bun run test:browser-baseline
+```
+
+Use the browser baseline when changing text extraction, layout, or image placeholder behavior. It is intentionally opt-in so CI and local runs stay fast without a Chromium download.
+
 ## Example pages
 
 | Page | Command | What it demonstrates |

@@ -2114,3 +2114,195 @@ text 6,10 "the left edge."
 text 2,12 "This paragraph wraps inside "
 text 2,13 "horizontal margins.""
 `;
+
+exports[`display-list snapshots fixtures-blog-post at 80x24: fixtures-blog-post-80x24 1`] = `
+"text 0,0 "Why terminal browsers still " bold
+text 0,4 "matter" bold
+text 0,9 "Published on "
+text 13,9 "2026-07-01" bold
+text 23,9 " ·\\n      "
+text 32,9 "browsers" fg=#569cd6 underline link=0
+text 40,9 ",\\n      "
+text 48,9 "cli" fg=#569cd6 underline link=1
+text 51,9 "\\n    "
+text 0,11 "Most developers live in the terminal. A browser that renders pages where you "
+text 0,12 "already work\\n      removes context switching without pretending to be a full "
+text 0,13 "desktop browser.\\n    "
+text 0,15 "Readable defaults beat pixel parity" bold
+text 0,19 "Pagina focuses on semantic content: headings, links, lists, and "
+text 0,20 "monospace-friendly layout.\\n      See the "
+text 41,20 "project docs" fg=#569cd6 underline link=2
+text 53,20 " for supported HTML.\\n    "
+text 4,22 "Terminal UI is a feature, not a fallback."
+text 0,25 "What to try next" bold
+text 0,28 "- "
+text 0,28 "Open local HTML files from disk"
+text 0,30 "- "
+text 0,30 "Follow links with keyboard focus"
+text 0,32 "- "
+text 0,32 "Scroll long articles with "
+text 26,32 "j" italic
+text 27,32 " and "
+text 32,32 "k" italic"
+`;
+
+exports[`display-list snapshots fixtures-blog-post at 40x24: fixtures-blog-post-40x24 1`] = `
+"text 0,0 "Why terminal " bold
+text 0,4 "browsers still " bold
+text 0,8 "matter" bold
+text 0,13 "Published on "
+text 13,13 "2026-07-01" bold
+text 23,13 " ·\\n      "
+text 32,13 "browsers" fg=#569cd6 underline link=0
+text 0,14 ",\\n      "
+text 8,14 "cli" fg=#569cd6 underline link=1
+text 11,14 "\\n    "
+text 0,16 "Most developers live in the terminal. A "
+text 0,17 "browser that renders pages where you "
+text 0,18 "already work\\n      removes context "
+text 0,19 "switching without pretending to be a "
+text 0,20 "full desktop browser.\\n    "
+text 0,22 "Readable defaults beat " bold
+text 0,25 "pixel parity" bold
+text 0,29 "Pagina focuses on semantic content: "
+text 0,30 "headings, links, lists, and "
+text 0,31 "monospace-friendly layout.\\n      See the "
+text 0,32 "project docs" fg=#569cd6 underline link=2
+text 12,32 " for supported HTML.\\n    "
+text 4,34 "Terminal UI is a feature, not a "
+text 4,35 "fallback."
+text 0,38 "What to try next" bold
+text 0,41 "- "
+text 0,41 "Open local HTML files from disk"
+text 0,43 "- "
+text 0,43 "Follow links with keyboard focus"
+text 0,45 "- "
+text 0,45 "Scroll long articles with "
+text 26,45 "j" italic
+text 27,45 " and "
+text 32,45 "k" italic"
+`;
+
+exports[`display-list snapshots fixtures-docs-page at 80x24: fixtures-docs-page-80x24 1`] = `
+"text 0,0 "Loading pages" bold
+text 0,5 "Pagina loads local files and remote URLs. Start from the\\n      "
+text 63,5 "documentation " fg=#569cd6 underline link=0
+text 0,6 "index" fg=#569cd6 underline link=0
+text 5,6 " or pass a path on the command line.\\n    "
+text 0,8 "Basic usage" bold
+text 0,12 "bun start examples/page.html" fg=#ce9178 bg=#2a2a2a
+text 0,13 "bun start https://example.com/guide.html" fg=#ce9178 bg=#2a2a2a
+text 0,15 "The loader resolves relative links against the current document location."
+text 0,17 "Glossary" bold
+text 0,21 "Viewport" bold
+text 4,22 "Terminal width and height used for layout and wrapping."
+text 0,23 "Display list" bold
+text 4,24 "Paint commands emitted after layout: text spans and background fills."
+text 0,26 "Related pages" bold
+text 0,30 "- "
+text 0,30 "Navigation" fg=#569cd6 underline link=1
+text 0,32 "- "
+text 0,32 "Rendering pipeline" fg=#569cd6 underline link=2"
+`;
+
+exports[`display-list snapshots fixtures-docs-page at 40x24: fixtures-docs-page-40x24 1`] = `
+"text 0,0 "Loading pages" bold
+text 0,5 "Pagina loads local files and remote "
+text 0,6 "URLs. Start from the\\n      "
+text 27,6 "documentation " fg=#569cd6 underline link=0
+text 0,7 "index" fg=#569cd6 underline link=0
+text 5,7 " or pass a path on the command "
+text 0,8 "line.\\n    "
+text 0,10 "Basic usage" bold
+text 0,14 "bun start examples/page.html" fg=#ce9178 bg=#2a2a2a
+text 0,15 "bun start https://example.com/guide.html" fg=#ce9178 bg=#2a2a2a
+text 0,17 "The loader resolves relative links "
+text 0,18 "against the current document location."
+text 0,20 "Glossary" bold
+text 0,24 "Viewport" bold
+text 4,25 "Terminal width and height used for "
+text 4,26 "layout and wrapping."
+text 0,27 "Display list" bold
+text 4,28 "Paint commands emitted after layout: "
+text 4,29 "text spans and background fills."
+text 0,31 "Related pages" bold
+text 0,35 "- "
+text 0,35 "Navigation" fg=#569cd6 underline link=1
+text 0,37 "- "
+text 0,37 "Rendering pipeline" fg=#569cd6 underline link=2"
+`;
+
+exports[`display-list snapshots fixtures-readme-page at 80x24: fixtures-readme-page-80x24 1`] = `
+"text 0,0 "Pagina" bold
+text 0,5 "A terminal browser for HTML pages. Install with "
+text 48,5 "bun install" fg=#ce9178 bg=#2a2a2a
+text 59,5 " and run "
+text 68,5 "bun start" fg=#ce9178 bg=#2a2a2a
+text 77,5 "."
+text 0,7 "Features" bold
+text 0,11 "- "
+text 0,11 "Keyboard-first navigation"
+text 0,13 "- "
+text 0,13 "Supported markup\\n        "
+text 2,14 "- "
+text 2,14 "Headings, paragraphs, links"
+text 2,16 "- "
+text 2,16 "Lists, tables, blockquotes"
+text 0,20 "- "
+text 0,20 "Local files and remote URLs"
+text 0,23 "Commands" bold
+text 0,28 "─────  ───────────────────"
+text 0,27 "Key  " bold
+text 7,27 "Action             " bold
+text 0,29 "Enter"
+text 7,29 "Follow focused link"
+text 0,30 "u    "
+text 7,30 "Go back            "
+text 0,31 "o    "
+text 7,31 "Open URL prompt    "
+text 0,33 "Links" bold
+text 0,37 "Repository: "
+text 12,37 "example.com/pagina" fg=#569cd6 underline link=0
+text 30,37 " ·\\n      Issues: "
+text 47,37 "report a bug" fg=#569cd6 underline link=1
+text 59,37 "\\n    ""
+`;
+
+exports[`display-list snapshots fixtures-readme-page at 40x24: fixtures-readme-page-40x24 1`] = `
+"text 0,0 "Pagina" bold
+text 0,5 "A terminal browser for HTML pages. "
+text 0,6 "Install with "
+text 13,6 "bun install" fg=#ce9178 bg=#2a2a2a
+text 24,6 " and run "
+text 33,6 "bun " fg=#ce9178 bg=#2a2a2a
+text 0,7 "start" fg=#ce9178 bg=#2a2a2a
+text 5,7 "."
+text 0,9 "Features" bold
+text 0,13 "- "
+text 0,13 "Keyboard-first navigation"
+text 0,15 "- "
+text 0,15 "Supported markup\\n        "
+text 2,16 "- "
+text 2,16 "Headings, paragraphs, links"
+text 2,18 "- "
+text 2,18 "Lists, tables, blockquotes"
+text 0,22 "- "
+text 0,22 "Local files and remote URLs"
+text 0,25 "Commands" bold
+text 0,30 "─────  ───────────────────"
+text 0,29 "Key  " bold
+text 7,29 "Action             " bold
+text 0,31 "Enter"
+text 7,31 "Follow focused link"
+text 0,32 "u    "
+text 7,32 "Go back            "
+text 0,33 "o    "
+text 7,33 "Open URL prompt    "
+text 0,35 "Links" bold
+text 0,39 "Repository: "
+text 12,39 "example.com/pagina" fg=#569cd6 underline link=0
+text 30,39 " ·\\n      "
+text 0,40 "Issues: "
+text 8,40 "report a bug" fg=#569cd6 underline link=1
+text 20,40 "\\n    ""
+`;

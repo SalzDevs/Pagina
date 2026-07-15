@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <!--
+    Fixture: docs-page
+    Intent: Documentation article with code samples and glossary-style definitions.
+    Modeled after: static docs sites (Read the Docs / MDN article shape, simplified).
+    Expected Pagina differences: no syntax highlighting themes, no copy-code buttons, no tabbed examples.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <title>Loading pages</title>
+  </head>
+  <body>
+    <h1>Loading pages</h1>
+    <p>
+      Pagina loads local files and remote URLs. Start from the
+      <a href="https://example.com/docs">documentation index</a> or pass a path on the command line.
+    </p>
+    <h2>Basic usage</h2>
+    <pre><code>bun start examples/page.html
+bun start https://example.com/guide.html</code></pre>
+    <p>The loader resolves relative links against the current document location.</p>
+    <h2>Glossary</h2>
+    <dl>
+      <dt>Viewport</dt>
+      <dd>Terminal width and height used for layout and wrapping.</dd>
+      <dt>Display list</dt>
+      <dd>Paint commands emitted after layout: text spans and background fills.</dd>
+    </dl>
+    <h2>Related pages</h2>
+    <ul>
+      <li><a href="https://example.com/docs/navigation">Navigation</a></li>
+      <li><a href="https://example.com/docs/rendering">Rendering pipeline</a></li>
+    </ul>
+  </body>
+</html>
