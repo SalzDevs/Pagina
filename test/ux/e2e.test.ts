@@ -9,6 +9,7 @@ import {
   click,
   createUxTestApp,
   followLink,
+  mockClipboard,
   moveMouse,
   press,
   pressArrow,
@@ -220,9 +221,26 @@ describe("UX E2E — navigation edge cases", () => {
 
   test("copies the current URL and shows breadcrumb confirmation", async () => {
     const ctx = await boot();
-    await press(ctx, "y");
+    const restoreClipboard = mockClipboard(async () => true);
 
-    expect(breadcrumb(ctx)).toMatch(/Copied|Copy failed/i);
+    try {
+      await press(ctx, "y");
+      expect(breadcrumb(ctx)).toMatch(/Copied URL|Copied/i);
+    } finally {
+      restoreClipboard();
+    }
+  });
+
+  test("shows copy failure when clipboard write is unavailable", async () => {
+    const ctx = await boot();
+    const restoreClipboard = mockClipboard(async () => false);
+
+    try {
+      await press(ctx, "y");
+      expect(breadcrumb(ctx)).toMatch(/Copy failed/i);
+    } finally {
+      restoreClipboard();
+    }
   });
 });
 

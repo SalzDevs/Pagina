@@ -1,5 +1,18 @@
 /** Copy text to the system clipboard when a platform helper is available. */
+export type ClipboardWriter = (text: string) => Promise<boolean>;
+
+let clipboardWriterOverride: ClipboardWriter | null = null;
+
+/** Replace clipboard writes in tests; pass null to restore platform behavior. */
+export function setClipboardWriter(writer: ClipboardWriter | null): void {
+  clipboardWriterOverride = writer;
+}
+
 export async function copyToClipboard(text: string): Promise<boolean> {
+  if (clipboardWriterOverride) {
+    return clipboardWriterOverride(text);
+  }
+
   if (process.platform === "darwin") {
     return spawnCopy(["pbcopy"], text);
   }

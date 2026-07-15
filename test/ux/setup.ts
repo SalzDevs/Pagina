@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { createTestRenderer } from "@opentui/core/testing";
 
 import { createPaginaApp } from "../../app/pagina-app";
+import { setClipboardWriter, type ClipboardWriter } from "../../navigation/clipboard";
 
 export interface UxTestContext {
   app: Awaited<ReturnType<typeof createPaginaApp>>;
@@ -148,4 +149,10 @@ export async function pressArrow(
 
 export function breadcrumb(ctx: UxTestContext): string {
   return ctx.app.getBreadcrumbText();
+}
+
+/** Install a clipboard writer for UX tests; returns a restore function. */
+export function mockClipboard(writer: ClipboardWriter): () => void {
+  setClipboardWriter(writer);
+  return () => setClipboardWriter(null);
 }
