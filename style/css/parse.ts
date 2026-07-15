@@ -192,8 +192,14 @@ function parseDeclarations(block: string): CssDeclarations {
   return declarations;
 }
 
+const LINK_PSEUDO_CLASS_PATTERN = /:(?:link|visited|any-link|local-link)\b/gi;
+
+function stripLinkPseudoClasses(selector: string): string {
+  return selector.replace(LINK_PSEUDO_CLASS_PATTERN, "");
+}
+
 function parseSimpleSelector(raw: string): SimpleSelector | null {
-  const selector = raw.trim();
+  const selector = stripLinkPseudoClasses(raw.trim());
   if (selector.length === 0) return null;
 
   if (selector === ":root") {
