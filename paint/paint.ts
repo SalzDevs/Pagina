@@ -1,5 +1,5 @@
 import { NodeType } from "../dom/node";
-import { contrastingForeground, parseTerminalColor } from "../links/focus-style";
+import { blendColors, contrastingForeground, parseTerminalColor } from "../links/focus-style";
 import type { Link, LinkBounds } from "../links/types";
 import type { LayoutOutput } from "../layout/output";
 import { isBlock } from "../style/display";
@@ -27,6 +27,8 @@ interface PaintContext {
   nextLinkIndex: { value: number };
   links: Link[];
   linkCollector?: LinkCollector;
+  opacity: number;
+  backdrop: string;
 }
 
 interface PaintOutput {
@@ -147,9 +149,16 @@ function paintTextNode(
   output: PaintOutput,
   ctx: PaintContext,
 ): void {
+  let fg = resolveTextForeground(node.style.fg, node.style.bg);
+  const bg = node.style.bg;
+
+  if (fg && ctx.opacity < 1) {
+    fg = blendColors(fg, ctx.backdrop, ctx.opacity);
+  }
+
   const style = {
-    fg: resolveTextForeground(node.style.fg, node.style.bg),
-    bg: node.style.bg,
+    fg,
+    bg,
     bold: node.style.bold || undefined,
     italic: node.style.italic || undefined,
     underline: node.style.underline || undefined,
@@ -204,8 +213,18 @@ function paintNode(
     case NodeType.Element: {
       paintBlockBackground(node, layout, output, viewportHeight);
 
+      const backdrop = node.style.bg ?? ctx.backdrop;
+      const childCtx: PaintContext = {
+        ...ctx,
+        backdrop,
+        opacity:
+          node.style.ownOpacity !== undefined
+            ? ctx.opacity * node.style.ownOpacity
+            : ctx.opacity,
+      };
+
       if (layout.getFragments(node).length > 0) {
-        paintTextNode(node, layout, output, ctx);
+        paintTextNode(node, layout, output, childCtx);
       }
 
       if (node.dom.type === NodeType.Element && node.dom.tag === "a" && node.dom.attributes?.href) {
@@ -213,7 +232,7 @@ function paintNode(
         const collector: LinkCollector = { href, bounds: [] };
         const startTextCount = output.texts.length;
         const linkCtx: PaintContext = {
-          ...ctx,
+          ...childCtx,
           linkIndex: null,
           linkCollector: collector,
         };
@@ -239,7 +258,7 @@ function paintNode(
       }
 
       for (const child of node.children) {
-        paintNode(child, layout, output, ctx, viewportHeight);
+        paintNode(child, layout, output, childCtx, viewportHeight);
       }
       return;
     }
@@ -261,7 +280,7 @@ export function paint(
     node,
     layout,
     output,
-    { linkIndex: null, nextLinkIndex: { value: 0 }, links: output.links },
+    { linkIndex: null, nextLinkIndex: { value: 0 }, links: output.links, opacity: 1, backdrop: "#000000" },
     options.viewportHeight,
   );
 

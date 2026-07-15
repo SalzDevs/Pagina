@@ -88,6 +88,7 @@ function mergeDeclarations(
   if (declarations.marginLeftAuto) next.marginLeftAuto = true;
   if (declarations.marginRightAuto) next.marginRightAuto = true;
   set("width", declarations.width);
+  if (declarations.opacity !== undefined) next.ownOpacity = declarations.opacity;
   set("paddingTop", declarations.paddingTop);
   set("paddingBottom", declarations.paddingBottom);
   set("paddingLeft", declarations.paddingLeft);

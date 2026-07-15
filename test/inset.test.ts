@@ -101,6 +101,14 @@ describe("horizontal spacing parse", () => {
     });
     expect(rules[0]?.declarations.marginTop).toBe(4);
   });
+
+  test("parses opacity values", () => {
+    const rules = parseStylesheet("div { opacity: 0.8; }");
+    expect(rules[0]?.declarations.opacity).toBe(0.8);
+
+    const percent = parseStylesheet("div { opacity: 50%; }")[0]?.declarations;
+    expect(percent?.opacity).toBe(0.5);
+  });
 });
 
 describe("blockBox", () => {

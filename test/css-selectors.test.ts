@@ -33,6 +33,7 @@ describe("link pseudo-class selectors", () => {
   test("applies author link color on example.com", async () => {
     const page = await loadPageContent("https://example.com/", {
       viewportWidth: DEFAULT_VIEWPORT.width,
+      viewportHeight: DEFAULT_VIEWPORT.height,
     });
     const anchor = findElementByTag(page.styled, "a");
 
@@ -42,7 +43,7 @@ describe("link pseudo-class selectors", () => {
     const linkText = view.displayList
       .filter(isTextCommand)
       .find((command) => command.text === "Learn more");
-    expect(linkText?.fg).toBe("#348");
+    expect(linkText?.fg).toBe("#58669c");
   });
 
   test("author link color overrides UA default in cascade", async () => {

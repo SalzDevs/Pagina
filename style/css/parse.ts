@@ -197,6 +197,19 @@ function parseFontSize(value: string): number | undefined {
   }
 }
 
+function parseOpacity(value: string): number | undefined {
+  const trimmed = value.trim().toLowerCase();
+  if (trimmed.endsWith("%")) {
+    const amount = Number(trimmed.slice(0, -1));
+    if (Number.isNaN(amount)) return undefined;
+    return Math.max(0, Math.min(1, amount / 100));
+  }
+
+  const amount = Number(trimmed);
+  if (Number.isNaN(amount)) return undefined;
+  return Math.max(0, Math.min(1, amount));
+}
+
 function parseDeclarations(
   block: string,
   context: MediaContext = DEFAULT_MEDIA_CONTEXT,
@@ -244,6 +257,9 @@ function parseDeclarations(
         break;
       case "white-space":
         declarations.whiteSpace = value;
+        break;
+      case "opacity":
+        declarations.opacity = parseOpacity(value);
         break;
       case "width":
         declarations.width = parseLength(value, context);

@@ -27,6 +27,7 @@ export interface ComputedStyle {
   marginLeftAuto?: boolean;
   marginRightAuto?: boolean;
   width?: number;
+  ownOpacity?: number;
   paddingTop?: number;
   paddingBottom?: number;
   paddingLeft?: number;

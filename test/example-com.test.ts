@@ -31,7 +31,7 @@ describe("example.com rendering parity", () => {
     expect(pagina.cssWarnings).toEqual([]);
   });
 
-  test("applies light page background and author link color", async () => {
+  test("applies light page background and dimmed author link color", async () => {
     const page = await loadPageContent(EXAMPLE_COM, {
       viewportWidth: DEFAULT_VIEWPORT.width,
       viewportHeight: DEFAULT_VIEWPORT.height,
@@ -46,7 +46,7 @@ describe("example.com rendering parity", () => {
       .find((command) => command.text === "Learn more");
 
     expect(bodyFill).toBeDefined();
-    expect(linkText?.fg).toBe("#348");
+    expect(linkText?.fg).toBe("#58669c");
   });
 
   test("renders readable body text contrast in the terminal", async () => {
@@ -71,5 +71,18 @@ describe("example.com rendering parity", () => {
 
     expect(box?.width).toBe(48);
     expect(box?.x).toBe(16);
+  });
+
+  test("dims text inside semi-transparent blocks", async () => {
+    const page = await loadPageContent(EXAMPLE_COM, {
+      viewportWidth: DEFAULT_VIEWPORT.width,
+      viewportHeight: DEFAULT_VIEWPORT.height,
+    });
+    const view = buildPageView(page.styled, DEFAULT_VIEWPORT);
+    const bodyText = view.displayList
+      .filter(isTextCommand)
+      .find((command) => command.text.includes("This domain"));
+
+    expect(bodyText?.fg).toBe("#303030");
   });
 });

@@ -60,6 +60,19 @@ function parseRgbColor(value: string): RgbColor | null {
   };
 }
 
+/** Blend a foreground color over a backdrop using CSS opacity compositing. */
+export function blendColors(foreground: string, background: string, opacity: number): string {
+  if (opacity >= 1) return foreground;
+  if (opacity <= 0) return background;
+
+  const fg = parseTerminalColor(foreground);
+  const bg = parseTerminalColor(background);
+  if (!fg || !bg) return foreground;
+
+  const toHex = (channel: number) => clampChannel(channel).toString(16).padStart(2, "0");
+  return `#${toHex(fg.r * opacity + bg.r * (1 - opacity))}${toHex(fg.g * opacity + bg.g * (1 - opacity))}${toHex(fg.b * opacity + bg.b * (1 - opacity))}`;
+}
+
 /** Parse a terminal color string into RGB channels. */
 export function parseTerminalColor(value: string): RgbColor | null {
   const trimmed = value.trim();

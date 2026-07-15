@@ -37,6 +37,26 @@ describe("paint", () => {
     expect(text?.fg).toBe("#000000");
   });
 
+  test("blends text colors when a block declares opacity", async () => {
+    const html = `
+      <style>
+        body { background-color: #eee; }
+        div { opacity: 0.8; }
+        a { color: #348; }
+      </style>
+      <body><div><p>Body copy <a href="/x">Learn more</a></p></div></body>
+    `;
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const laidOut = layout(styled, { viewport });
+    const displayList = paint(styled, laidOut.output).displayList;
+
+    const bodyText = displayList.find((cmd) => isTextCommand(cmd) && cmd.text.includes("Body"));
+    const linkText = displayList.find((cmd) => isTextCommand(cmd) && cmd.text.includes("Learn"));
+
+    expect(bodyText?.fg).toBe("#303030");
+    expect(linkText?.fg).toBe("#58669c");
+  });
+
   test("uses layout positions for each command", async () => {
     const html = "<p>ab</p>";
     const styled = await computeStyles(convert(parseHTML(html)));
