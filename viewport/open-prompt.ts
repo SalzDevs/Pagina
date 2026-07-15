@@ -1,6 +1,7 @@
 import type { KeyEvent } from "@opentui/core";
 
 import { splitPageLocation } from "../navigation/fragment";
+import type { BookmarkStore } from "../config/bookmarks";
 import type { OpenPromptHistory } from "./open-prompt-history";
 import { OpenPromptHistory as OpenPromptHistoryClass } from "./open-prompt-history";
 import { completeLocalPath, expandTilde } from "./open-prompt-path";
@@ -15,6 +16,7 @@ export interface OpenPromptState {
 
 export interface OpenPromptContext {
   history: OpenPromptHistory;
+  bookmarks?: BookmarkStore;
   cwd?: string;
 }
 
@@ -299,6 +301,20 @@ function handleEditingShortcut(
       return { kind: "update", state: browseHistory(state, history, "down") };
     case "tab":
       if (key.shift) return { kind: "update", state };
+      if (context?.bookmarks) {
+        const bookmarkCompleted = context.bookmarks.completeToken(state.value, state.cursor);
+        if (bookmarkCompleted) {
+          return {
+            kind: "update",
+            state: updatePrompt(
+              state,
+              history,
+              bookmarkCompleted.value,
+              bookmarkCompleted.cursor,
+            ),
+          };
+        }
+      }
       const completed = completeLocalPath(state.value, state.cursor, context.cwd);
       if (!completed) return { kind: "update", state };
       return {
@@ -340,6 +356,16 @@ export function applyOpenPromptKey(
   if (key.name === "return" || key.name === "enter") {
     const trimmed = state.value.trim();
     if (trimmed.length === 0) return { kind: "cancel" };
+
+    if (trimmed.startsWith("@")) {
+      const bookmark = context?.bookmarks?.resolveInput(trimmed);
+      if (!bookmark) return { kind: "update", state };
+      return {
+        kind: "submit",
+        location: bookmark.location,
+        fragment: bookmark.fragment,
+      };
+    }
 
     const expanded = expandTilde(trimmed);
     const parts = splitPageLocation(expanded);

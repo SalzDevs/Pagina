@@ -1,28 +1,41 @@
-import type { CliRenderer } from "@opentui/core";
+import type { CliRenderer, KeyEvent } from "@opentui/core";
 import { BoxRenderable, TextRenderable, createTextAttributes } from "@opentui/core";
 
 import { BREADCRUMB_HEIGHT } from "./breadcrumb";
 import { formatHelpLines } from "../viewport/keybindings";
+import {
+  clampScrollY,
+  createScrollViewport,
+  handleScrollKey,
+  withScroll,
+} from "../viewport/scroll";
 
 export interface HelpOverlay {
   setVisible: (visible: boolean) => void;
   setCssWarnings: (warnings: string[]) => void;
+  isScrollable: () => boolean;
+  handleKey: (key: KeyEvent) => boolean;
   resize: (width: number, height: number) => void;
   destroy: () => void;
 }
 
-/** Mount a full-screen help overlay below the breadcrumb bar. */
+/** Mount a scrollable full-screen help overlay below the breadcrumb bar. */
 export function mountHelpOverlay(renderer: CliRenderer): HelpOverlay {
   let cssWarnings: string[] = [];
+  let scrollY = 0;
+  let lineCount = 0;
+  let panelHeight = Math.max(1, renderer.height - BREADCRUMB_HEIGHT);
+
   const panel = new BoxRenderable(renderer, {
     id: "pagina-help",
     width: renderer.width,
-    height: Math.max(1, renderer.height - BREADCRUMB_HEIGHT),
+    height: panelHeight,
     position: "absolute",
     top: BREADCRUMB_HEIGHT,
     left: 0,
     backgroundColor: "#0c0c0c",
     shouldFill: true,
+    overflow: "hidden",
     visible: false,
   });
 
@@ -42,16 +55,46 @@ export function mountHelpOverlay(renderer: CliRenderer): HelpOverlay {
   panel.add(text);
   renderer.root.add(panel);
 
-  const refresh = (width: number) => {
-    text.content = formatHelpLines(width, { cssWarnings }).join("\n");
-    text.width = Math.max(0, width - 2);
+  const scrollViewport = () =>
+    withScroll(createScrollViewport(1, panelHeight, 1, lineCount), { scrollY });
+
+  const clampScroll = () => {
+    scrollY = clampScrollY(scrollViewport(), scrollY);
+  };
+
+  const applyScroll = () => {
+    text.top = -scrollY;
     renderer.requestRender();
+  };
+
+  const refresh = (width: number) => {
+    const lines = formatHelpLines(width, { cssWarnings });
+    lineCount = lines.length;
+    text.content = lines.join("\n");
+    text.width = Math.max(0, width - 2);
+    clampScroll();
+    applyScroll();
+  };
+
+  const handleMouseScroll = (delta: number) => {
+    scrollY = clampScrollY(scrollViewport(), scrollY + delta);
+    applyScroll();
+  };
+
+  panel.onMouseScroll = (event) => {
+    if (!panel.visible || !event.scroll) return;
+    const delta = event.scroll.direction === "down" ? event.scroll.delta : -event.scroll.delta;
+    handleMouseScroll(delta);
   };
 
   refresh(renderer.width);
 
   return {
     setVisible(visible: boolean) {
+      if (visible) {
+        scrollY = 0;
+        applyScroll();
+      }
       panel.visible = visible;
       renderer.requestRender();
     },
@@ -59,12 +102,24 @@ export function mountHelpOverlay(renderer: CliRenderer): HelpOverlay {
       cssWarnings = warnings;
       refresh(renderer.width);
     },
+    isScrollable() {
+      return lineCount > panelHeight;
+    },
+    handleKey(key: KeyEvent) {
+      const next = handleScrollKey(scrollViewport(), key);
+      if (!next) return false;
+      scrollY = next.scrollY;
+      applyScroll();
+      return true;
+    },
     resize(width: number, height: number) {
       panel.width = width;
-      panel.height = Math.max(1, height - BREADCRUMB_HEIGHT);
+      panelHeight = Math.max(1, height - BREADCRUMB_HEIGHT);
+      panel.height = panelHeight;
       refresh(width);
     },
     destroy() {
+      panel.onMouseScroll = undefined;
       panel.destroyRecursively();
     },
   };

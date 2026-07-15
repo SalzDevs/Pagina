@@ -367,6 +367,19 @@ export function formatFragmentNotFoundStatus(fragment: string, width: number): s
   return truncateStatus(variants[variants.length - 1]!, width);
 }
 
+/** Append copy-URL feedback to the breadcrumb. */
+export function formatCopyUrlStatus(success: boolean, width: number): string {
+  const variants = success
+    ? [" | ✓ Copied URL", " | ✓ Copied", " | ✓"]
+    : [" | ⚠ Copy failed", " | ⚠"];
+
+  for (const status of variants) {
+    if (status.length <= width) return status;
+  }
+
+  return truncateStatus(variants[variants.length - 1]!, width);
+}
+
 /** Append unsupported-link status to a breadcrumb when a link cannot be followed. */
 export function formatUnsupportedLinkStatus(href: string, width: number): string {
   const trimmed = href.trim();
@@ -410,6 +423,7 @@ export function formatBreadcrumbWithStatus(
     cssWarnings?: string[];
     fragmentNotFound?: string | null;
     unsupportedLink?: string | null;
+    copyUrlSuccess?: boolean;
   } = {},
 ): string {
   const fragment = options.fragmentNotFound ?? null;
@@ -423,6 +437,14 @@ export function formatBreadcrumbWithStatus(
       history,
       width,
       formatUnsupportedLinkStatus(unsupportedLink, width),
+    );
+  }
+
+  if (options.copyUrlSuccess !== undefined) {
+    return appendBreadcrumbStatus(
+      history,
+      width,
+      formatCopyUrlStatus(options.copyUrlSuccess, width),
     );
   }
 

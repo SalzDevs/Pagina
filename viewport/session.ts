@@ -6,11 +6,14 @@ import type { Link } from "../links/types";
 import {
   createLinkFocusState,
   handleLinkKey,
+  resolveMouseLinkFocus,
   scrollToFocusedLink,
   type LinkFocusState,
 } from "../links/focus";
 import { handleHistoryKey } from "../navigation/history-keys";
 import { isHelpToggleKey } from "./help-key";
+import { handleCopyUrlKey } from "./copy-url-key";
+import { handleReloadKey } from "./reload-key";
 import { isSamePage, parseLinkTarget, isActionableLinkTarget, unfollowableLinkLabel, EMPTY_LINK_LABEL } from "../navigation/fragment";
 import { scrollToFragment } from "../navigation/anchors";
 import type { DisplayList } from "../paint/display-list";
@@ -48,9 +51,12 @@ export interface BrowserSessionOptions {
   onOpenPromptKey?: (key: KeyEvent) => boolean;
   onSearchKey?: (key: KeyEvent) => boolean;
   onHistoryPickerKey?: (key: KeyEvent) => boolean;
+  onHelpKey?: (key: KeyEvent) => boolean;
   onNavigate: (location: string, fragment?: string | null) => void | Promise<void>;
   onHistoryBack?: () => void | Promise<void>;
   onHistoryForward?: () => void | Promise<void>;
+  onReload?: (forceReload: boolean) => void | Promise<void>;
+  onCopyUrl?: (detailed: boolean) => void | Promise<void>;
   onFragmentNotFound?: (fragment: string | null) => void;
   onUnsupportedLink?: (href: string | null) => void;
   onScrollChange?: () => void;
@@ -97,6 +103,7 @@ export function createBrowserSession(
     options.initialFocusedLinkIndex !== undefined
       ? { focusedIndex: options.initialFocusedLinkIndex }
       : createLinkFocusState();
+  let keyboardFocusedIndex: number | null = linkFocus.focusedIndex;
   let pageLinks = links;
   let pageLinkHitIndex: LinkHitIndex = buildLinkHitIndex(links);
   let fragmentPositions = options.fragmentPositions;
@@ -207,6 +214,13 @@ export function createBrowserSession(
     pageLayout = layout;
     lastHoverCell = null;
 
+    if (
+      keyboardFocusedIndex !== null &&
+      (keyboardFocusedIndex < 0 || keyboardFocusedIndex >= pageLinks.length)
+    ) {
+      keyboardFocusedIndex = null;
+    }
+
     mounted.relayout(
       pageDisplayList,
       pageContentHeight,
@@ -261,6 +275,7 @@ export function createBrowserSession(
       return linkFocus.focusedIndex;
     },
     setFocusedLink(focusedIndex: number | null) {
+      keyboardFocusedIndex = focusedIndex;
       syncLinkFocus({ focusedIndex }, false);
     },
     scrollToFragment: scrollToFragmentId,
@@ -293,7 +308,10 @@ export function createBrowserSession(
 
         if (options.onHistoryPickerKey?.(key)) return;
 
-        if (options.isHelpVisible?.()) return;
+        if (options.isHelpVisible?.()) {
+          options.onHelpKey?.(key);
+          return;
+        }
 
         const historyAction = handleHistoryKey(key);
         if (historyAction === "back") {
@@ -305,9 +323,22 @@ export function createBrowserSession(
           return;
         }
 
+        const reloadAction = handleReloadKey(key);
+        if (reloadAction) {
+          await options.onReload?.(reloadAction === "hard");
+          return;
+        }
+
+        const copyUrlAction = handleCopyUrlKey(key);
+        if (copyUrlAction) {
+          await options.onCopyUrl?.(copyUrlAction === "detailed");
+          return;
+        }
+
         const linkResult = handleLinkKey(linkFocus, pageLinks, key);
         if (linkResult) {
           if (linkResult.kind === "focus") {
+            keyboardFocusedIndex = linkResult.state.focusedIndex;
             syncLinkFocus(linkResult.state, true);
             return;
           }
@@ -359,9 +390,10 @@ export function createBrowserSession(
         }
 
         lastHoverCell = cell;
-        const index = linkIndexAtPoint(pageLinkHitIndex, point.x, point.y);
-        if (index === linkFocus.focusedIndex) return;
-        syncLinkFocus({ focusedIndex: index }, false);
+        const hoveredIndex = linkIndexAtPoint(pageLinkHitIndex, point.x, point.y);
+        const nextFocusedIndex = resolveMouseLinkFocus(hoveredIndex, keyboardFocusedIndex);
+        if (nextFocusedIndex === linkFocus.focusedIndex) return;
+        syncLinkFocus({ focusedIndex: nextFocusedIndex }, false);
       };
 
       mouseUpHandler = (event) => {
@@ -379,6 +411,7 @@ export function createBrowserSession(
         const index = linkIndexAtPoint(pageLinkHitIndex, point.x, point.y);
         if (index === null) return;
 
+        keyboardFocusedIndex = index;
         void activateLink(index);
       };
 

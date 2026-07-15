@@ -10,11 +10,10 @@ import {
   focusNextLink,
   focusPreviousLink,
   formatLinkHintStatus,
-  FOCUSED_LINK_BG,
-  FOCUSED_LINK_FG,
   handleLinkKey,
   initialLinkFocusIndex,
   linkCommandIndices,
+  resolveMouseLinkFocus,
   scrollToFocusedLink,
   textLinkFocusStyle,
   uniqueLinkFocusIndices,
@@ -243,32 +242,54 @@ describe("link focus", () => {
     expect(formatLinkHintStatus(0, 40)).toBe("");
   });
 
+  test("restores keyboard focus when the mouse leaves links", () => {
+    expect(resolveMouseLinkFocus(1, 0)).toBe(1);
+    expect(resolveMouseLinkFocus(null, 0)).toBe(0);
+    expect(resolveMouseLinkFocus(null, null)).toBeNull();
+  });
+
   test("applies focus styling to one link at a time", () => {
     const displayList = [
       { kind: "text" as const, x: 0, y: 0, text: "plain", linkIndex: undefined },
       { kind: "text" as const, x: 0, y: 1, text: "other page", linkIndex: 0 },
-      { kind: "text" as const, x: 0, y: 2, text: "styled page", linkIndex: 1 },
+      {
+        kind: "text" as const,
+        x: 0,
+        y: 2,
+        text: "styled page",
+        linkIndex: 1,
+        fg: "#336699",
+      },
     ];
 
     const focused = applyLinkFocus(displayList, 1);
     expect(focused[0]?.bg).toBeUndefined();
     expect(focused[1]?.bg).toBeUndefined();
-    expect(focused[2]?.bg).toBe("#264f78");
+    expect(focused[2]?.fg).toBe("#ffffff");
+    expect(focused[2]?.bg).toBe("#336699");
   });
 
   test("indexes link command positions for targeted focus updates", () => {
     const displayList = [
       { kind: "text" as const, x: 0, y: 0, text: "plain" },
       { kind: "text" as const, x: 0, y: 1, text: "other", linkIndex: 0 },
-      { kind: "text" as const, x: 0, y: 2, text: "styled", linkIndex: 1 },
+      {
+        kind: "text" as const,
+        x: 0,
+        y: 2,
+        text: "styled",
+        linkIndex: 1,
+        fg: "#ff0000",
+        bg: "#0000ff",
+      },
       { kind: "text" as const, x: 0, y: 3, text: "also styled", linkIndex: 1 },
     ];
 
     expect(linkCommandIndices(displayList).get(0)).toEqual([1]);
     expect(linkCommandIndices(displayList).get(1)).toEqual([2, 3]);
     expect(textLinkFocusStyle(displayList[2]!, true)).toEqual({
-      fg: FOCUSED_LINK_FG,
-      bg: FOCUSED_LINK_BG,
+      fg: "#0000ff",
+      bg: "#ff0000",
       bold: undefined,
       italic: undefined,
       underline: true,

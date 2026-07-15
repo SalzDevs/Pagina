@@ -173,6 +173,7 @@ describe("mouse hover focus churn", () => {
     expect(firstLink).toBeDefined();
 
     let lastHoverCell: { x: number; y: number } | null = null;
+    let keyboardFocusedIndex: number | null = null;
     let focusedIndex: number | null = null;
     let focusUpdates = 0;
 
@@ -182,10 +183,11 @@ describe("mouse hover focus churn", () => {
       if (lastHoverCell?.x === cell.x && lastHoverCell?.y === cell.y) return;
 
       lastHoverCell = cell;
-      const index = linkIndexAtPoint(hitIndex, point.x, point.y);
-      if (index === focusedIndex) return;
+      const hoveredIndex = linkIndexAtPoint(hitIndex, point.x, point.y);
+      const nextFocusedIndex = hoveredIndex ?? keyboardFocusedIndex;
+      if (nextFocusedIndex === focusedIndex) return;
 
-      focusedIndex = index;
+      focusedIndex = nextFocusedIndex;
       focusUpdates += 1;
     };
 
@@ -204,6 +206,12 @@ describe("mouse hover focus churn", () => {
 
     expect(focusedIndex).toBe(1);
     expect(focusUpdates).toBe(2);
+
+    keyboardFocusedIndex = 0;
+    move(40, layout.top + 10);
+
+    expect(focusedIndex).toBe(0);
+    expect(focusUpdates).toBe(3);
   });
 });
 

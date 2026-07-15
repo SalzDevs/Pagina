@@ -19,6 +19,8 @@ import {
   type BrowserHistory,
 } from "./navigation/history";
 import { normalizePageLocation } from "./navigation/location";
+import { copyToClipboard } from "./navigation/clipboard";
+import { formatPageCopyUrl } from "./navigation/copy-url";
 import { PageCache, resolveLoadedPage } from "./navigation/page-cache";
 import { splitPageLocation } from "./navigation/fragment";
 import { isRemoteUrl } from "./navigation/resolve";
@@ -44,7 +46,8 @@ import {
   formatOpenPromptBreadcrumb,
   type OpenPromptState,
 } from "./viewport/open-prompt";
-import { OpenPromptHistory } from "./viewport/open-prompt-history";
+import { createPersistentOpenPromptHistory } from "./config/open-prompt-history-store";
+import { loadBookmarkStore, type BookmarkStore } from "./config/bookmarks";
 import {
   applySearchKey,
   createSearchState,
@@ -90,7 +93,8 @@ async function main() {
   let helpVisible = false;
   let historyPicker: HistoryPickerState = createHistoryPickerState();
   let openPrompt: OpenPromptState = createOpenPromptState();
-  const openPromptHistory = new OpenPromptHistory();
+  let openPromptHistory = await createPersistentOpenPromptHistory();
+  const bookmarkStore = await loadBookmarkStore();
   let search: SearchState = createSearchState();
   let searchMatches: SearchMatch[] = [];
   let history: BrowserHistory = createBrowserHistory();
@@ -99,6 +103,7 @@ async function main() {
   let loadedPage: LoadedPage | null = null;
   let fragmentNotFound: string | null = null;
   let unsupportedLink: string | null = null;
+  let copyUrlSuccess: boolean | undefined;
   let rendererStarted = false;
   let loadGeneration = 0;
   let loadAbortController: AbortController | null = null;
@@ -124,7 +129,7 @@ async function main() {
     let suffix = "";
     let remaining = renderer.width;
 
-    if (search.query && !fragmentNotFound && !unsupportedLink) {
+    if (search.query && !fragmentNotFound && !unsupportedLink && copyUrlSuccess === undefined) {
       const status = formatSearchStatus(
         search.query,
         search.matchIndex,
@@ -170,7 +175,11 @@ async function main() {
 
   const updateBreadcrumb = () => {
     if (helpVisible) {
-      breadcrumb.update("Help — press ? to close");
+      breadcrumb.update(
+        help.isScrollable()
+          ? "Help — ? to close, ↑/↓ to scroll"
+          : "Help — press ? to close",
+      );
       return;
     }
 
@@ -202,6 +211,7 @@ async function main() {
         cssWarnings: loadedPage?.cssWarnings,
         fragmentNotFound,
         unsupportedLink,
+        copyUrlSuccess,
       },
     );
 
@@ -277,7 +287,11 @@ async function main() {
   };
 
   const handleOpenPromptKey = (key: KeyEvent): boolean => {
-    const result = applyOpenPromptKey(openPrompt, key, { history: openPromptHistory });
+    const result = applyOpenPromptKey(openPrompt, key, {
+      history: openPromptHistory,
+      bookmarks: bookmarkStore,
+      cwd: process.cwd(),
+    });
 
     switch (result.kind) {
       case "none":
@@ -477,6 +491,9 @@ async function main() {
       onOpenPromptKey: handleOpenPromptKey,
       onSearchKey: handleSearchKey,
       onHistoryPickerKey: handleHistoryPickerKey,
+      onHelpKey: (key) => help.handleKey(key),
+      onReload: reloadCurrentPage,
+      onCopyUrl: copyCurrentPageUrl,
       onNavigate: (target, targetFragment) => loadPage(target, "push", targetFragment ?? null),
       onHistoryBack: async () => {
         snapshotViewStateIntoHistory();
@@ -502,12 +519,18 @@ async function main() {
       },
       onFragmentNotFound: (fragment) => {
         fragmentNotFound = fragment;
-        if (fragment) unsupportedLink = null;
+        if (fragment) {
+          unsupportedLink = null;
+          copyUrlSuccess = undefined;
+        }
         updateBreadcrumb();
       },
       onUnsupportedLink: (href) => {
         unsupportedLink = href;
-        if (href) fragmentNotFound = null;
+        if (href) {
+          fragmentNotFound = null;
+          copyUrlSuccess = undefined;
+        }
         updateBreadcrumb();
       },
       onScrollChange: updateBreadcrumb,
@@ -563,6 +586,38 @@ async function main() {
     syncCssWarnings();
   };
 
+  const reloadCurrentPage = async (forceReload: boolean) => {
+    if (!loadedPage) return;
+
+    snapshotViewStateIntoHistory();
+    await loadPage(
+      loadedPage.pageLocation,
+      "none",
+      null,
+      {
+        scrollY: session?.viewport.scrollY,
+        focusedLinkIndex: session?.focusedLinkIndex,
+      },
+      { forceReload },
+    );
+  };
+
+  const copyCurrentPageUrl = async (detailed: boolean) => {
+    if (!loadedPage) return;
+
+    const entry = history.index >= 0 ? history.entries[history.index] : undefined;
+    const text = formatPageCopyUrl(loadedPage.pageLocation, {
+      detailed,
+      fragment: entry?.fragment ?? null,
+      scrollY: session?.viewport.scrollY ?? 0,
+    });
+
+    copyUrlSuccess = await copyToClipboard(text);
+    fragmentNotFound = null;
+    unsupportedLink = null;
+    updateBreadcrumb();
+  };
+
   const loadPage = async (
     location: string,
     historyMode: HistoryMode = "push",
@@ -575,6 +630,7 @@ async function main() {
     const forceReload = options.forceReload ?? false;
     fragmentNotFound = null;
     unsupportedLink = null;
+    copyUrlSuccess = undefined;
 
     if (historyMode === "push") {
       snapshotViewStateIntoHistory();

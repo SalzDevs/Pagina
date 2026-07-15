@@ -10,6 +10,7 @@ import {
   formatBreadcrumbWithStatus,
   formatCssWarningHelpSection,
   formatCssWarningStatus,
+  formatCopyUrlStatus,
   formatFragmentNotFoundStatus,
   formatLoadingBreadcrumb,
   formatLoadCancelledBreadcrumb,
@@ -128,6 +129,19 @@ describe("browser history", () => {
         fragmentNotFound: "does-not-exist",
       }),
     ).toBe("[Fragments] | ⚠ #does-not-exist not found");
+  });
+
+  test("formats copy URL status for the breadcrumb", () => {
+    let history = createBrowserHistory();
+    history = pushHistory(history, { location: "/a", label: "Home" });
+
+    expect(formatCopyUrlStatus(true, 40)).toBe(" | ✓ Copied URL");
+    expect(formatCopyUrlStatus(false, 40)).toBe(" | ⚠ Copy failed");
+    expect(
+      formatBreadcrumbWithStatus(history, 50, {
+        copyUrlSuccess: true,
+      }),
+    ).toBe("[Home] | ✓ Copied URL");
   });
 
   test("formats unsupported link status for the breadcrumb", () => {

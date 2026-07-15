@@ -5,9 +5,7 @@ import { isTextCommand } from "../paint/display-list";
 import type { ScrollViewport } from "../viewport/scroll";
 import { scrollToRevealY } from "../viewport/scroll";
 import type { Link } from "./types";
-
-export const FOCUSED_LINK_FG = "#ffffff";
-export const FOCUSED_LINK_BG = "#264f78";
+import { focusedLinkColors } from "./focus-style";
 
 export interface LinkFocusState {
   focusedIndex: number | null;
@@ -15,6 +13,14 @@ export interface LinkFocusState {
 
 export function createLinkFocusState(): LinkFocusState {
   return { focusedIndex: null };
+}
+
+/** Resolve which link should appear focused after a mouse move. */
+export function resolveMouseLinkFocus(
+  hoveredLinkIndex: number | null,
+  keyboardFocusedLinkIndex: number | null,
+): number | null {
+  return hoveredLinkIndex ?? keyboardFocusedLinkIndex;
 }
 
 export function focusableLinkCount(links: Link[]): number {
@@ -145,9 +151,10 @@ export interface FocusedTextStyle {
 /** Return text styles for a link command, focused or at rest. */
 export function textLinkFocusStyle(command: TextCommand, focused: boolean): FocusedTextStyle {
   if (focused) {
+    const colors = focusedLinkColors(command.fg, command.bg);
     return {
-      fg: FOCUSED_LINK_FG,
-      bg: FOCUSED_LINK_BG,
+      fg: colors.fg,
+      bg: colors.bg,
       bold: command.bold,
       italic: command.italic,
       underline: true,
@@ -170,12 +177,13 @@ export function applyLinkFocus(
   if (focusedIndex === null) return displayList;
 
   return displayList.map((command) => {
-    if (!commandMatchesLink(command, focusedIndex)) return command;
+    if (!commandMatchesLink(command, focusedIndex) || !isTextCommand(command)) return command;
 
+    const colors = focusedLinkColors(command.fg, command.bg);
     return {
       ...command,
-      fg: FOCUSED_LINK_FG,
-      bg: FOCUSED_LINK_BG,
+      fg: colors.fg,
+      bg: colors.bg,
       underline: true,
     };
   });

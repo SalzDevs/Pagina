@@ -1,10 +1,19 @@
 /** Recent locations entered through the open prompt. */
 export class OpenPromptHistory {
-  private readonly entries: string[] = [];
+  private readonly entries: string[];
   private readonly maxEntries: number;
+  private readonly onChange?: (entries: readonly string[]) => void;
 
-  constructor(maxEntries = 50) {
-    this.maxEntries = maxEntries;
+  constructor(
+    options: {
+      maxEntries?: number;
+      initial?: readonly string[];
+      onChange?: (entries: readonly string[]) => void;
+    } = {},
+  ) {
+    this.maxEntries = options.maxEntries ?? 50;
+    this.entries = [...(options.initial ?? [])];
+    this.onChange = options.onChange;
   }
 
   get length(): number {
@@ -13,6 +22,10 @@ export class OpenPromptHistory {
 
   get(index: number): string | undefined {
     return this.entries[index];
+  }
+
+  toArray(): readonly string[] {
+    return [...this.entries];
   }
 
   /** Append a submitted location, skipping empty values and consecutive duplicates. */
@@ -25,5 +38,7 @@ export class OpenPromptHistory {
     if (this.entries.length > this.maxEntries) {
       this.entries.shift();
     }
+
+    this.onChange?.(this.entries);
   }
 }

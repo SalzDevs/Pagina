@@ -8,6 +8,7 @@ import {
   isOpenPromptToggleKey,
 } from "../viewport/open-prompt";
 import { OpenPromptHistory } from "../viewport/open-prompt-history";
+import { BookmarkStore } from "../config/bookmarks";
 
 function key(
   name: string,
@@ -36,8 +37,11 @@ function key(
   };
 }
 
-function promptContext(history = new OpenPromptHistory()) {
-  return { history, cwd: process.cwd() };
+function promptContext(
+  history = new OpenPromptHistory(),
+  bookmarks?: BookmarkStore,
+) {
+  return { history, bookmarks, cwd: process.cwd() };
 }
 
 describe("open prompt", () => {
@@ -150,6 +154,38 @@ describe("open prompt", () => {
       kind: "submit",
       location: home,
       fragment: null,
+    });
+  });
+
+  test("opens bookmarks with @name from the open prompt", () => {
+    const bookmarks = new BookmarkStore([{ name: "docs", location: "examples/page.html" }]);
+    const state = { ...activateOpenPrompt(new OpenPromptHistory()), value: "@docs", cursor: 5 };
+    const result = applyOpenPromptKey(state, key("return"), promptContext(new OpenPromptHistory(), bookmarks));
+
+    expect(result).toEqual({
+      kind: "submit",
+      location: "examples/page.html",
+      fragment: null,
+    });
+  });
+
+  test("tab-completes bookmark names in the open prompt", () => {
+    const bookmarks = new BookmarkStore([
+      { name: "docs", location: "examples/page.html" },
+      { name: "downloads", location: "examples/other-page.html" },
+    ]);
+    const state = { ...activateOpenPrompt(new OpenPromptHistory()), value: "@doc", cursor: 4 };
+    const result = applyOpenPromptKey(state, key("tab"), promptContext(new OpenPromptHistory(), bookmarks));
+
+    expect(result).toEqual({
+      kind: "update",
+      state: {
+        ...state,
+        value: "@docs",
+        cursor: 5,
+        historyPosition: 0,
+        historyDraft: "",
+      },
     });
   });
 

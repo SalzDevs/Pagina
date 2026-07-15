@@ -1,0 +1,115 @@
+export interface RgbColor {
+  r: number;
+  g: number;
+  b: number;
+}
+
+const NAMED_COLORS: Record<string, RgbColor> = {
+  white: { r: 255, g: 255, b: 255 },
+  black: { r: 0, g: 0, b: 0 },
+  red: { r: 255, g: 0, b: 0 },
+  green: { r: 0, g: 128, b: 0 },
+  blue: { r: 0, g: 0, b: 255 },
+  yellow: { r: 255, g: 255, b: 0 },
+  cyan: { r: 0, g: 255, b: 255 },
+  magenta: { r: 255, g: 0, b: 255 },
+  gray: { r: 128, g: 128, b: 128 },
+  grey: { r: 128, g: 128, b: 128 },
+  silver: { r: 192, g: 192, b: 192 },
+};
+
+function clampChannel(value: number): number {
+  return Math.max(0, Math.min(255, Math.round(value)));
+}
+
+function parseHexColor(value: string): RgbColor | null {
+  const match = value.match(/^#([0-9a-f]{3,8})$/i);
+  if (!match) return null;
+
+  const hex = match[1]!.toLowerCase();
+  if (hex.length === 3) {
+    return {
+      r: Number.parseInt(hex[0]! + hex[0]!, 16),
+      g: Number.parseInt(hex[1]! + hex[1]!, 16),
+      b: Number.parseInt(hex[2]! + hex[2]!, 16),
+    };
+  }
+
+  if (hex.length === 6) {
+    return {
+      r: Number.parseInt(hex.slice(0, 2), 16),
+      g: Number.parseInt(hex.slice(2, 4), 16),
+      b: Number.parseInt(hex.slice(4, 6), 16),
+    };
+  }
+
+  return null;
+}
+
+function parseRgbColor(value: string): RgbColor | null {
+  const match = value.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/i);
+  if (!match) return null;
+
+  return {
+    r: clampChannel(Number(match[1])),
+    g: clampChannel(Number(match[2])),
+    b: clampChannel(Number(match[3])),
+  };
+}
+
+/** Parse a terminal color string into RGB channels. */
+export function parseTerminalColor(value: string): RgbColor | null {
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return null;
+
+  return (
+    parseHexColor(trimmed) ??
+    parseRgbColor(trimmed) ??
+    NAMED_COLORS[trimmed.toLowerCase()] ??
+    null
+  );
+}
+
+function relativeLuminance(color: RgbColor): number {
+  const channels = [color.r, color.g, color.b].map((channel) => {
+    const normalized = channel / 255;
+    return normalized <= 0.03928
+      ? normalized / 12.92
+      : ((normalized + 0.055) / 1.055) ** 2.4;
+  });
+
+  return 0.2126 * channels[0]! + 0.7152 * channels[1]! + 0.0722 * channels[2]!;
+}
+
+/** Pick readable text on top of a solid background color. */
+export function contrastingForeground(background: RgbColor): string {
+  return relativeLuminance(background) > 0.45 ? "#000000" : "#ffffff";
+}
+
+/** Derive focused link colors from the underlying cell palette. */
+export function focusedLinkColors(
+  restFg?: string,
+  restBg?: string,
+): { fg: string; bg: string } {
+  if (restFg && restBg) {
+    return { fg: restBg, bg: restFg };
+  }
+
+  if (restFg) {
+    const parsed = parseTerminalColor(restFg);
+    return {
+      fg: parsed ? contrastingForeground(parsed) : "#000000",
+      bg: restFg,
+    };
+  }
+
+  if (restBg) {
+    const parsed = parseTerminalColor(restBg);
+    return {
+      fg: parsed ? contrastingForeground(parsed) : "#ffffff",
+      bg: restBg,
+    };
+  }
+
+  return { fg: "#000000", bg: "#cccccc" };
+}
