@@ -20,6 +20,17 @@ export const EXAMPLE_PAGES = [
 
 export const DEFAULT_VIEWPORT = { width: 80, height: 24 } as const;
 
+export const WIDE_VIEWPORT = { width: 60, height: 24 } as const;
+
 export const MEDIUM_VIEWPORT = { width: 40, height: 24 } as const;
 
 export const NARROW_VIEWPORT = { width: 30, height: 24 } as const;
+
+export const COMPARISON_VIEWPORTS = [
+  { viewport: NARROW_VIEWPORT, label: "30x24" },
+  { viewport: MEDIUM_VIEWPORT, label: "40x24" },
+  { viewport: WIDE_VIEWPORT, label: "60x24" },
+  { viewport: DEFAULT_VIEWPORT, label: "80x24" },
+] as const;
+
+export type ComparisonViewport = (typeof COMPARISON_VIEWPORTS)[number]["viewport"];

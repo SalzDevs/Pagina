@@ -1,7 +1,12 @@
 import { describe, expect, test } from "bun:test";
 
 import { comparePageRender, formatComparisonReport } from "./compare";
-import { DEFAULT_VIEWPORT, EXAMPLE_PAGES, NARROW_VIEWPORT } from "./fixtures";
+import {
+  COMPARISON_VIEWPORTS,
+  DEFAULT_VIEWPORT,
+  EXAMPLE_PAGES,
+  MEDIUM_VIEWPORT,
+} from "./fixtures";
 import { buildPaginaRender } from "./pagina";
 import { buildPageReference } from "./reference";
 import { layout } from "../../layout/layout";
@@ -15,11 +20,13 @@ import { BLOCKQUOTE_INDENT } from "../../style/style";
 import { DEFINITION_INDENT } from "../../layout/definitions";
 
 const comparisons = await Promise.all(
-  EXAMPLE_PAGES.map(async (pagePath) => {
-    const reference = await buildPageReference(pagePath);
-    const pagina = await buildPaginaRender(pagePath, DEFAULT_VIEWPORT);
-    return comparePageRender(reference, pagina);
-  }),
+  COMPARISON_VIEWPORTS.flatMap(({ viewport }) =>
+    EXAMPLE_PAGES.map(async (pagePath) => {
+      const reference = await buildPageReference(pagePath);
+      const pagina = await buildPaginaRender(pagePath, viewport);
+      return comparePageRender(reference, pagina, viewport);
+    }),
+  ),
 );
 
 const report = formatComparisonReport(comparisons);
@@ -28,17 +35,23 @@ describe("render comparison — example pages", () => {
   test("prints a comparison report for all example pages", () => {
     console.log("\n" + report + "\n");
     expect(report).toContain("Pagina render comparison report");
-    expect(comparisons.length).toBe(EXAMPLE_PAGES.length);
+    expect(report).toContain("Viewport matrix");
+    expect(report).toContain("30x24");
+    expect(report).toContain("40x24");
+    expect(report).toContain("60x24");
+    expect(report).toContain("80x24");
+    expect(comparisons.length).toBe(EXAMPLE_PAGES.length * COMPARISON_VIEWPORTS.length);
   });
 
   for (const comparison of comparisons) {
     const pageName = comparison.pagePath.split("/").slice(-2).join("/");
+    const viewportLabel = `${comparison.viewportWidth}x${comparison.viewportHeight}`;
 
-    test(`${pageName} preserves most reference words`, () => {
+    test(`${pageName} @ ${viewportLabel} preserves most reference words`, () => {
       expect(comparison.wordCoverage).toBeGreaterThanOrEqual(0.85);
     });
 
-    test(`${pageName} has no critical render errors`, () => {
+    test(`${pageName} @ ${viewportLabel} has no critical render errors`, () => {
       const errors = comparison.issues.filter((issue) => issue.severity === "error");
       expect(errors).toEqual([]);
     });
@@ -46,19 +59,21 @@ describe("render comparison — example pages", () => {
 });
 
 describe("render comparison — responsive behavior", () => {
-  test("shows wide-only content at 80 columns", async () => {
-    const pagina = await buildPaginaRender("examples/responsive-page.html", DEFAULT_VIEWPORT);
-    const collapsed = pagina.plainText.replace(/\s+/g, " ");
-    expect(collapsed).toContain("Wide viewport");
-    expect(collapsed).not.toContain("Narrow viewport");
-  });
+  for (const { viewport, label } of COMPARISON_VIEWPORTS) {
+    test(`responsive-page.html matches @media rules at ${label}`, async () => {
+      const pagina = await buildPaginaRender("examples/responsive-page.html", viewport);
+      const collapsed = pagina.plainText.replace(/\s+/g, " ");
 
-  test("shows narrow-only content at 30 columns", async () => {
-    const pagina = await buildPaginaRender("examples/responsive-page.html", NARROW_VIEWPORT);
-    const collapsed = pagina.plainText.replace(/\s+/g, " ");
-    expect(collapsed).toContain("Narrow viewport");
-    expect(collapsed).not.toContain("Wide viewport");
-  });
+      if (viewport.width <= MEDIUM_VIEWPORT.width) {
+        expect(collapsed).toContain("Narrow viewport");
+        expect(collapsed).not.toContain("Wide viewport");
+        return;
+      }
+
+      expect(collapsed).toContain("Wide viewport");
+      expect(collapsed).not.toContain("Narrow viewport");
+    });
+  }
 });
 
 describe("render comparison — styling fidelity", () => {

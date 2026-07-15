@@ -11,6 +11,8 @@ export interface ComparisonIssue {
 
 export interface PageComparison {
   pagePath: string;
+  viewportWidth: number;
+  viewportHeight: number;
   wordCoverage: number;
   issues: ComparisonIssue[];
 }
@@ -185,6 +187,7 @@ function compareStyling(reference: PageReference, pagina: PaginaRender, pagePath
 export function comparePageRender(
   reference: PageReference,
   pagina: PaginaRender,
+  viewport: { width: number; height: number },
 ): PageComparison {
   const issues: ComparisonIssue[] = [];
   const missing = missingWords(reference.words, pagina.words);
@@ -233,17 +236,73 @@ export function comparePageRender(
 
   return {
     pagePath: reference.pagePath,
+    viewportWidth: viewport.width,
+    viewportHeight: viewport.height,
     wordCoverage,
     issues,
   };
 }
 
+function comparisonStatus(comparison: PageComparison): "OK" | "WARN" | "FAIL" {
+  const errors = comparison.issues.filter((issue) => issue.severity === "error");
+  if (errors.length > 0 || comparison.wordCoverage < 0.85) return "FAIL";
+  const warnings = comparison.issues.filter((issue) => issue.severity === "warning");
+  if (warnings.length > 0) return "WARN";
+  return "OK";
+}
+
+function formatViewportLabel(comparison: PageComparison): string {
+  return `${comparison.viewportWidth}x${comparison.viewportHeight}`;
+}
+
+function formatComparisonMatrix(comparisons: PageComparison[]): string[] {
+  const viewportLabels = [...new Set(comparisons.map(formatViewportLabel))];
+  const pages = [...new Set(comparisons.map((comparison) => comparison.pagePath))];
+  const statusByKey = new Map(
+    comparisons.map((comparison) => [
+      `${comparison.pagePath}@${formatViewportLabel(comparison)}`,
+      comparisonStatus(comparison),
+    ]),
+  );
+
+  const header = ["Page", ...viewportLabels];
+  const rows = pages.map((pagePath) => {
+    const pageName = pagePath.split("/").slice(-2).join("/");
+    const cells = viewportLabels.map((label) => {
+      const status = statusByKey.get(`${pagePath}@${label}`) ?? "FAIL";
+      return status;
+    });
+    return [pageName, ...cells];
+  });
+
+  const widths = header.map((_, columnIndex) =>
+    Math.max(
+      header[columnIndex]?.length ?? 0,
+      ...rows.map((row) => row[columnIndex]?.length ?? 0),
+    ),
+  );
+
+  const formatRow = (cells: string[]) =>
+    cells.map((cell, index) => cell.padEnd(widths[index] ?? cell.length)).join(" | ");
+
+  return [
+    "## Viewport matrix",
+    "",
+    formatRow(header),
+    formatRow(widths.map((width) => "-".repeat(width))),
+    ...rows.map(formatRow),
+    "",
+  ];
+}
+
 export function formatComparisonReport(comparisons: PageComparison[]): string {
+  const viewportLabels = [...new Set(comparisons.map(formatViewportLabel))].join(", ");
   const lines: string[] = [
     "# Pagina render comparison report",
     "",
-    "Compares semantic HTML reference text against Pagina terminal output at 80×24.",
+    `Compares semantic HTML reference text against Pagina terminal output at ${viewportLabels}.`,
     "",
+    ...formatComparisonMatrix(comparisons),
   ];
 
   for (const comparison of comparisons) {
@@ -251,7 +310,7 @@ export function formatComparisonReport(comparisons: PageComparison[]): string {
     const errors = comparison.issues.filter((issue) => issue.severity === "error");
     const warnings = comparison.issues.filter((issue) => issue.severity === "warning");
 
-    lines.push(`## ${pageName}`);
+    lines.push(`## ${pageName} @ ${formatViewportLabel(comparison)}`);
     lines.push(`- Word coverage: ${(comparison.wordCoverage * 100).toFixed(1)}%`);
     lines.push(`- Issues: ${errors.length} errors, ${warnings.length} warnings`);
 
