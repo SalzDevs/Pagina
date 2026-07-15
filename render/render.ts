@@ -11,6 +11,11 @@ import {
   type VisibleCommandEntry,
 } from "../viewport/visible";
 
+export const SEARCH_MATCH_FG = "#ffffff";
+export const SEARCH_MATCH_BG = "#665500";
+export const SEARCH_ACTIVE_FG = "#000000";
+export const SEARCH_ACTIVE_BG = "#ffcc00";
+
 export interface RenderOptions {
   scrollY?: number;
   viewportHeight?: number;
@@ -25,6 +30,11 @@ export interface MountLayout {
 export interface MountedDisplayList {
   setScroll: (scrollY: number, scrollX: number) => void;
   setFocusedLink: (focusedIndex: number | null) => void;
+  setSearchHighlight: (
+    matchCommandIndices: ReadonlySet<number>,
+    activeCommandIndex: number | null,
+  ) => void;
+  clearSearchHighlight: () => void;
   relayout: (
     displayList: DisplayList,
     contentHeight: number,
@@ -44,6 +54,11 @@ interface LinkMount {
   renderable: TextRenderable;
 }
 
+interface SearchMount {
+  commandIndex: number;
+  renderable: TextRenderable;
+}
+
 function applyTextLinkStyle(
   renderable: TextRenderable,
   command: TextCommand,
@@ -57,6 +72,36 @@ function applyTextLinkStyle(
     italic: style.italic,
     underline: style.underline,
   });
+}
+
+function applyTextSearchStyle(
+  renderable: TextRenderable,
+  command: TextCommand,
+  active: boolean,
+): void {
+  renderable.fg = active ? SEARCH_ACTIVE_FG : SEARCH_MATCH_FG;
+  renderable.bg = active ? SEARCH_ACTIVE_BG : SEARCH_MATCH_BG;
+  renderable.attributes = createTextAttributes({
+    bold: command.bold,
+    italic: command.italic,
+    underline: command.underline,
+  });
+}
+
+function rebuildSearchMounts(
+  mountedCommands: MountedCommand[],
+  searchMounts: Map<number, SearchMount>,
+): void {
+  searchMounts.clear();
+
+  for (const mounted of mountedCommands) {
+    if (mounted.kind !== "text") continue;
+
+    searchMounts.set(mounted.commandIndex, {
+      commandIndex: mounted.commandIndex,
+      renderable: mounted.renderable,
+    });
+  }
 }
 
 function rebuildLinkMounts(
@@ -78,20 +123,6 @@ function rebuildLinkMounts(
       renderable: mounted.renderable,
     });
     linkMounts.set(command.linkIndex, bucket);
-  }
-}
-
-function updateLinkFocus(
-  displayList: DisplayList,
-  linkMounts: Map<number, LinkMount[]>,
-  linkIndex: number,
-  focused: boolean,
-): void {
-  for (const mount of linkMounts.get(linkIndex) ?? []) {
-    const command = displayList[mount.commandIndex];
-    if (!command || !isTextCommand(command)) continue;
-
-    applyTextLinkStyle(mount.renderable, command, focused);
   }
 }
 
@@ -262,6 +293,34 @@ export function mountDisplayList(
   let cullingEnabled = useCulling;
   const mountedCommands: MountedCommand[] = [];
   const linkMounts = new Map<number, LinkMount[]>();
+  const searchMounts = new Map<number, SearchMount>();
+  let highlightedSearchCommands = new Set<number>();
+  let activeSearchCommandIndex: number | null = null;
+
+  const applyTextStylesForCommand = (commandIndex: number) => {
+    const mount = searchMounts.get(commandIndex);
+    if (!mount) return;
+
+    const command = currentDisplayList[commandIndex];
+    if (!command || !isTextCommand(command)) return;
+
+    const isFocusedLink =
+      command.linkIndex !== undefined && command.linkIndex === currentFocusedLinkIndex;
+    const isSearchMatch = highlightedSearchCommands.has(commandIndex);
+    const isActiveSearch = commandIndex === activeSearchCommandIndex;
+
+    if (isFocusedLink) {
+      applyTextLinkStyle(mount.renderable, command, true);
+      return;
+    }
+
+    if (isSearchMatch) {
+      applyTextSearchStyle(mount.renderable, command, isActiveSearch);
+      return;
+    }
+
+    applyTextCommand(mount.renderable, command);
+  };
 
   const applyLayout = (nextLayout: MountLayout, nextContentHeight: number, nextContentWidth: number) => {
     currentLayout = nextLayout;
@@ -288,24 +347,36 @@ export function mountDisplayList(
   const applyFocus = (focusedIndex: number | null) => {
     if (currentFocusedLinkIndex === focusedIndex) return;
 
-    if (currentFocusedLinkIndex !== null) {
-      updateLinkFocus(currentDisplayList, linkMounts, currentFocusedLinkIndex, false);
+    const previousFocused = currentFocusedLinkIndex;
+    currentFocusedLinkIndex = focusedIndex;
+
+    if (previousFocused !== null) {
+      for (const mount of linkMounts.get(previousFocused) ?? []) {
+        applyTextStylesForCommand(mount.commandIndex);
+      }
     }
 
     if (focusedIndex !== null) {
-      updateLinkFocus(currentDisplayList, linkMounts, focusedIndex, true);
+      for (const mount of linkMounts.get(focusedIndex) ?? []) {
+        applyTextStylesForCommand(mount.commandIndex);
+      }
     }
 
-    currentFocusedLinkIndex = focusedIndex;
     renderer.requestRender();
   };
 
   const syncDisplayList = (nextFocusedLinkIndex: number | null = currentFocusedLinkIndex) => {
     syncMountedCommands(renderer, content, mountEntries(), mountedCommands);
     rebuildLinkMounts(currentDisplayList, mountedCommands, linkMounts);
+    rebuildSearchMounts(mountedCommands, searchMounts);
     const previousFocused = currentFocusedLinkIndex;
     currentFocusedLinkIndex = null;
     applyFocus(nextFocusedLinkIndex ?? previousFocused);
+
+    for (const commandIndex of highlightedSearchCommands) {
+      applyTextStylesForCommand(commandIndex);
+    }
+
     renderer.requestRender();
   };
 
@@ -336,6 +407,30 @@ export function mountDisplayList(
       applyScroll();
     },
     setFocusedLink: applyFocus,
+    setSearchHighlight(matchCommandIndices, activeCommandIndex) {
+      const affected = new Set([...highlightedSearchCommands, ...matchCommandIndices]);
+      highlightedSearchCommands = new Set(matchCommandIndices);
+      activeSearchCommandIndex = activeCommandIndex;
+
+      for (const commandIndex of affected) {
+        applyTextStylesForCommand(commandIndex);
+      }
+
+      renderer.requestRender();
+    },
+    clearSearchHighlight() {
+      if (highlightedSearchCommands.size === 0 && activeSearchCommandIndex === null) return;
+
+      const affected = new Set(highlightedSearchCommands);
+      highlightedSearchCommands = new Set();
+      activeSearchCommandIndex = null;
+
+      for (const commandIndex of affected) {
+        applyTextStylesForCommand(commandIndex);
+      }
+
+      renderer.requestRender();
+    },
     relayout(nextDisplayList, nextContentHeight, nextLayout, nextFocusedLinkIndex) {
       currentDisplayList = nextDisplayList;
       currentContentHeight = nextContentHeight;

@@ -2,6 +2,7 @@ import { basename } from "node:path";
 
 import type { Node } from "../dom/node";
 import { NodeType } from "../dom/node";
+import { EMPTY_LINK_LABEL } from "./fragment";
 import { isRemoteUrl } from "./resolve";
 import { ERROR_PAGE_TITLE } from "./error-page";
 
@@ -72,6 +73,23 @@ export function goForward(history: BrowserHistory): {
   }
 
   const index = history.index + 1;
+  return {
+    history: { ...history, index },
+    entry: history.entries[index] ?? null,
+  };
+}
+
+export function goToHistoryIndex(
+  history: BrowserHistory,
+  index: number,
+): {
+  history: BrowserHistory;
+  entry: HistoryEntry | null;
+} {
+  if (index < 0 || index >= history.entries.length) {
+    return { history, entry: null };
+  }
+
   return {
     history: { ...history, index },
     entry: history.entries[index] ?? null,
@@ -168,31 +186,104 @@ export function historyEntryLabel(
   return historyLabel(location, title);
 }
 
-/** Format the history trail for the breadcrumb bar. */
-export function formatBreadcrumb(history: BrowserHistory, width: number): string {
-  if (history.entries.length === 0 || history.index < 0) return "";
+export interface BreadcrumbSegment {
+  index: number;
+  label: string;
+  start: number;
+  end: number;
+}
+
+export interface BreadcrumbLayout {
+  text: string;
+  segments: BreadcrumbSegment[];
+  ellipsis: { start: number; end: number } | null;
+}
+
+function breadcrumbDisplayLabel(entry: HistoryEntry, index: number, currentIndex: number): string {
+  return index === currentIndex ? `[${entry.label}]` : entry.label;
+}
+
+/** Lay out the history trail and record clickable segment ranges. */
+export function layoutBreadcrumb(history: BrowserHistory, width: number): BreadcrumbLayout {
+  if (history.entries.length === 0 || history.index < 0) {
+    return { text: "", segments: [], ellipsis: null };
+  }
 
   const separator = " › ";
   const labels = history.entries.map((entry, index) =>
-    index === history.index ? `[${entry.label}]` : entry.label,
+    breadcrumbDisplayLabel(entry, index, history.index),
   );
 
-  const join = (parts: string[]) => parts.join(separator);
-  let parts = [...labels];
+  let visibleStart = 0;
+  let visible = [...labels];
 
-  while (parts.length > 1) {
-    const candidate = join(parts);
-    if (candidate.length <= width) return candidate;
-
-    parts = parts.slice(1);
+  while (visible.length > 1) {
+    const candidate = visible.join(separator);
+    if (candidate.length <= width) break;
+    visibleStart++;
+    visible = labels.slice(visibleStart);
   }
 
-  const single = parts[0] ?? "";
-  if (single.length <= width) {
-    return parts.length < labels.length ? `...${separator}${single}` : single;
+  let text: string;
+  let ellipsis: BreadcrumbLayout["ellipsis"] = null;
+
+  if (visible.length === 1) {
+    const single = visible[0] ?? "";
+    if (single.length <= width) {
+      text = visibleStart > 0 ? `...${separator}${single}` : single;
+      if (visibleStart > 0) {
+        ellipsis = { start: 0, end: 3 };
+      }
+    } else {
+      text = single.slice(0, Math.max(0, width - 3)) + "...";
+    }
+  } else {
+    text = visible.join(separator);
   }
 
-  return single.slice(0, Math.max(0, width - 3)) + "...";
+  const segments: BreadcrumbSegment[] = [];
+  let searchFrom = ellipsis ? ellipsis.end + separator.length : 0;
+
+  for (let index = visibleStart; index < labels.length; index++) {
+    const label = labels[index]!;
+    const start = text.indexOf(label, searchFrom);
+    if (start === -1) continue;
+
+    segments.push({
+      index,
+      label,
+      start,
+      end: start + label.length,
+    });
+    searchFrom = start + label.length;
+  }
+
+  return { text, segments, ellipsis };
+}
+
+/** Resolve a breadcrumb column to a history index or picker action. */
+export function historyTargetAtBreadcrumbColumn(
+  layout: BreadcrumbLayout,
+  column: number,
+): number | "picker" | null {
+  if (column < 0 || column >= layout.text.length) return null;
+
+  if (layout.ellipsis && column >= layout.ellipsis.start && column < layout.ellipsis.end) {
+    return "picker";
+  }
+
+  for (const segment of layout.segments) {
+    if (column >= segment.start && column < segment.end) {
+      return segment.index;
+    }
+  }
+
+  return null;
+}
+
+/** Format the history trail for the breadcrumb bar. */
+export function formatBreadcrumb(history: BrowserHistory, width: number): string {
+  return layoutBreadcrumb(history, width).text;
 }
 
 function cssWarningLabel(url: string): string {
@@ -278,8 +369,18 @@ export function formatFragmentNotFoundStatus(fragment: string, width: number): s
 
 /** Append unsupported-link status to a breadcrumb when a link cannot be followed. */
 export function formatUnsupportedLinkStatus(href: string, width: number): string {
-  const scheme = href.trim().split(":")[0]?.toLowerCase() ?? "link";
-  const variants = [` | ⚠ ${scheme}: links not supported`, " | ⚠ Link not supported", " | ⚠"];
+  const trimmed = href.trim();
+  const genericVariants = [" | ⚠ Link not supported", " | ⚠"];
+
+  if (!trimmed || trimmed === EMPTY_LINK_LABEL || trimmed === "#") {
+    for (const status of genericVariants) {
+      if (status.length <= width) return status;
+    }
+    return truncateStatus(genericVariants[genericVariants.length - 1]!, width);
+  }
+
+  const scheme = trimmed.split(":")[0]?.toLowerCase() ?? "link";
+  const variants = [` | ⚠ ${scheme}: links not supported`, ...genericVariants];
 
   for (const status of variants) {
     if (status.length <= width) return status;

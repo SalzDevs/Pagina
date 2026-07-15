@@ -9,9 +9,11 @@ import {
   createLinkFocusState,
   focusNextLink,
   focusPreviousLink,
+  formatLinkHintStatus,
   FOCUSED_LINK_BG,
   FOCUSED_LINK_FG,
   handleLinkKey,
+  initialLinkFocusIndex,
   linkCommandIndices,
   scrollToFocusedLink,
   textLinkFocusStyle,
@@ -212,6 +214,33 @@ describe("link focus", () => {
     expect(handleLinkKey(state, links, key("o"))).toEqual({ kind: "activate", index: 1 });
     expect(links[1]?.href).toBe("styled-page.html");
     expect(resolveHref(links[1]!.href, linksPagePath)).toBe(styledPagePath);
+  });
+
+  test("auto-focuses the first link on a fresh page load", async () => {
+    const { links } = await pipelineFromFile("examples/links-page.html");
+
+    expect(
+      initialLinkFocusIndex(links, {
+        restoredIndex: null,
+        hasSavedScroll: false,
+        visitingFragment: false,
+      }),
+    ).toBe(0);
+  });
+
+  test("skips auto-focus when restoring scroll or visiting a fragment", async () => {
+    const { links } = await pipelineFromFile("examples/links-page.html");
+
+    expect(initialLinkFocusIndex(links, { hasSavedScroll: true })).toBeNull();
+    expect(initialLinkFocusIndex(links, { visitingFragment: true })).toBeNull();
+    expect(initialLinkFocusIndex(links, { restoredIndex: 1 })).toBe(1);
+  });
+
+  test("formats a breadcrumb hint when links are available", () => {
+    expect(formatLinkHintStatus(3, 40)).toBe(" | 3 links — press ]");
+    expect(formatLinkHintStatus(3, 10)).toBe(" | 3 links");
+    expect(formatLinkHintStatus(3, 4)).toBe(" | ]");
+    expect(formatLinkHintStatus(0, 40)).toBe("");
   });
 
   test("applies focus styling to one link at a time", () => {

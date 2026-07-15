@@ -92,6 +92,27 @@ export function scrollToRevealY(
   return viewport;
 }
 
+/** Scroll the viewport so a document point is visible. */
+export function scrollToRevealPoint(
+  viewport: ScrollViewport,
+  y: number,
+  x: number,
+  width = 1,
+): ScrollViewport {
+  let next = scrollToRevealY(viewport, y, 1);
+
+  if (x < next.scrollX) {
+    next = withScroll(next, { scrollX: x });
+  } else {
+    const right = x + width;
+    if (right > next.scrollX + next.viewportWidth) {
+      next = withScroll(next, { scrollX: right - next.viewportWidth });
+    }
+  }
+
+  return next;
+}
+
 function isScrollKey(key: KeyEvent): boolean {
   if (key.ctrl || key.meta) return false;
   return true;

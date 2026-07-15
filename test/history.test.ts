@@ -137,6 +137,10 @@ describe("browser history", () => {
     expect(formatUnsupportedLinkStatus("mailto:test@example.com", 40)).toBe(
       " | ⚠ mailto: links not supported",
     );
+    expect(formatUnsupportedLinkStatus("#", 40)).toBe(" | ⚠ Link not supported");
+    expect(formatUnsupportedLinkStatus("javascript:void(0)", 40)).toBe(
+      " | ⚠ javascript: links not supported",
+    );
     expect(
       formatBreadcrumbWithStatus(history, 50, {
         unsupportedLink: "mailto:test@example.com",

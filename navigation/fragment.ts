@@ -2,6 +2,8 @@ import { resolve } from "node:path";
 
 import { isRemoteUrl, resolveResource, resolveAgainstBase, isUnsupportedLinkScheme } from "./resolve";
 
+export const EMPTY_LINK_LABEL = "(empty link)";
+
 export interface LinkTarget {
   /** Resolved page location when a navigation fetch is needed. */
   location: string | null;
@@ -44,6 +46,20 @@ function normalizeComparableLocation(location: string): string {
 /** True when two locations refer to the same page (ignoring fragments). */
 export function isSamePage(left: string, right: string): boolean {
   return normalizeComparableLocation(left) === normalizeComparableLocation(right);
+}
+
+/** When non-null, the href cannot be followed and this label belongs in the breadcrumb. */
+export function unfollowableLinkLabel(href: string): string | null {
+  const trimmed = href.trim();
+  if (!trimmed) return EMPTY_LINK_LABEL;
+  if (trimmed === "#") return "#";
+  if (trimmed.startsWith("javascript:")) return trimmed;
+  if (isUnsupportedLinkScheme(trimmed)) return trimmed;
+  return null;
+}
+
+export function isActionableLinkTarget(target: LinkTarget): boolean {
+  return target.location !== null || target.fragment !== null;
 }
 
 /** Parse an anchor href into a navigation target. */

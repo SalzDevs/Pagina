@@ -10,7 +10,7 @@ import {
   findElementById,
   scrollToFragment,
 } from "../navigation/anchors";
-import { isSamePage, parseLinkTarget, splitPageLocation } from "../navigation/fragment";
+import { isSamePage, parseLinkTarget, splitPageLocation, unfollowableLinkLabel } from "../navigation/fragment";
 import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
 import { layout } from "../layout/layout";
@@ -131,6 +131,14 @@ describe("parseLinkTarget", () => {
     expect(parseLinkTarget("tel:+1234", linksPagePath)).toBeNull();
     expect(parseLinkTarget("data:text/html,hi", linksPagePath)).toBeNull();
     expect(parseLinkTarget("", linksPagePath)).toBeNull();
+  });
+
+  test("treats bare hash links as unfollowable", () => {
+    expect(parseLinkTarget("#", linksPagePath)).toEqual({ location: null, fragment: null });
+    expect(unfollowableLinkLabel("#")).toBe("#");
+    expect(unfollowableLinkLabel("javascript:void(0)")).toBe("javascript:void(0)");
+    expect(unfollowableLinkLabel("")).toBe("(empty link)");
+    expect(unfollowableLinkLabel("#intro")).toBeNull();
   });
 });
 

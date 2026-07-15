@@ -10,7 +10,10 @@ import {
   formatLoadingBreadcrumb,
   goBack,
   goForward,
+  goToHistoryIndex,
   historyEntryLabel,
+  layoutBreadcrumb,
+  historyTargetAtBreadcrumbColumn,
   pushHistory,
   updateCurrentHistoryEntry,
   type BrowserHistory,
@@ -21,6 +24,7 @@ import { splitPageLocation } from "./navigation/fragment";
 import { isRemoteUrl } from "./navigation/resolve";
 import { BREADCRUMB_HEIGHT, mountBreadcrumb } from "./render/breadcrumb";
 import { mountHelpOverlay } from "./render/help-overlay";
+import { mountHistoryOverlay } from "./render/history-overlay";
 import { mountLoadingOverlay } from "./render/loading-overlay";
 import type { MountLayout } from "./render/render";
 import { createKeyboardInput } from "./viewport/keyboard";
@@ -28,6 +32,12 @@ import { isLoadCancelKey } from "./viewport/load-cancel-key";
 import { buildPageView } from "./viewport/page-view";
 import { createBrowserSession, type BrowserSession } from "./viewport/session";
 import { clampScrollY } from "./viewport/scroll";
+import { formatScrollStatus, isVerticallyScrollable } from "./viewport/scroll-indicator";
+import {
+  focusableLinkCount,
+  formatLinkHintStatus,
+  initialLinkFocusIndex,
+} from "./links/focus";
 import {
   applyOpenPromptKey,
   createOpenPromptState,
@@ -35,6 +45,21 @@ import {
   type OpenPromptState,
 } from "./viewport/open-prompt";
 import { OpenPromptHistory } from "./viewport/open-prompt-history";
+import {
+  applySearchKey,
+  createSearchState,
+  formatSearchPromptBreadcrumb,
+  formatSearchStatus,
+  stepSearchMatchIndex,
+  type SearchMatch,
+  type SearchState,
+} from "./viewport/search";
+import {
+  applyHistoryPickerKey,
+  activateHistoryPicker,
+  createHistoryPickerState,
+  type HistoryPickerState,
+} from "./viewport/history-picker";
 
 const DEFAULT_PAGE = "examples/page.html";
 
@@ -60,10 +85,14 @@ async function main() {
 
   const breadcrumb = mountBreadcrumb(renderer);
   const help = mountHelpOverlay(renderer);
+  const historyOverlay = mountHistoryOverlay(renderer);
   const loading = mountLoadingOverlay(renderer);
   let helpVisible = false;
+  let historyPicker: HistoryPickerState = createHistoryPickerState();
   let openPrompt: OpenPromptState = createOpenPromptState();
   const openPromptHistory = new OpenPromptHistory();
+  let search: SearchState = createSearchState();
+  let searchMatches: SearchMatch[] = [];
   let history: BrowserHistory = createBrowserHistory();
   const pageCache = new PageCache();
   let session: BrowserSession | null = null;
@@ -73,6 +102,7 @@ async function main() {
   let rendererStarted = false;
   let loadGeneration = 0;
   let loadAbortController: AbortController | null = null;
+  let currentFocusableLinkCount = 0;
 
   const startRendererOnce = () => {
     if (rendererStarted) return;
@@ -90,9 +120,62 @@ async function main() {
     help.setCssWarnings(loadedPage?.cssWarnings ?? []);
   };
 
+  const breadcrumbExtraSuffix = (): string => {
+    let suffix = "";
+    let remaining = renderer.width;
+
+    if (search.query && !fragmentNotFound && !unsupportedLink) {
+      const status = formatSearchStatus(
+        search.query,
+        search.matchIndex,
+        searchMatches.length,
+        remaining,
+      );
+      suffix += status;
+      remaining = Math.max(0, remaining - status.length);
+    }
+
+    if (session && isVerticallyScrollable(session.viewport)) {
+      const scrollStatus = formatScrollStatus(session.viewport, remaining);
+      suffix += scrollStatus;
+      remaining = Math.max(0, remaining - scrollStatus.length);
+    }
+
+    if (session?.focusedLinkIndex === null && currentFocusableLinkCount > 0) {
+      const hint = formatLinkHintStatus(currentFocusableLinkCount, remaining);
+      suffix += hint;
+    }
+
+    return suffix;
+  };
+
+  const historyBreadcrumbWidth = (): number => {
+    const breadcrumbWidth = renderer.width - breadcrumbExtraSuffix().length;
+    return breadcrumbWidth >= 0 ? breadcrumbWidth : renderer.width;
+  };
+
+  const closeHistoryPicker = () => {
+    historyPicker = createHistoryPickerState();
+    historyOverlay.setVisible(false);
+    updateBreadcrumb();
+  };
+
+  const openHistoryPicker = () => {
+    if (history.entries.length === 0) return;
+    historyPicker = activateHistoryPicker(history);
+    historyOverlay.setHistory(history, historyPicker.selectedIndex);
+    historyOverlay.setVisible(true);
+    updateBreadcrumb();
+  };
+
   const updateBreadcrumb = () => {
     if (helpVisible) {
       breadcrumb.update("Help — press ? to close");
+      return;
+    }
+
+    if (historyPicker.active) {
+      breadcrumb.update("History — ↑/↓ to select, Enter to go, Esc to close");
       return;
     }
 
@@ -103,22 +186,94 @@ async function main() {
       return;
     }
 
-    breadcrumb.update(
-      formatBreadcrumbWithStatus(history, renderer.width, {
+    if (search.promptActive) {
+      breadcrumb.update(
+        formatSearchPromptBreadcrumb(search.value, renderer.width, search.cursor),
+      );
+      return;
+    }
+
+    const extraSuffix = breadcrumbExtraSuffix();
+    const historyWidth = renderer.width - extraSuffix.length;
+    let line = formatBreadcrumbWithStatus(
+      history,
+      historyWidth >= 0 ? historyWidth : renderer.width,
+      {
         cssWarnings: loadedPage?.cssWarnings,
         fragmentNotFound,
         unsupportedLink,
-      }),
+      },
     );
+
+    if (extraSuffix && historyWidth >= 0) {
+      line += extraSuffix;
+    }
+
+    breadcrumb.update(line);
+  };
+
+  const applySearch = () => {
+    if (!session || !search.query) {
+      session?.clearSearchHighlight();
+      searchMatches = [];
+      return;
+    }
+
+    searchMatches = session.findSearchMatches(search.query);
+    if (searchMatches.length === 0) {
+      search.matchIndex = 0;
+      session.clearSearchHighlight();
+    } else {
+      search = {
+        ...search,
+        matchIndex: Math.min(search.matchIndex, searchMatches.length - 1),
+      };
+      session.showSearch(searchMatches, search.matchIndex);
+    }
   };
 
   const toggleHelp = () => {
     helpVisible = !helpVisible;
     if (helpVisible) {
       openPrompt = createOpenPromptState();
+      search = createSearchState();
+      searchMatches = [];
+      session?.clearSearchHighlight();
+      closeHistoryPicker();
     }
     help.setVisible(helpVisible);
     updateBreadcrumb();
+  };
+
+  const handleHistoryPickerKey = (key: KeyEvent): boolean => {
+    if (openPrompt.active || search.promptActive) return false;
+
+    const result = applyHistoryPickerKey(historyPicker, key, history);
+
+    switch (result.kind) {
+      case "none":
+        return false;
+      case "open":
+        if (helpVisible) {
+          helpVisible = false;
+          help.setVisible(false);
+        }
+        historyPicker = result.state;
+        historyOverlay.setHistory(history, historyPicker.selectedIndex);
+        historyOverlay.setVisible(true);
+        updateBreadcrumb();
+        return true;
+      case "update":
+        historyPicker = result.state;
+        historyOverlay.setHistory(history, historyPicker.selectedIndex);
+        return true;
+      case "cancel":
+        closeHistoryPicker();
+        return true;
+      case "submit":
+        void navigateToHistoryIndex(result.index);
+        return true;
+    }
   };
 
   const handleOpenPromptKey = (key: KeyEvent): boolean => {
@@ -151,12 +306,78 @@ async function main() {
     }
   };
 
+  const handleSearchKey = (key: KeyEvent): boolean => {
+    if (openPrompt.active) return false;
+
+    const result = applySearchKey(search, key);
+
+    switch (result.kind) {
+      case "none":
+        return false;
+      case "open":
+        if (helpVisible) {
+          helpVisible = false;
+          help.setVisible(false);
+        }
+        search = result.state;
+        updateBreadcrumb();
+        return true;
+      case "update":
+        search = result.state;
+        updateBreadcrumb();
+        return true;
+      case "cancel":
+        search = createSearchState();
+        searchMatches = [];
+        session?.clearSearchHighlight();
+        updateBreadcrumb();
+        return true;
+      case "submit":
+        search = result.state;
+        applySearch();
+        updateBreadcrumb();
+        return true;
+      case "navigate":
+        if (searchMatches.length === 0) return true;
+        search = {
+          ...result.state,
+          matchIndex: stepSearchMatchIndex(
+            search.matchIndex,
+            searchMatches.length,
+            result.direction,
+          ),
+        };
+        session?.showSearch(searchMatches, search.matchIndex);
+        updateBreadcrumb();
+        return true;
+    }
+  };
+
   const snapshotViewStateIntoHistory = () => {
     if (history.index < 0 || !session) return;
 
     history = updateCurrentHistoryEntry(history, {
       scrollY: session.viewport.scrollY,
       focusedLinkIndex: session.focusedLinkIndex,
+    });
+  };
+
+  const navigateToHistoryIndex = async (index: number) => {
+    if (index < 0 || index >= history.entries.length || index === history.index) {
+      closeHistoryPicker();
+      return;
+    }
+
+    snapshotViewStateIntoHistory();
+    const result = goToHistoryIndex(history, index);
+    history = result.history;
+    if (!result.entry) return;
+
+    closeHistoryPicker();
+    await loadPage(result.entry.location, "none", null, {
+      scrollY: result.entry.scrollY,
+      focusedLinkIndex: result.entry.focusedLinkIndex,
+      fragment: result.entry.fragment,
     });
   };
 
@@ -206,6 +427,18 @@ async function main() {
         ? viewState.restoreFragment
         : fragment;
 
+    const visitingFragment =
+      (visitFragment !== null && !hasSavedScroll && !viewState.preserveViewState) ||
+      (fragment !== null && historyMode === "push");
+
+    currentFocusableLinkCount = focusableLinkCount(view.links);
+
+    const initialFocusedLink = initialLinkFocusIndex(view.links, {
+      restoredIndex: previousFocusedLink,
+      hasSavedScroll,
+      visitingFragment,
+    });
+
     if (historyMode === "push") {
       history = pushHistory(history, {
         location: loadedPage.pageLocation,
@@ -233,11 +466,17 @@ async function main() {
       layout: chrome,
       fragmentPositions: view.fragmentPositions,
       initialScrollY,
-      initialFocusedLinkIndex: previousFocusedLink,
+      initialFocusedLinkIndex: initialFocusedLink,
+      initialFocusedLinkScroll:
+        initialFocusedLink !== null && previousFocusedLink === null && !hasSavedScroll,
       isHelpVisible: () => helpVisible,
       isOpenPromptVisible: () => openPrompt.active,
+      isSearchPromptVisible: () => search.promptActive,
+      isHistoryPickerVisible: () => historyPicker.active,
       onToggleHelp: toggleHelp,
       onOpenPromptKey: handleOpenPromptKey,
+      onSearchKey: handleSearchKey,
+      onHistoryPickerKey: handleHistoryPickerKey,
       onNavigate: (target, targetFragment) => loadPage(target, "push", targetFragment ?? null),
       onHistoryBack: async () => {
         snapshotViewStateIntoHistory();
@@ -271,6 +510,8 @@ async function main() {
         if (href) fragmentNotFound = null;
         updateBreadcrumb();
       },
+      onScrollChange: updateBreadcrumb,
+      onLinkFocusChange: updateBreadcrumb,
     });
 
     if (visitFragment !== null && !hasSavedScroll && !viewState.preserveViewState) {
@@ -280,6 +521,7 @@ async function main() {
     }
 
     session.attach();
+    updateBreadcrumb();
   };
 
   const ensureStylesForViewport = async (page: LoadedPage, viewportWidth: number) => {
@@ -301,6 +543,7 @@ async function main() {
 
   const relayoutCurrentPage = async () => {
     help.resize(renderer.width, renderer.height);
+    historyOverlay.resize(renderer.width, renderer.height);
     breadcrumb.resize(renderer.width);
     loading.resize(renderer.width, renderer.height);
 
@@ -315,6 +558,7 @@ async function main() {
     });
 
     session.relayout(view, chrome);
+    applySearch();
     updateBreadcrumb();
     syncCssWarnings();
   };
@@ -343,6 +587,9 @@ async function main() {
       help.setVisible(false);
     }
     openPrompt = createOpenPromptState();
+    search = createSearchState();
+    searchMatches = [];
+    closeHistoryPicker();
 
     const cachedPage = !forceReload ? pageCache.get(pageLocation) : undefined;
     if (cachedPage) {
@@ -429,6 +676,30 @@ async function main() {
   };
 
   renderer.on(CliRenderEvents.RESIZE, relayoutCurrentPage);
+
+  breadcrumb.bar.onMouseUp = (event) => {
+    if (helpVisible || openPrompt.active || search.promptActive || historyPicker.active) return;
+    if (event.button !== 0 || event.type !== "up") return;
+    if (history.entries.length === 0) return;
+
+    const column = Math.trunc(event.x) - 1;
+    const layout = layoutBreadcrumb(history, historyBreadcrumbWidth());
+    const target = historyTargetAtBreadcrumbColumn(layout, column);
+
+    if (target === "picker") {
+      openHistoryPicker();
+      return;
+    }
+
+    if (typeof target === "number") {
+      void navigateToHistoryIndex(target);
+      return;
+    }
+
+    if (history.entries.length > 1) {
+      openHistoryPicker();
+    }
+  };
 
   const initial = splitPageLocation(process.argv[2] ?? DEFAULT_PAGE);
   await loadPage(

@@ -17,6 +17,49 @@ export function createLinkFocusState(): LinkFocusState {
   return { focusedIndex: null };
 }
 
+export function focusableLinkCount(links: Link[]): number {
+  return documentLinkFocusIndices(links).length;
+}
+
+/** Choose the link to focus when a page is first shown. */
+export function initialLinkFocusIndex(
+  links: Link[],
+  options: {
+    restoredIndex?: number | null;
+    hasSavedScroll?: boolean;
+    visitingFragment?: boolean;
+  } = {},
+): number | null {
+  if (
+    options.restoredIndex !== null &&
+    options.restoredIndex !== undefined &&
+    options.restoredIndex >= 0
+  ) {
+    return options.restoredIndex;
+  }
+
+  if (options.hasSavedScroll || options.visitingFragment) return null;
+
+  return documentLinkFocusIndices(links)[0] ?? null;
+}
+
+/** Format a breadcrumb hint when links exist but none are focused. */
+export function formatLinkHintStatus(linkCount: number, width: number): string {
+  if (linkCount <= 0) return "";
+
+  const variants = [
+    ` | ${linkCount} links — press ]`,
+    ` | ${linkCount} links`,
+    ` | ]`,
+  ];
+
+  for (const status of variants) {
+    if (status.length <= width) return status;
+  }
+
+  return variants[variants.length - 1]!;
+}
+
 /** Indices of every focusable link in document order. */
 export function documentLinkFocusIndices(links: Link[]): number[] {
   const indices: number[] = [];

@@ -11,8 +11,7 @@ import {
 } from "../links/focus";
 import { handleHistoryKey } from "../navigation/history-keys";
 import { isHelpToggleKey } from "./help-key";
-import { isSamePage, parseLinkTarget } from "../navigation/fragment";
-import { isUnsupportedLinkScheme } from "../navigation/resolve";
+import { isSamePage, parseLinkTarget, isActionableLinkTarget, unfollowableLinkLabel, EMPTY_LINK_LABEL } from "../navigation/fragment";
 import { scrollToFragment } from "../navigation/anchors";
 import type { DisplayList } from "../paint/display-list";
 import { mountDisplayList, type MountLayout, type MountedDisplayList } from "../render/render";
@@ -23,9 +22,15 @@ import {
   createScrollViewport,
   handleScrollKey,
   scrollBy,
+  scrollToRevealPoint,
   withScroll,
   type ScrollViewport,
 } from "../viewport/scroll";
+import {
+  findSearchMatches,
+  matchCommandIndices,
+  type SearchMatch,
+} from "./search";
 
 export interface BrowserSessionOptions {
   pageLocation: string;
@@ -34,15 +39,22 @@ export interface BrowserSessionOptions {
   fragmentPositions: ReadonlyMap<string, number>;
   initialScrollY?: number;
   initialFocusedLinkIndex?: number | null;
+  initialFocusedLinkScroll?: boolean;
   isHelpVisible?: () => boolean;
   isOpenPromptVisible?: () => boolean;
+  isSearchPromptVisible?: () => boolean;
+  isHistoryPickerVisible?: () => boolean;
   onToggleHelp?: () => void;
   onOpenPromptKey?: (key: KeyEvent) => boolean;
+  onSearchKey?: (key: KeyEvent) => boolean;
+  onHistoryPickerKey?: (key: KeyEvent) => boolean;
   onNavigate: (location: string, fragment?: string | null) => void | Promise<void>;
   onHistoryBack?: () => void | Promise<void>;
   onHistoryForward?: () => void | Promise<void>;
   onFragmentNotFound?: (fragment: string | null) => void;
   onUnsupportedLink?: (href: string | null) => void;
+  onScrollChange?: () => void;
+  onLinkFocusChange?: () => void;
 }
 
 export interface BrowserSession {
@@ -55,6 +67,9 @@ export interface BrowserSession {
   relayout: (view: PageView, layout: MountLayout) => void;
   setFocusedLink: (focusedIndex: number | null) => void;
   scrollToFragment: (fragment: string | null) => void;
+  findSearchMatches: (query: string) => SearchMatch[];
+  showSearch: (matches: SearchMatch[], matchIndex: number) => void;
+  clearSearchHighlight: () => void;
 }
 
 export function createBrowserSession(
@@ -106,11 +121,17 @@ export function createBrowserSession(
       contentHeight: pageContentHeight,
     });
     mounted.setScroll(viewport.scrollY, viewport.scrollX);
+    options.onScrollChange?.();
   };
 
   const syncLinkFocus = (next: LinkFocusState, scroll = false) => {
+    const previousIndex = linkFocus.focusedIndex;
     linkFocus = next;
     mounted.setFocusedLink(linkFocus.focusedIndex);
+
+    if (previousIndex !== linkFocus.focusedIndex) {
+      options.onLinkFocusChange?.();
+    }
 
     if (!scroll || linkFocus.focusedIndex === null) return;
 
@@ -136,11 +157,15 @@ export function createBrowserSession(
     const link = pageLinks[index];
     if (!link) return;
 
+    const unfollowable = unfollowableLinkLabel(link.href);
+    if (unfollowable !== null) {
+      options.onUnsupportedLink?.(unfollowable);
+      return;
+    }
+
     const target = parseLinkTarget(link.href, options.documentBase, options.pageLocation);
-    if (!target) {
-      if (isUnsupportedLinkScheme(link.href)) {
-        options.onUnsupportedLink?.(link.href);
-      }
+    if (!target || !isActionableLinkTarget(target)) {
+      options.onUnsupportedLink?.(link.href.trim() || EMPTY_LINK_LABEL);
       return;
     }
 
@@ -161,6 +186,15 @@ export function createBrowserSession(
 
   const scrollToFragmentId = (fragment: string | null) => {
     applyFragmentScroll(fragment);
+  };
+
+  const showSearch = (matches: SearchMatch[], matchIndex: number) => {
+    mounted.setSearchHighlight(matchCommandIndices(matches), matches[matchIndex]?.commandIndex ?? null);
+
+    const match = matches[matchIndex];
+    if (!match) return;
+
+    syncViewport(scrollToRevealPoint(viewport, match.y, match.x, match.length));
   };
 
   const relayout = (view: PageView, layout: MountLayout) => {
@@ -192,6 +226,10 @@ export function createBrowserSession(
   };
 
   syncViewport(viewport);
+
+  if (options.initialFocusedLinkScroll && linkFocus.focusedIndex !== null) {
+    syncLinkFocus(linkFocus, true);
+  }
 
   let keyboard: KeyboardInput | null = null;
   let keyHandler: ((key: KeyEvent) => void | Promise<void>) | null = null;
@@ -226,6 +264,9 @@ export function createBrowserSession(
       syncLinkFocus({ focusedIndex }, false);
     },
     scrollToFragment: scrollToFragmentId,
+    findSearchMatches: (query: string) => findSearchMatches(pageDisplayList, query),
+    showSearch,
+    clearSearchHighlight: () => mounted.clearSearchHighlight(),
     relayout,
     suspend() {
       detachInputHandlers();
@@ -242,6 +283,15 @@ export function createBrowserSession(
         }
 
         if (options.onOpenPromptKey?.(key)) return;
+
+        if (options.onSearchKey?.(key)) return;
+
+        if (options.isHistoryPickerVisible?.()) {
+          options.onHistoryPickerKey?.(key);
+          return;
+        }
+
+        if (options.onHistoryPickerKey?.(key)) return;
 
         if (options.isHelpVisible?.()) return;
 
@@ -275,7 +325,14 @@ export function createBrowserSession(
       keyboard.onKeyPress(keyHandler);
 
       mouseScrollHandler = (event) => {
-        if (options.isHelpVisible?.() || options.isOpenPromptVisible?.()) return;
+        if (
+          options.isHelpVisible?.() ||
+          options.isOpenPromptVisible?.() ||
+          options.isSearchPromptVisible?.() ||
+          options.isHistoryPickerVisible?.()
+        ) {
+          return;
+        }
         if (!event.scroll) return;
 
         const delta = event.scroll.direction === "down" ? event.scroll.delta : -event.scroll.delta;
@@ -283,7 +340,14 @@ export function createBrowserSession(
       };
 
       mouseMoveHandler = (event) => {
-        if (options.isHelpVisible?.() || options.isOpenPromptVisible?.()) return;
+        if (
+          options.isHelpVisible?.() ||
+          options.isOpenPromptVisible?.() ||
+          options.isSearchPromptVisible?.() ||
+          options.isHistoryPickerVisible?.()
+        ) {
+          return;
+        }
 
         const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY, viewport.scrollX);
         const cell = { x: Math.trunc(point.x), y: Math.trunc(point.y) };
@@ -301,7 +365,14 @@ export function createBrowserSession(
       };
 
       mouseUpHandler = (event) => {
-        if (options.isHelpVisible?.() || options.isOpenPromptVisible?.()) return;
+        if (
+          options.isHelpVisible?.() ||
+          options.isOpenPromptVisible?.() ||
+          options.isSearchPromptVisible?.() ||
+          options.isHistoryPickerVisible?.()
+        ) {
+          return;
+        }
         if (event.button !== 0 || event.type !== "up") return;
 
         const point = mouseToDocumentPoint(event, pageLayout, viewport.scrollY, viewport.scrollX);
