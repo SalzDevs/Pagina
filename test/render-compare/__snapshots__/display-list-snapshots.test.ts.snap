@@ -158,7 +158,9 @@ fill 0,9 80x1 bg=#111111
 text 0,0 "Styled Page" fg=#ffd700 bold
 text 0,5 "This paragraph uses a class selector from CSS." fg=#8be9fd
 text 0,7 "This paragraph uses an id selector." fg=#50fa7b bold
-text 0,9 "Default body colors apply here." fg=#cccccc"
+text 0,9 "Default body colors apply here. Visit the " fg=#cccccc
+text 42,9 "home page" fg=#569cd6 underline link=0
+text 51,9 "." fg=#cccccc"
 `;
 
 exports[`display-list snapshots styled-page at 40x24: styled-page-40x24 1`] = `
@@ -166,12 +168,15 @@ exports[`display-list snapshots styled-page at 40x24: styled-page-40x24 1`] = `
 fill 0,0 40x4 bg=#111111
 fill 0,5 40x2 bg=#111111
 fill 0,8 40x1 bg=#111111
-fill 0,10 40x1 bg=#111111
+fill 0,10 40x2 bg=#111111
 text 0,0 "Styled Page" fg=#ffd700 bold
 text 0,5 "This paragraph uses a class selector " fg=#8be9fd
 text 0,6 "from CSS." fg=#8be9fd
 text 0,8 "This paragraph uses an id selector." fg=#50fa7b bold
-text 0,10 "Default body colors apply here." fg=#cccccc"
+text 0,10 "Default body colors apply here. Visit " fg=#cccccc
+text 0,11 "the " fg=#cccccc
+text 4,11 "home page" fg=#569cd6 underline link=0
+text 13,11 "." fg=#cccccc"
 `;
 
 exports[`display-list snapshots responsive-page at 80x24: responsive-page-80x24 1`] = `

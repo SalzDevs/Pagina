@@ -4,6 +4,9 @@ export interface RgbColor {
   b: number;
 }
 
+/** WCAG AA contrast threshold for normal-sized terminal link text. */
+export const MIN_READABLE_CONTRAST_RATIO = 4.5;
+
 const NAMED_COLORS: Record<string, RgbColor> = {
   white: { r: 255, g: 255, b: 255 },
   black: { r: 0, g: 0, b: 0 },
@@ -81,9 +84,34 @@ function relativeLuminance(color: RgbColor): number {
   return 0.2126 * channels[0]! + 0.7152 * channels[1]! + 0.0722 * channels[2]!;
 }
 
+/** WCAG 2.x contrast ratio between two sRGB colors. */
+export function contrastRatio(foreground: RgbColor, background: RgbColor): number {
+  const foregroundLuminance = relativeLuminance(foreground);
+  const backgroundLuminance = relativeLuminance(background);
+  const lighter = Math.max(foregroundLuminance, backgroundLuminance);
+  const darker = Math.min(foregroundLuminance, backgroundLuminance);
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+/** True when a focused/unfocused color pair meets a readability threshold. */
+export function meetsContrastThreshold(
+  foreground: string,
+  background: string,
+  minimumRatio = MIN_READABLE_CONTRAST_RATIO,
+): boolean {
+  const foregroundColor = parseTerminalColor(foreground);
+  const backgroundColor = parseTerminalColor(background);
+  if (!foregroundColor || !backgroundColor) return false;
+  return contrastRatio(foregroundColor, backgroundColor) >= minimumRatio;
+}
+
 /** Pick readable text on top of a solid background color. */
 export function contrastingForeground(background: RgbColor): string {
-  return relativeLuminance(background) > 0.45 ? "#000000" : "#ffffff";
+  const black: RgbColor = { r: 0, g: 0, b: 0 };
+  const white: RgbColor = { r: 255, g: 255, b: 255 };
+  return contrastRatio(black, background) >= contrastRatio(white, background)
+    ? "#000000"
+    : "#ffffff";
 }
 
 /** Derive focused link colors from the underlying cell palette. */
@@ -92,6 +120,15 @@ export function focusedLinkColors(
   restBg?: string,
 ): { fg: string; bg: string } {
   if (restFg && restBg) {
+    const foreground = parseTerminalColor(restFg);
+    const background = parseTerminalColor(restBg);
+    if (foreground && background) {
+      if (contrastRatio(foreground, background) >= MIN_READABLE_CONTRAST_RATIO) {
+        return { fg: restBg, bg: restFg };
+      }
+      return { fg: contrastingForeground(foreground), bg: restFg };
+    }
+
     return { fg: restBg, bg: restFg };
   }
 

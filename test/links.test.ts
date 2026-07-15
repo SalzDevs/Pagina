@@ -288,7 +288,7 @@ describe("link focus", () => {
     expect(linkCommandIndices(displayList).get(0)).toEqual([1]);
     expect(linkCommandIndices(displayList).get(1)).toEqual([2, 3]);
     expect(textLinkFocusStyle(displayList[2]!, true)).toEqual({
-      fg: "#0000ff",
+      fg: "#000000",
       bg: "#ff0000",
       bold: undefined,
       italic: undefined,

@@ -1,4 +1,9 @@
+import type { RgbColor } from "../../links/focus-style";
+import { contrastRatio, MIN_READABLE_CONTRAST_RATIO } from "../../links/focus-style";
+
 type RgbaTuple = [number, number, number, number];
+
+export const MIN_FOCUS_CONTRAST_RATIO = MIN_READABLE_CONTRAST_RATIO;
 
 export interface CapturedSpanStyle {
   text: string;
@@ -58,5 +63,34 @@ export function spanStylesDiffer(left: CapturedSpanStyle, right: CapturedSpanSty
     left.attributes !== right.attributes ||
     JSON.stringify(left.fg) !== JSON.stringify(right.fg) ||
     JSON.stringify(left.bg) !== JSON.stringify(right.bg)
+  );
+}
+
+function rgbaToRgb(color: RgbaTuple): RgbColor {
+  return { r: color[0]!, g: color[1]!, b: color[2]! };
+}
+
+/** Contrast ratio for a rendered span's foreground and background colors. */
+export function spanContrastRatio(style: CapturedSpanStyle): number | null {
+  if (!style.fg || !style.bg) return null;
+  return contrastRatio(rgbaToRgb(style.fg), rgbaToRgb(style.bg));
+}
+
+/** True when a focused link span meets the minimum readability contrast. */
+export function meetsFocusContrast(
+  style: CapturedSpanStyle,
+  minimumRatio = MIN_FOCUS_CONTRAST_RATIO,
+): boolean {
+  const ratio = spanContrastRatio(style);
+  return ratio !== null && ratio >= minimumRatio;
+}
+
+/** True when focus styling collapsed to identical foreground and background. */
+export function focusColorsCollapsed(style: CapturedSpanStyle): boolean {
+  if (!style.fg || !style.bg) return false;
+  return (
+    style.fg[0] === style.bg[0] &&
+    style.fg[1] === style.bg[1] &&
+    style.fg[2] === style.bg[2]
   );
 }
