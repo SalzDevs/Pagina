@@ -20,4 +20,6 @@ export const EXAMPLE_PAGES = [
 
 export const DEFAULT_VIEWPORT = { width: 80, height: 24 } as const;
 
+export const MEDIUM_VIEWPORT = { width: 40, height: 24 } as const;
+
 export const NARROW_VIEWPORT = { width: 30, height: 24 } as const;

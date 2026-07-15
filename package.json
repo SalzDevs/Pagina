@@ -7,7 +7,9 @@
     "start": "bun run index.ts examples/page.html",
     "test": "bun test test/",
     "test:ux": "bun test test/ux/",
+    "test:ux:update-snapshots": "bun test test/ux/frame-snapshots.test.ts --update-snapshots",
     "test:render-compare": "bun test test/render-compare/",
+    "test:render-compare:update-snapshots": "bun test test/render-compare/display-list-snapshots.test.ts --update-snapshots",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

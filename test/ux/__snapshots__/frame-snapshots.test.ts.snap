@@ -1,0 +1,141 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`UX frame snapshots page at 80x24: page 1`] = `
+" [Hello!]                                                                       
+Hello!                                                                          
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+This is Pagina rendering a file from disk.                                      
+                                                                                
+Pass another path: bun start path/to/page.html                                  
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+"
+`;
+
+exports[`UX frame snapshots styled-page at 80x24: styled-page 1`] = `
+" [Styled Page]                                                                  
+Styled Page                                                                     
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+This paragraph uses a class selector from CSS.                                  
+                                                                                
+This paragraph uses an id selector.                                             
+                                                                                
+Default body colors apply here.                                                 
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+"
+`;
+
+exports[`UX frame snapshots links-page at 80x24: links-page 1`] = `
+" [Links Demo]                                                                   
+Links Demo                                                                      
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+Use [ and ] to move between links,       Enter or o to follow,                  
+link with the mouse.                                     or click a             
+                                                                                
+Use u and U (or Option+arrow keys) for back and forward.                        
+the top shows yourhpath.adcrumb at                                              
+                                                                                
+Go to the other page.                                                           
+                                                                                
+Or open the styled page.                                                        
+                                                                                
+Back to home.                                                                   
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+"
+`;
+
+exports[`UX frame snapshots lists-page at 80x24: lists-page 1`] = `
+" [Lists Demo]                                                            
+Lists Demo                                                                      
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+Unordered list:                                                                 
+                                                                                
+First item                                                                      
+                                                                                
+Second item                                                                     
+                                                                                
+Third item                                                                      
+                                                                                
+                                                                                
+Ordered list:                                                                   
+                                                                                
+Step one                                                                        
+                                                                                
+Step two                                                                        
+                                                                                
+Step three                                                                      
+                                                                                
+                                                                                
+"
+`;
+
+exports[`UX frame snapshots table-page at 80x24: table-page 1`] = `
+" [Tables Demo]                                                                  
+Quarterly metrics                                                               
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+Name   Value                                                                    
+─────  ─────                                                                    
+Alpha  1                                                                        
+Beta   2                                                                        
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+"
+`;
