@@ -4,6 +4,8 @@ import { convert } from "../parser/convert";
 import { parseHTML } from "../parser/html";
 import { layout } from "../layout/layout";
 import type { LayoutOutput } from "../layout/output";
+import { paint } from "../paint/paint";
+import { isTextCommand } from "../paint/display-list";
 import { BLOCKQUOTE_INDENT, computeStyles, type StyledNode } from "../style/style";
 
 function findBody(styled: StyledNode) {
@@ -130,5 +132,25 @@ describe("blockquote layout", () => {
     expect(textFragments(nested, laidOut.output).some((fragment) => fragment.x === BLOCKQUOTE_INDENT * 2)).toBe(
       true,
     );
+  });
+
+  test("paints increasing blockquote offsets in the display list", async () => {
+    const html = await Bun.file("examples/blockquote-page.html").text();
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const laidOut = layout(styled, { viewport: { width: 80, height: 30 } });
+    const painted = paint(styled, laidOut.output);
+    const commands = painted.displayList.filter(isTextCommand);
+
+    const bodyX = commands.find((command) => command.text.includes("Body text sits"))?.x;
+    const quoteX = commands.find((command) =>
+      command.text.includes("This quotation is indented"),
+    )?.x;
+    const nestedX = commands.find((command) =>
+      command.text.includes("Nested quote indents further"),
+    )?.x;
+
+    expect(bodyX).toBe(0);
+    expect(quoteX).toBe(BLOCKQUOTE_INDENT);
+    expect(nestedX).toBe(BLOCKQUOTE_INDENT * 2);
   });
 });

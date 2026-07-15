@@ -8,6 +8,7 @@ import { layout } from "../../layout/layout";
 import { loadPageContent } from "../../navigation/load-page";
 import { buildPageView } from "../../viewport/page-view";
 import { isTextCommand } from "../../paint/display-list";
+import { BLOCKQUOTE_INDENT } from "../../style/style";
 
 const comparisons = await Promise.all(
   EXAMPLE_PAGES.map(async (pagePath) => {
@@ -108,6 +109,42 @@ describe("render comparison — table structure", () => {
     expect(pagina.plainText).toMatch(/Name\s+Value/);
     expect(pagina.plainText).toMatch(/─{3,}/);
     expect(pagina.plainText).toMatch(/Alpha\s+1/);
+  });
+});
+
+describe("render comparison — blockquote structure", () => {
+  test("indents nested blockquotes on blockquote-page.html", async () => {
+    const page = await loadPageContent("examples/blockquote-page.html", {
+      viewportWidth: DEFAULT_VIEWPORT.width,
+    });
+    const view = buildPageView(page.styled, DEFAULT_VIEWPORT);
+    const commands = view.displayList.filter(isTextCommand);
+
+    const bodyX = commands.find((command) => command.text.includes("Body text sits"))?.x;
+    const singleQuoteX = commands.find((command) =>
+      command.text.includes("This quotation is indented"),
+    )?.x;
+    const outerQuoteX = commands.find((command) => command.text.includes("Outer quote"))?.x;
+    const nestedQuoteX = commands.find((command) =>
+      command.text.includes("Nested quote indents further"),
+    )?.x;
+
+    expect(bodyX).toBe(0);
+    expect(singleQuoteX).toBe(BLOCKQUOTE_INDENT);
+    expect(outerQuoteX).toBe(BLOCKQUOTE_INDENT);
+    expect(nestedQuoteX).toBe(BLOCKQUOTE_INDENT * 2);
+    expect(nestedQuoteX).toBeGreaterThan(outerQuoteX!);
+  });
+
+  test("preserves blockquote indentation in plain text extraction", async () => {
+    const pagina = await buildPaginaRender("examples/blockquote-page.html", DEFAULT_VIEWPORT);
+    const lines = pagina.plainText.split("\n");
+
+    const bodyLine = lines.find((line) => line.includes("Body text sits"));
+    const nestedLine = lines.find((line) => line.includes("Nested quote indents further"));
+
+    expect(bodyLine?.startsWith("Body text")).toBe(true);
+    expect((nestedLine?.match(/^ */)?.[0].length ?? 0)).toBeGreaterThanOrEqual(BLOCKQUOTE_INDENT * 2);
   });
 });
 
