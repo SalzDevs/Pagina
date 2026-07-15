@@ -8,6 +8,9 @@ import { layout } from "../../layout/layout";
 import { loadPageContent } from "../../navigation/load-page";
 import { buildPageView } from "../../viewport/page-view";
 import { isTextCommand } from "../../paint/display-list";
+import { convert } from "../../parser/convert";
+import { parseHTML } from "../../parser/html";
+import { computeStyles } from "../../style/style";
 import { BLOCKQUOTE_INDENT } from "../../style/style";
 import { DEFINITION_INDENT } from "../../layout/definitions";
 
@@ -184,6 +187,49 @@ describe("render comparison — definition list structure", () => {
     expect((definitionLine?.match(/^ */)?.[0].length ?? 0)).toBeGreaterThanOrEqual(
       DEFINITION_INDENT,
     );
+  });
+});
+
+describe("render comparison — preformatted structure", () => {
+  test("preserves pre and pre-wrap whitespace on pre-page.html", async () => {
+    const page = await loadPageContent("examples/pre-page.html", {
+      viewportWidth: DEFAULT_VIEWPORT.width,
+    });
+    const view = buildPageView(page.styled, DEFAULT_VIEWPORT);
+    const commands = view.displayList.filter(isTextCommand);
+
+    const preWrapFirst = commands.find((command) => command.text === "  indented line");
+    const preWrapSecond = commands.find((command) => command.text === "second line");
+    const codeLine = commands.find((command) => command.text.includes("function greet(name)"));
+    const returnLine = commands.find((command) => command.text.includes('return "hello "'));
+    const asciiLine = commands.find((command) => command.text.trim() === "*");
+
+    expect(preWrapFirst?.x).toBe(0);
+    expect(preWrapSecond?.x).toBe(0);
+    expect(preWrapFirst!.y).toBeLessThan(preWrapSecond!.y);
+    expect(codeLine).toBeDefined();
+    expect(returnLine?.text.startsWith("  return")).toBe(true);
+    expect(asciiLine).toBeDefined();
+    expect(codeLine!.y).toBeLessThan(asciiLine!.y);
+  });
+
+  test("keeps long pre lines unwrapped while pre-wrap splits in the display list", async () => {
+    const line = "y".repeat(24);
+    const viewport = { width: 10, height: 10 };
+
+    const preStyled = await computeStyles(
+      convert(parseHTML(`<html><body><pre>${line}</pre></body></html>`)),
+    );
+    const wrapStyled = await computeStyles(
+      convert(parseHTML(`<html><body><pre style="white-space: pre-wrap">${line}</pre></body></html>`)),
+    );
+
+    const preCommands = buildPageView(preStyled, viewport).displayList.filter(isTextCommand);
+    const wrapCommands = buildPageView(wrapStyled, viewport).displayList.filter(isTextCommand);
+
+    expect(preCommands).toHaveLength(1);
+    expect(preCommands[0]?.text).toHaveLength(24);
+    expect(wrapCommands.length).toBeGreaterThan(1);
   });
 });
 

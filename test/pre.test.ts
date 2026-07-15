@@ -10,6 +10,8 @@ import {
 } from "../layout/pre";
 import type { LayoutFragment } from "../layout/types";
 import type { LayoutOutput } from "../layout/output";
+import { paint } from "../paint/paint";
+import { isTextCommand } from "../paint/display-list";
 import { computeStyles, type StyledNode } from "../style/style";
 
 function findBody(styled: StyledNode) {
@@ -67,6 +69,50 @@ describe("preformatted text", () => {
     expect(fragments[1]?.y).toBe(1);
   });
 
+  test("preserves tabs and multiple spaces inside pre", async () => {
+    const html = `<pre>col1\tcol2  end</pre>`;
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const pre = findPre(styled)!;
+
+    expect(collectPreformattedText(pre)).toBe("col1\tcol2  end");
+
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
+    const fragments = textFragments(pre, laidOut.output);
+
+    expect(fragments).toHaveLength(1);
+    expect(fragments[0]?.text).toBe("col1\tcol2  end");
+  });
+
+  test("keeps inline elements in pre as contiguous text", async () => {
+    const html = `<pre>before <code>inline</code> after</pre>`;
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const pre = findPre(styled)!;
+
+    expect(collectPreformattedText(pre)).toBe("before inline after");
+
+    const laidOut = layout(styled, { viewport: { width: 40, height: 10 } });
+    expect(textFragments(pre, laidOut.output).map((fragment) => fragment.text)).toEqual([
+      "before inline after",
+    ]);
+  });
+
+  test("wraps only pre-wrap blocks at the viewport edge", async () => {
+    const line = "x".repeat(12);
+    const html = `
+      <pre>${line}</pre>
+      <pre style="white-space: pre-wrap">${line}</pre>
+    `;
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const laidOut = layout(styled, { viewport: { width: 5, height: 10 } });
+
+    const preFragments = textFragments(findPre(styled, 0), laidOut.output);
+    const preWrapFragments = textFragments(findPre(styled, 1), laidOut.output);
+
+    expect(preFragments).toHaveLength(1);
+    expect(preFragments[0]?.text).toHaveLength(12);
+    expect(preWrapFragments.map((fragment) => fragment.text)).toEqual(["xxxxx", "xxxxx", "xx"]);
+  });
+
   test("does not wrap long pre lines by default", async () => {
     const html = `<pre>${"x".repeat(12)}</pre>`;
     const styled = await computeStyles(convert(parseHTML(html)));
@@ -113,6 +159,24 @@ describe("preformatted text", () => {
     expect(codeText).toContain('function greet(name) {');
     expect(codeText).toContain('  return "hello " + name;');
     expect(textFragments(artPre, laidOut.output).some((fragment) => fragment.text.trim() === "*")).toBe(true);
+  });
+
+  test("paints pre-page.html with preserved pre lines in the display list", async () => {
+    const html = await Bun.file("examples/pre-page.html").text();
+    const styled = await computeStyles(convert(parseHTML(html)));
+    const laidOut = layout(styled, { viewport: { width: 80, height: 40 } });
+    const painted = paint(styled, laidOut.output);
+    const commands = painted.displayList.filter(isTextCommand);
+
+    const preWrapLine = commands.find((command) => command.text === "  indented line");
+    const codeLine = commands.find((command) => command.text.includes("function greet(name)"));
+    const asciiLine = commands.find((command) => command.text.trim() === "*");
+
+    expect(preWrapLine).toBeDefined();
+    expect(codeLine).toBeDefined();
+    expect(asciiLine).toBeDefined();
+    expect(preWrapLine!.x).toBe(0);
+    expect(codeLine!.y).toBeLessThan(asciiLine!.y);
   });
 });
 
