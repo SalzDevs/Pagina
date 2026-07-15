@@ -96,12 +96,17 @@ function linearizeDisplayList(displayList: ReturnType<typeof buildPageView>["dis
     .trim();
 }
 
+function resolvePageLocation(pagePath: string): string {
+  if (/^https?:\/\//i.test(pagePath)) return pagePath;
+  return resolve(pagePath);
+}
+
 /** Render a page through Pagina and extract comparable text/structure. */
 export async function buildPaginaRender(
   pagePath: string,
   viewport: { width: number; height: number },
 ): Promise<PaginaRender> {
-  const resolved = resolve(pagePath);
+  const resolved = resolvePageLocation(pagePath);
   const page = await loadPageContent(resolved, { viewportWidth: viewport.width });
   const view = buildPageView(page.styled, viewport);
   const plainText = linearizeDisplayList(view.displayList);
